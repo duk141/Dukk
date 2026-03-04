@@ -14,12 +14,11 @@
         }
         
         body {
-            background: linear-gradient(135deg, #8B1E1E, #C41E1E, #9D1E1E);
-            min-height: 100vh;
-            padding: 30px;
-            position: relative;
-            overflow-x: hidden;
-        }
+    background: linear-gradient(135deg, #8B1E1E, #C41E1E, #9D1E1E);
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
         
         /* Hiệu ứng hoa mai, hoa đào */
         .tet-floating {
@@ -93,17 +92,18 @@
             50% { transform: scale(1.05); }
         }
         
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 10;
-            border: 5px solid #FFD700;
-        }
+     .container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 30px auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 10;
+    border: 5px solid #FFD700;
+}
         
         /* Header Tết */
         .tet-header {
@@ -527,6 +527,28 @@
             color: #C41E1E;
             margin-bottom: 10px;
         }
+        @media (max-width: 768px) {
+
+    .container {
+        margin: 0;
+        border-radius: 0;
+        padding: 20px;
+    }
+
+    .tet-title {
+        font-size: 32px;
+        letter-spacing: 2px;
+    }
+
+    .prediction-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
     </style>
 </head>
 <body>
