@@ -159,6 +159,82 @@
     if(pCount !== bCount){
         add(pCount > bCount ? 'P' : 'B', 1, "Xác suất");
     }
+    
+    // ===== PHÂN TÍCH CHUỖI =====
+function getRuns(arr){
+    let runs = [];
+    let count = 1;
+
+    for(let i=1;i<arr.length;i++){
+        if(arr[i] === arr[i-1]) count++;
+        else{
+            runs.push(count);
+            count = 1;
+        }
+    }
+    runs.push(count);
+    return runs;
+}
+
+let runs = getRuns(h);
+
+// lấy tối đa 6 phần tử cuối
+let r = runs.slice(-6);
+
+// ===== 4-3-2-1 =====
+if(r.length >= 4){
+    let a = r.slice(-4);
+    if(a[0]===4 && a[1]===3 && a[2]===2 && a[3]===1){
+        add(last === 'P' ? 'B' : 'P', 2.5, "4-3-2-1");
+    }
+}
+
+// ===== 1-2-3-4 =====
+if(r.length >= 4){
+    let a = r.slice(-4);
+    if(a[0]===1 && a[1]===2 && a[2]===3 && a[3]===4){
+        add(last, 2.5, "1-2-3-4");
+    }
+}
+
+// ===== 3-2-1 =====
+if(r.length >= 3){
+    let a = r.slice(-3);
+    if(a[0]===3 && a[1]===2 && a[2]===1){
+        add(last === 'P' ? 'B' : 'P', 2, "3-2-1");
+    }
+}
+
+// ===== 1-2-3 =====
+if(r.length >= 3){
+    let a = r.slice(-3);
+    if(a[0]===1 && a[1]===2 && a[2]===3){
+        add(last, 2, "1-2-3");
+    }
+}
+
+// ===== 3-1-2-1-1-1 =====
+if(r.length >= 6){
+    let a = r.slice(-6);
+    if(
+        a[0]===3 && a[1]===1 &&
+        a[2]===2 && a[3]===1 &&
+        a[4]===1 && a[5]===1
+    ){
+        add(last === 'P' ? 'B' : 'P', 3, "3-1-2-1-1-1");
+    }
+}
+
+// ===== 1-1-1-2-1-3 =====
+if(r.length >= 6){
+    let a = r.slice(-6);
+    if(
+        a[0]===1 && a[1]===1 && a[2]===1 &&
+        a[3]===2 && a[4]===1 && a[5]===3
+    ){
+        add(last, 3, "1-1-1-2-1-3");
+    }
+}
 
     // ===== ANTI NHIỄU =====
     let diff = Math.abs(scoreP - scoreB);
