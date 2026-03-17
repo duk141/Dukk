@@ -119,12 +119,22 @@
 
     let scoreP = 0;
     let scoreB = 0;
+    
+    let mainCau = pattern;
+    let maxWeight = 0;
 
     function add(side, val, text){
-        if(side === 'P') scoreP += val;
-        else scoreB += val;
-        msg += " | " + text;
+    if(side === 'P') scoreP += val;
+    else scoreB += val;
+
+    msg += " | " + text;
+
+    // chọn cầu mạnh nhất
+    if(val > maxWeight){
+        maxWeight = val;
+        mainCau = text;
     }
+}
 
     // 1. Bệt mạnh
     if(last === p1 && p1 === p2){
@@ -252,12 +262,12 @@ if(r.length >= 6){
     let percent = (diff / (scoreP + scoreB || 1)) * 100;
 
     // ===== UI =====
-    badge.innerText = `CẦU: ${pattern} | AI: P ${scoreP.toFixed(1)} - B ${scoreB.toFixed(1)}`;
+    badge.innerText = `CẦU: ${mainCau} | AI: P ${scoreP.toFixed(1)} - B ${scoreB.toFixed(1)}`;
 
     nextBet.innerText = final === 'P' ? "PLAYER" : "BANKER";
     nextBet.className = `next-move ${final === 'P' ? 'p-style' : 'b-style'}`;
 
-    reason.innerText = msg + ` | CONF: ${percent.toFixed(1)}%`;
+    reason.innerText = `${mainCau} | CONF: ${percent.toFixed(1)}%`;
 }
 
     function render() {
