@@ -67,65 +67,122 @@
     }
 
     function logic() {
-        const h = history.filter(x => x.type !== 'T').map(x => x.type);
-        const nextBet = document.getElementById('next-bet');
-        const reason = document.getElementById('reason');
-        const badge = document.getElementById('current-pattern');
-        const n = h.length;
+    const h = history.filter(x => x.type !== 'T').map(x => x.type);
+    const nextBet = document.getElementById('next-bet');
+    const reason = document.getElementById('reason');
+    const badge = document.getElementById('current-pattern');
 
-        if (n < 2) return;
+    const n = h.length;
+    if (n < 2) return;
 
-        let last = h[n-1];
-        let p1 = h[n-2];
-        let p2 = h[n-3];
-        let p3 = h[n-4];
+    let last = h[n-1];
+    let p1 = h[n-2];
+    let p2 = h[n-3];
+    let p3 = h[n-4];
 
-        let pred = "";
-        let msg = "";
+    let pred = "";
+    let msg = "";
 
-        // KIỂM TRA PHÁ CẦU
-        if (pattern === "1-1" && last === p1) pattern = "NONE";
-        if (pattern === "2-2" && ( (last === p1 && p1 === p2) || (last !== p1 && p1 !== p2) )) {
-            // Phá 2-2 khi: ra cây thứ 3 giống nhau (BBB) HOẶC nhảy liên tục (B-P-B)
-            pattern = "NONE";
-        }
-        if (pattern === "BET" && last !== p1) pattern = "NONE";
+    // ===== GIỮ NGUYÊN LOGIC CŨ =====
 
-        // NHẬN DIỆN CẦU NGHIÊM NGẶT
-        // 1. Cầu Bệt (Ít nhất 3 cây giống nhau)
-        if (last === p1 && p1 === p2) {
-            pattern = "BET";
-            pred = last;
-            msg = "Cầu Bệt: Đang bệt " + last + ", bám dây ngay!";
-        }
-        // 2. Cầu 1-1 (Ít nhất nhịp B-P-B hoặc P-B-P)
-        else if (n >= 3 && last !== p1 && p1 !== p2) {
-            pattern = "1-1";
-            pred = last === 'P' ? 'B' : 'P';
-            msg = "Cầu 1-1: Nhịp nhảy BPB ổn định, đánh đối nghịch.";
-        }
-        // 3. Cầu 2-2 (Ít nhất nhịp BB-P hoặc PP-B)
-        else if (n >= 3 && last !== p1 && p1 === p2) {
-            pattern = "2-2";
-            pred = last; // Đánh cây thứ 2 cho đủ cặp
-            msg = "Cầu 2-2: Vừa đổi màu, đánh cùng màu để đủ cặp.";
-        }
-        // Cầu 2-2 tiếp diễn (Đã đủ cặp BB-PP, giờ dự đoán sang cặp mới)
-        else if (pattern === "2-2" && last === p1) {
-            pred = last === 'P' ? 'B' : 'P';
-            msg = "Cầu 2-2: Đã đủ cặp, dự đoán đổi màu sang cặp mới.";
-        }
-        // Mặc định dò cầu
-        else {
-            pred = last; 
-            msg = "Đang chờ form cầu rõ ràng (1-1, 2-2 hoặc Bệt).";
-        }
-
-        badge.innerText = "TRẠNG THÁI: " + (pattern === "NONE" ? "DÒ CẦU" : "CẦU " + pattern);
-        nextBet.innerText = pred === 'P' ? "PLAYER" : "BANKER";
-        nextBet.className = `next-move ${pred === 'P' ? 'p-style' : 'b-style'}`;
-        reason.innerText = msg;
+    if (pattern === "1-1" && last === p1) pattern = "NONE";
+    if (pattern === "2-2" && ( (last === p1 && p1 === p2) || (last !== p1 && p1 !== p2) )) {
+        pattern = "NONE";
     }
+    if (pattern === "BET" && last !== p1) pattern = "NONE";
+
+    if (last === p1 && p1 === p2) {
+        pattern = "BET";
+        pred = last;
+        msg = "Cầu Bệt";
+    }
+    else if (n >= 3 && last !== p1 && p1 !== p2) {
+        pattern = "1-1";
+        pred = last === 'P' ? 'B' : 'P';
+        msg = "Cầu 1-1";
+    }
+    else if (n >= 3 && last !== p1 && p1 === p2) {
+        pattern = "2-2";
+        pred = last;
+        msg = "Cầu 2-2";
+    }
+    else if (pattern === "2-2" && last === p1) {
+        pred = last === 'P' ? 'B' : 'P';
+        msg = "2-2 đảo";
+    }
+    else {
+        pred = last;
+        msg = "Dò cầu";
+    }
+
+    // ===== LAYER AI BỔ SUNG (KHÔNG PHÁ LOGIC CŨ) =====
+
+    let scoreP = 0;
+    let scoreB = 0;
+
+    function add(side, val, text){
+        if(side === 'P') scoreP += val;
+        else scoreB += val;
+        msg += " | " + text;
+    }
+
+    // 1. Bệt mạnh
+    if(last === p1 && p1 === p2){
+        add(last, 2, "Bệt+");
+    }
+
+    // 2. 3-1 (gãy bệt)
+    if(n >= 4 && p3 === p2 && p2 === p1 && last !== p1){
+        add(last, 1.5, "3-1");
+    }
+
+    // 3. So le dài
+    if(n >= 5){
+        let alt = true;
+        for(let i=n-1;i>n-5;i--){
+            if(h[i] === h[i-1]) alt = false;
+        }
+        if(alt){
+            add(last === 'P' ? 'B' : 'P', 1.5, "So le");
+        }
+    }
+
+    // 4. Nhồi
+    if(n >= 4 && p3 === p2 && p2 === p1 && last !== p1){
+        add(last, 1, "Nhồi");
+    }
+
+    // 5. Xác suất
+    let pCount = h.filter(x=>x==='P').length;
+    let bCount = h.filter(x=>x==='B').length;
+
+    if(pCount !== bCount){
+        add(pCount > bCount ? 'P' : 'B', 1, "Xác suất");
+    }
+
+    // ===== ANTI NHIỄU =====
+    let diff = Math.abs(scoreP - scoreB);
+    let final = pred;
+
+    if(diff >= 2){
+        final = scoreP > scoreB ? 'P' : 'B';
+    }
+
+    // nếu tín hiệu yếu → giữ logic gốc
+    if(diff < 1){
+        final = pred;
+    }
+
+    let percent = (diff / (scoreP + scoreB || 1)) * 100;
+
+    // ===== UI =====
+    badge.innerText = `CẦU: ${pattern} | AI: P ${scoreP.toFixed(1)} - B ${scoreB.toFixed(1)}`;
+
+    nextBet.innerText = final === 'P' ? "PLAYER" : "BANKER";
+    nextBet.className = `next-move ${final === 'P' ? 'p-style' : 'b-style'}`;
+
+    reason.innerText = msg + ` | CONF: ${percent.toFixed(1)}%`;
+}
 
     function render() {
         const container = document.getElementById('board-container');
