@@ -1,0 +1,36 @@
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+.controls button{
+    padding:10px 15px;
+    margin:5px;
+    border:none;
+    border-radius:8px;
+}
+
+.b{background:red;}
+.p{background:blue;}
+.t{background:green;}
+.r{background:gray;}
+
+#bead, #road{
+    display:grid;
+    grid-template-columns: repeat(12, 25px);
+    gap:4px;
+    justify-content:center;
+    margin:10px;
+}
+
+.cell{
+    width:25px;
+    height:25px;
+    border-radius:50%;
+}
+
+.B{background:red;}
+.P{background:blue;}
+.T{background:green;}
