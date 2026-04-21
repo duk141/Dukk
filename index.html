@@ -2,29 +2,33 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Baccarat AI Pro</title>
+<title>Baccarat Pro Tool</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Baccarat AI Pro</h2>
+<h2>Baccarat Auto Calculator</h2>
 
-<div class="controls">
-    <button onclick="add('B')" class="b">Banker</button>
-    <button onclick="add('P')" class="p">Player</button>
-    <button onclick="add('T')" class="t">Tie</button>
-    <button onclick="resetGame()" class="r">Reset</button>
+<div class="card-box">
+    <h3>Player</h3>
+    <input id="p1" placeholder="Lá 1">
+    <input id="p2" placeholder="Lá 2">
 </div>
 
-<h3>Bead Plate</h3>
-<div id="bead"></div>
+<div class="card-box">
+    <h3>Banker</h3>
+    <input id="b1" placeholder="Lá 1">
+    <input id="b2" placeholder="Lá 2">
+</div>
 
-<h3>Big Road</h3>
-<div id="road"></div>
+<button class="main-btn" onclick="play()">Tính kết quả</button>
+<button class="reset" onclick="resetGame()">Reset</button>
 
-<h3 id="predict">AI: --</h3>
+<h3 id="roundResult">Kết quả: --</h3>
+<h3 id="history">Lịch sử: --</h3>
+<h3 id="predict">Dự đoán: --</h3>
 
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
