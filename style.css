@@ -1,36 +1,40 @@
 body{
+    font-family: Arial;
+    text-align:center;
     background:#0f172a;
     color:white;
-    font-family:Arial;
-    text-align:center;
 }
 
-.controls button{
-    padding:10px 15px;
+.card-box{
+    background:#1e293b;
+    padding:15px;
+    margin:10px auto;
+    width:250px;
+    border-radius:12px;
+}
+
+input{
+    width:60px;
+    padding:10px;
     margin:5px;
-    border:none;
+    text-align:center;
     border-radius:8px;
+    border:none;
 }
 
-.b{background:red;}
-.p{background:blue;}
-.t{background:green;}
-.r{background:gray;}
-
-#bead, #road{
-    display:grid;
-    grid-template-columns: repeat(12, 25px);
-    gap:4px;
-    justify-content:center;
+.main-btn{
+    background:#22c55e;
+    color:white;
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
     margin:10px;
 }
 
-.cell{
-    width:25px;
-    height:25px;
-    border-radius:50%;
+.reset{
+    background:#ef4444;
+    color:white;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
 }
-
-.B{background:red;}
-.P{background:blue;}
-.T{background:green;}
