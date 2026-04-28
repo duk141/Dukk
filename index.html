@@ -119,6 +119,37 @@ input{
   margin:0 auto 15px;
   background:transparent;
 }
+.learnBtns{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:15px;
+}
+
+.learnBtns button{
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  color:#fff;
+  cursor:pointer;
+}
+
+.winP{
+  background:#00bfff;
+  box-shadow:0 0 12px #00bfff;
+}
+
+.winB{
+  background:#ff3b3b;
+  box-shadow:0 0 12px #ff3b3b;
+}
+
+.winD{
+  background:#2eb82e;
+  box-shadow:0 0 12px #2eb82e;
+}
 #predResult{
   text-align:center;
   font-size:24px;
@@ -164,7 +195,7 @@ input{
   <input id="banker" type="number">
   <div id="displayBanker" class="display">0</div>
 
-  <div class="keypad">
+<div class="keypad">
     <button onclick="press(1)">1</button>
     <button onclick="press(2)">2</button>
     <button onclick="press(3)">3</button>
@@ -182,6 +213,13 @@ input{
   <button id="predictBtn">🔮 Dự đoán</button>
   <button id="clearBtn">Xoá tất cả</button>
 
+  <!-- NÚT AI TỰ HỌC -->
+  <div class="learnBtns">
+    <button onclick="vipRecord('PLAYER')" class="winP">PLAYER THẮNG</button>
+    <button onclick="vipRecord('BANKER')" class="winB">BANKER THẮNG</button>
+    <button onclick="vipRecord('HÒA')" class="winD">HÒA</button>
+  </div>
+
   <div class="predict" id="predictBox">
     <div class="circle" id="predCircle">?</div>
     <div id="predResult">—</div>
@@ -189,25 +227,39 @@ input{
 </div>
 
 <script>
-const HISTORY_KEY='bcr_history_v15_final';
-const WEIGHTS_KEY='bcr_weights_v15_final';
-const SHORT_TERM_N=3;
-const DRAW_THRESHOLD=1;
-const LR_DEFAULT=0.25;
+/* =========================
+   VIP GOD AI ENGINE V30
+========================= */
+
+const HISTORY_KEY = "bcr_history_v30_god";
+const MODEL_KEY = "bcr_model_v30_god";
+
+const CONFIG = {
+  shortTrend: 4,
+  longTrend: 12,
+  drawThreshold: 1,
+  confidenceBase: 50
+};
 
 let current='player';
 
-/* ===== UI INPUT ===== */
+/* ===== UI ===== */
 function switchBox(){
   current = current === 'player' ? 'banker' : 'player';
+
   document.getElementById('displayPlayer').classList.remove('activeBox');
   document.getElementById('displayBanker').classList.remove('activeBox');
-  document.getElementById(current === 'player' ? 'displayPlayer' : 'displayBanker').classList.add('activeBox');
+
+  document.getElementById(
+    current === 'player' ? 'displayPlayer' : 'displayBanker'
+  ).classList.add('activeBox');
 }
 
 function press(num){
   const input = document.getElementById(current);
-  const display = document.getElementById(current === 'player' ? 'displayPlayer':'displayBanker');
+  const display = document.getElementById(
+    current === 'player' ? 'displayPlayer' : 'displayBanker'
+  );
 
   input.value = num;
   display.textContent = num;
@@ -217,118 +269,213 @@ function press(num){
 
 function clearNum(){
   const input = document.getElementById(current);
-  const display = document.getElementById(current === 'player' ? 'displayPlayer':'displayBanker');
-  input.value='';
-  display.textContent='0';
+  const display = document.getElementById(
+    current === 'player' ? 'displayPlayer' : 'displayBanker'
+  );
+
+  input.value = '';
+  display.textContent = '0';
 }
 
-document.getElementById('clearBtn').addEventListener('click',()=>{
-  document.getElementById('player').value='';
-  document.getElementById('banker').value='';
-  document.getElementById('displayPlayer').textContent='0';
-  document.getElementById('displayBanker').textContent='0';
-  document.getElementById('predictBox').style.display='none';
+document.getElementById("clearBtn").addEventListener("click", ()=>{
+  document.getElementById("player").value='';
+  document.getElementById("banker").value='';
+  document.getElementById("displayPlayer").textContent='0';
+  document.getElementById("displayBanker").textContent='0';
+  document.getElementById("predictBox").style.display='none';
 });
 
-/* ===== AI ===== */
+/* ===== STORAGE ===== */
 function loadHistory(){
-  try{return JSON.parse(localStorage.getItem(HISTORY_KEY))||[];}
+  try{return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];}
   catch(e){return [];}
 }
 
-function loadWeights(){
-  try{
-    const raw=localStorage.getItem(WEIGHTS_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
+function saveHistory(h){
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+}
+
+/* ===== CORE ===== */
+function normalizeResult(r){
+  if(r==="PLAYER") return "P";
+  if(r==="BANKER") return "B";
+  return "D";
+}
+
+function trendAnalysis(){
+  const hist = loadHistory();
+  let score = {P:0,B:0,D:0};
+
+  hist.slice(-CONFIG.shortTrend).forEach((h,i)=>{
+    score[normalizeResult(h.result)] += (i+1)*2;
+  });
+
+  hist.slice(-CONFIG.longTrend).forEach(h=>{
+    score[normalizeResult(h.result)] += 1;
+  });
+
+  return score;
+}
+
+function markovPrediction(){
+  const hist = loadHistory();
+  let score = {P:0,B:0,D:0};
+
+  if(hist.length < 4) return score;
+
+  let seq = hist.slice(-3).map(x=>normalizeResult(x.result)).join("");
+
+  for(let i=0;i<hist.length-3;i++){
+    let pattern = hist.slice(i,i+3).map(x=>normalizeResult(x.result)).join("");
+
+    if(pattern===seq){
+      let next = normalizeResult(hist[i+3].result);
+      score[next]+=4;
+    }
+  }
+
+  return score;
+}
+
+function chaosDetector(){
+  const hist = loadHistory();
+  if(hist.length<6) return false;
+
+  let last6 = hist.slice(-6).map(x=>normalizeResult(x.result)).join("");
+
+  return (
+    last6==="PBPBPB" ||
+    last6==="BPBPBP"
+  );
+}
+
+function baccaratFeature(p,b){
+  let score = {P:0,B:0,D:0};
+
+  if(p>b) score.P+=3;
+  if(b>p) score.B+=3;
+
+  if(Math.abs(p-b)<=CONFIG.drawThreshold) score.D+=5;
+
+  if(p>=8) score.P+=2;
+  if(b>=8) score.B+=2;
+
+  if(p===b) score.D+=8;
+
+  if((p+b)%2===0){
+    score.B+=1.2;
+  }else{
+    score.P+=1.2;
+  }
+
+  return score;
+}
+
+function calcConfidence(finalScore){
+  let vals = Object.values(finalScore).sort((a,b)=>b-a);
+  let diff = vals[0]-vals[1];
+  return Math.min(99, Math.max(55, CONFIG.confidenceBase + diff*6));
+}
+
+function vipPredict(player, banker){
+  let finalScore = {P:0,B:0,D:0};
+
+  let base = baccaratFeature(player, banker);
+  let trend = trendAnalysis();
+  let markov = markovPrediction();
+
+  finalScore.P += base.P + trend.P*0.35 + markov.P*0.8;
+  finalScore.B += base.B + trend.B*0.35 + markov.B*0.8;
+  finalScore.D += base.D + trend.D*0.35 + markov.D*0.8;
+
+  if(chaosDetector()){
+    finalScore.P*=0.85;
+    finalScore.B*=0.85;
+    finalScore.D*=1.3;
+  }
+
+  finalScore.B*=1.06;
+
+  let prediction="PLAYER";
+
+  if(finalScore.B > finalScore.P && finalScore.B > finalScore.D){
+    prediction="BANKER";
+  }
+
+  if(finalScore.D > finalScore.P && finalScore.D > finalScore.B){
+    prediction="HÒA";
+  }
+
   return {
-    P:[-3,0,1,0,3,1],
-    B:[3,0,-1,0,-3,1],
-    D:[0,0,0,0,0,2],
-    lr:LR_DEFAULT
+    final: prediction,
+    confidence: calcConfidence(finalScore),
+    scores: finalScore
   };
 }
 
-function features(p,b){
-  const v1=p>b?1:(p<b?-1:0);
-  const r=(p+1)/(b+1);
-  const v2=r>1.2?1:(r<0.8?-1:0);
-  const d3=(p%3)-(b%3);
-  const v3=d3>0?1:(d3<0?-1:0);
-  const v4=Math.abs(p-b)>=4?(p>b?1:-1):0;
-  const d5=(p%4)-(b%4);
-  const v5=d5>0?1:(d5<0?-1:0);
-  const v6=Math.abs(p-b)<=DRAW_THRESHOLD?1:0;
-  return [v1,v2,v3,v4,v5,v6];
-}
-
-function dot(w,vs){
-  let s=0;
-  for(let i=0;i<vs.length;i++) s+=(w[i]||0)*vs[i];
-  return s;
-}
-
-function shortTermBias(){
-  const hist=loadHistory();
-  if(hist.length<SHORT_TERM_N) return null;
-  const last=hist.slice(-SHORT_TERM_N);
-  const cnt={PLAYER:0,BANKER:0};
-  last.forEach(h=>{
-    if(h.result==='PLAYER') cnt.PLAYER++;
-    if(h.result==='BANKER') cnt.BANKER++;
-  });
-  if(cnt.PLAYER>=2) return 'PLAYER';
-  if(cnt.BANKER>=2) return 'BANKER';
-  return null;
-}
-
-function predict(p,b){
-  const w=loadWeights();
-  const vs=features(p,b);
-
-  let sP=dot(w.P,vs);
-  let sB=dot(w.B,vs);
-  let sD=dot(w.D,vs);
-
-  const bias=shortTermBias();
-  if(bias==='PLAYER') sP+=1;
-  if(bias==='BANKER') sB+=1;
-
-  if(vs[5]===1 && sD>=sP && sD>=sB) return 'HÒA';
-  return sP>=sB?'PLAYER':'BANKER';
-}
-
-/* ===== Predict Button ===== */
-document.getElementById('predictBtn').addEventListener('click',()=>{
-  const p=Number(document.getElementById('player').value);
-  const b=Number(document.getElementById('banker').value);
-
-  if(Number.isNaN(p)||Number.isNaN(b)){
-    alert('Nhập đủ PLAYER và BANKER');
+/* ===== SELF LEARNING ===== */
+function vipRecord(actual){
+  if(!window._lastPrediction){
+    alert("Hãy dự đoán trước");
     return;
   }
 
-  const result = predict(p,b);
+  let hist = loadHistory();
 
-  document.getElementById('predictBox').style.display='block';
+  hist.push({
+    inputP: window._lastPrediction.player,
+    inputB: window._lastPrediction.banker,
+    prediction: window._lastPrediction.result.final,
+    result: actual,
+    confidence: window._lastPrediction.result.confidence,
+    time: Date.now()
+  });
 
-  const circle=document.getElementById('predCircle');
-  const resultEl=document.getElementById('predResult');
+  saveHistory(hist);
 
-  if(result==='PLAYER'){
-    circle.textContent='P';
-    circle.className='circle flash-blue';
-    resultEl.textContent='PLAYER 🔵';
-  }else if(result==='BANKER'){
-    circle.textContent='B';
-    circle.className='circle flash-red';
-    resultEl.textContent='BANKER 🔴';
-  }else{
-    circle.textContent='H';
-    circle.className='circle flash-green';
-    resultEl.textContent='HÒA 🟢';
+  alert("AI đã học kết quả: " + actual);
+}
+
+/* ===== MAIN BUTTON ===== */
+document.getElementById("predictBtn").addEventListener("click", ()=>{
+  const p = Number(document.getElementById("player").value);
+  const b = Number(document.getElementById("banker").value);
+
+  if(Number.isNaN(p) || Number.isNaN(b)){
+    alert("Nhập đủ PLAYER và BANKER");
+    return;
+  }
+
+  const result = vipPredict(p,b);
+
+  window._lastPrediction = {
+    player:p,
+    banker:b,
+    result
+  };
+
+  document.getElementById("predictBox").style.display="block";
+
+  const circle = document.getElementById("predCircle");
+  const text = document.getElementById("predResult");
+
+  if(result.final==="PLAYER"){
+    circle.textContent="P";
+    circle.className="circle flash-blue";
+    text.innerHTML=`PLAYER 🔵<br>${result.confidence}%`;
+  }
+  else if(result.final==="BANKER"){
+    circle.textContent="B";
+    circle.className="circle flash-red";
+    text.innerHTML=`BANKER 🔴<br>${result.confidence}%`;
+  }
+  else{
+    circle.textContent="H";
+    circle.className="circle flash-green";
+    text.innerHTML=`HÒA 🟢<br>${result.confidence}%`;
   }
 });
 </script>
+
 </body>
 </html>
