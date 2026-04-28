@@ -1,104 +1,113 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>ðŸ‘¾TOOL BCR V2ðŸ‘¾</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>👾 TOOL BCR V2 👾</title>
+
 <style>
-body {
+body{
   background:#000;
-  font-family: 'Arial', sans-serif;
+  font-family:Arial,sans-serif;
   color:#fff;
   margin:0;
   padding:0;
 }
-.wrap {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #000;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #ff5f87, 0 0 40px #ff5f87 inset;
-}
-h1 {
-  text-align:center;
-  font-size:22px;
-  margin-bottom:20px;
-  color:#0ff;
-  text-shadow:0 0 5px #0ff,0 0 10px #0ff;
-}
-label {
-  font-size:16px;
-  display:block;
-  margin-top:15px;
-  color:#00faff;
-  text-shadow:0 0 5px #00faff,0 0 10px #00faff;
-}
-input[type=number]{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:2px solid #a24bff;
-  background:#000;
-  color:#fff;
-  font-size:16px;
-  margin-top:5px;
-  box-shadow:0 0 8px #a24bff,0 0 12px #a24bff inset;
-}
-button{
-  padding:12px 20px;
-  border:2px solid transparent;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:18px;
-  font-weight:bold;
-}
-#predictBtn {
-  background:#ff5f87;
-  color:#fff;
-  text-shadow:0 0 5px #fff;
-  box-shadow:0 0 10px #ff5f87,0 0 20px #ff5f87 inset;
-  margin-top:20px;
-  width:100%;
-  position:relative;
-}
-#predictBtn::before {
-  content:"ðŸ”® ";
-}
-#clearBtn {
-  display:none;
-}
-.predict {
-  margin-top:25px;
+.wrap{
+  max-width:400px;
+  margin:20px auto;
   padding:20px;
   background:#000;
   border-radius:12px;
-  box-shadow:0 0 20px #ff5f87,0 0 30px #ff5f87 inset;
+  box-shadow:0 0 20px #ff5f87,0 0 40px #ff5f87 inset;
 }
-.circle {
-  width:130px;
-  height:130px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:50px;
-  font-weight:800;
-  margin:0 auto 15px auto;
-  box-shadow:0 0 20px #ff5f87,0 0 40px #ff5f87;
-}
-#predResult {
+h1{
   text-align:center;
-  font-size:24px;
-  font-weight:800;
-  color:#fff;
+  font-size:22px;
+  color:#0ff;
+  text-shadow:0 0 5px #0ff,0 0 10px #0ff;
 }
-#predDetail {
+label{
+  display:block;
+  margin-top:15px;
+  color:#00faff;
+  font-size:16px;
+  text-shadow:0 0 5px #00faff;
+}
+
+/* Ẩn input gốc */
+input{
   display:none;
 }
 
-.circle {
+/* Màn hình hiển thị */
+.display{
+  width:100%;
+  padding:15px;
+  margin-top:8px;
+  border-radius:10px;
+  border:2px solid #a24bff;
+  background:#000;
+  color:#fff;
+  font-size:28px;
+  text-align:center;
+  box-sizing:border-box;
+  box-shadow:0 0 8px #a24bff,0 0 12px #a24bff inset;
+}
+
+/* Keypad */
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:20px;
+}
+.keypad button{
+  padding:16px;
+  border:none;
+  border-radius:10px;
+  font-size:22px;
+  font-weight:bold;
+  background:#111;
+  color:#fff;
+  box-shadow:0 0 10px #ff5f87;
+}
+.keypad button:active{
+  transform:scale(0.95);
+}
+
+/* Action buttons */
+#predictBtn{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  font-size:20px;
+  font-weight:bold;
+  background:#ff5f87;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  box-shadow:0 0 10px #ff5f87,0 0 20px #ff5f87 inset;
+}
+#clearBtn{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  background:#333;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+}
+
+/* Predict box */
+.predict{
+  margin-top:25px;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 0 20px #ff5f87,0 0 30px #ff5f87 inset;
+  display:none;
+}
+.circle{
   width:130px;
   height:130px;
   border-radius:50%;
@@ -107,272 +116,218 @@ button{
   justify-content:center;
   font-size:50px;
   font-weight:800;
-  margin:0 auto 15px auto;
+  margin:0 auto 15px;
   background:transparent;
 }
-
-  50% { box-shadow:0 0 35px #ff3b3b; background:#ff3b3b; color:white; transform:scale(1.1);}
-  100%{ box-shadow:0 0 15px #ff3b3b; background:#ff3b3b; color:white;}
-}
-@keyframes pulseBlue {
-  0% { box-shadow:0 0 15px #00bfff; background:#00bfff; color:white;}
-  50%{ box-shadow:0 0 35px #00bfff; background:#00bfff; color:white; transform:scale(1.1);}
-  100%{ box-shadow:0 0 15px #00bfff; background:#00bfff; color:white;}
-}
-@keyframes pulseGreen {
-  0% { box-shadow:0 0 15px #2eb82e; background:#2eb82e; color:white;}
-  50%{ box-shadow:0 0 35px #2eb82e; background:#2eb82e; color:white; transform:scale(1.1);}
-  100%{ box-shadow:0 0 15px #2eb82e; background:#2eb82e; color:white;}
-}
-.flash-red {
-  animation:pulseRed 1.5s infinite;
-}
-.flash-blue {
-  animation:pulseBlue 1.5s infinite;
-}
-.flash-green {
-  animation:pulseGreen 1.5s infinite;
+#predResult{
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
 }
 
-@keyframes pulseRed {
-  0% {
-    box-shadow:0 0 20px #ff5f87, 0 0 40px #ff5f87 inset;
-    background:#ff3b3b;
-    color:white;
-  }
-  50% {
-    box-shadow:0 0 40px #ff5f87, 0 0 60px #ff5f87 inset;
-    background:#ff3b3b;
-    color:white;
-    transform:scale(1.1);
-  }
-  100%{
-    box-shadow:0 0 20px #ff5f87, 0 0 40px #ff5f87 inset;
-    background:#ff3b3b;
-    color:white;
-  }
+/* Flash */
+@keyframes pulseRed{
+  0%{box-shadow:0 0 20px #ff3b3b;background:#ff3b3b;}
+  50%{box-shadow:0 0 40px #ff3b3b;transform:scale(1.1);}
+  100%{box-shadow:0 0 20px #ff3b3b;background:#ff3b3b;}
 }
-.flash-red {
-  animation:pulseRed 1.5s infinite;
+@keyframes pulseBlue{
+  0%{box-shadow:0 0 20px #00bfff;background:#00bfff;}
+  50%{box-shadow:0 0 40px #00bfff;transform:scale(1.1);}
+  100%{box-shadow:0 0 20px #00bfff;background:#00bfff;}
+}
+@keyframes pulseGreen{
+  0%{box-shadow:0 0 20px #2eb82e;background:#2eb82e;}
+  50%{box-shadow:0 0 40px #2eb82e;transform:scale(1.1);}
+  100%{box-shadow:0 0 20px #2eb82e;background:#2eb82e;}
+}
+.flash-red{animation:pulseRed 1.5s infinite;color:#fff;}
+.flash-blue{animation:pulseBlue 1.5s infinite;color:#fff;}
+.flash-green{animation:pulseGreen 1.5s infinite;color:#fff;}
+
+.activeBox{
+  border-color:#ff5f87 !important;
+  box-shadow:0 0 15px #ff5f87,0 0 20px #ff5f87 inset !important;
 }
 </style>
 </head>
+
 <body>
 <div class="wrap">
-<h1>ðŸ‘¾ TOOL BCR V2 ðŸ‘¾</h1>
-<div>
-<label>PLAYER</label>
-<input id="player" placeholder="Nháº­p Ä‘iá»ƒm PLAYER" type="number"/>
-<label>BANKER</label>
-<input id="banker" placeholder="Nháº­p Ä‘iá»ƒm BANKER" type="number"/>
+  <h1>👾 TOOL BCR V2 👾</h1>
+
+  <label>PLAYER</label>
+  <input id="player" type="number">
+  <div id="displayPlayer" class="display activeBox">0</div>
+
+  <label>BANKER</label>
+  <input id="banker" type="number">
+  <div id="displayBanker" class="display">0</div>
+
+  <div class="keypad">
+    <button onclick="press(1)">1</button>
+    <button onclick="press(2)">2</button>
+    <button onclick="press(3)">3</button>
+    <button onclick="press(4)">4</button>
+    <button onclick="press(5)">5</button>
+    <button onclick="press(6)">6</button>
+    <button onclick="press(7)">7</button>
+    <button onclick="press(8)">8</button>
+    <button onclick="press(9)">9</button>
+    <button onclick="clearNum()">C</button>
+    <button onclick="press(0)">0</button>
+    <button onclick="switchBox()">↔</button>
+  </div>
+
+  <button id="predictBtn">🔮 Dự đoán</button>
+  <button id="clearBtn">Xoá tất cả</button>
+
+  <div class="predict" id="predictBox">
+    <div class="circle" id="predCircle">?</div>
+    <div id="predResult">—</div>
+  </div>
 </div>
-<div class="actions">
-<button class="primary" id="predictBtn">Dá»± Ä‘oÃ¡n</button>
-<button class="ghost" id="clearBtn">XoÃ¡</button>
-</div>
-<div class="predict" id="predictBox" style="display:none;">
-<div class="row">
-<div class="circle" id="predCircle">?</div>
-<div style="flex:1">
-<div id="predResult" style="font-size:20px;font-weight:800">â€”</div>
-<div class="muted" id="predDetail">â€”</div>
-</div>
-</div>
-</div>
-</div>
+
 <script>
-/* v15-final: learning perceptron-like multi-class with short-term bias and draw handling + clear button */
+const HISTORY_KEY='bcr_history_v15_final';
+const WEIGHTS_KEY='bcr_weights_v15_final';
+const SHORT_TERM_N=3;
+const DRAW_THRESHOLD=1;
+const LR_DEFAULT=0.25;
 
-const HISTORY_KEY = 'bcr_history_v15_final';
-const WEIGHTS_KEY = 'bcr_weights_v15_final'; // object {P:[], B:[], D:[], lr:0.2}
-const STATS_KEY = 'bcr_stats_v15_final';
-const SHORT_TERM_N = 3; // remember last N outcomes for bias
-const DRAW_THRESHOLD = 1; // |P-B| <=1 considered potential draw
-const LR_DEFAULT = 0.25;
+let current='player';
 
-function loadHistory(){ try{return JSON.parse(localStorage.getItem(HISTORY_KEY))||[]}catch(e){return [];} }
-function saveHistory(h){ localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); }
+/* ===== UI INPUT ===== */
+function switchBox(){
+  current = current === 'player' ? 'banker' : 'player';
+  document.getElementById('displayPlayer').classList.remove('activeBox');
+  document.getElementById('displayBanker').classList.remove('activeBox');
+  document.getElementById(current === 'player' ? 'displayPlayer' : 'displayBanker').classList.add('activeBox');
+}
+
+function press(num){
+  const input = document.getElementById(current);
+  const display = document.getElementById(current === 'player' ? 'displayPlayer':'displayBanker');
+
+  input.value = num;
+  display.textContent = num;
+
+  switchBox();
+}
+
+function clearNum(){
+  const input = document.getElementById(current);
+  const display = document.getElementById(current === 'player' ? 'displayPlayer':'displayBanker');
+  input.value='';
+  display.textContent='0';
+}
+
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  document.getElementById('player').value='';
+  document.getElementById('banker').value='';
+  document.getElementById('displayPlayer').textContent='0';
+  document.getElementById('displayBanker').textContent='0';
+  document.getElementById('predictBox').style.display='none';
+});
+
+/* ===== AI ===== */
+function loadHistory(){
+  try{return JSON.parse(localStorage.getItem(HISTORY_KEY))||[];}
+  catch(e){return [];}
+}
+
 function loadWeights(){
   try{
-    const raw = localStorage.getItem(WEIGHTS_KEY);
+    const raw=localStorage.getItem(WEIGHTS_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  // default init (balanced)
   return {
-    P: [-3,0,1,0,3,1], // 6 features (5 + draw)
-    B: [3,0,-1,0,-3,1],
-    D: [0,0,0,0,0,2], // draw classifier focuses on draw feature
-    lr: LR_DEFAULT
+    P:[-3,0,1,0,3,1],
+    B:[3,0,-1,0,-3,1],
+    D:[0,0,0,0,0,2],
+    lr:LR_DEFAULT
   };
 }
-function saveWeights(w){ localStorage.setItem(WEIGHTS_KEY, JSON.stringify(w)); }
-function loadStats(){ try{return JSON.parse(localStorage.getItem(STATS_KEY))||{}}catch(e){return {}} }
-function saveStats(s){ localStorage.setItem(STATS_KEY, JSON.stringify(s)); }
 
-// features: v1..v5 as before, v6 = draw indicator (1 if |p-b|<=DRAW_THRESHOLD else 0)
 function features(p,b){
-  const v1 = p>b ? 1 : (p<b ? -1 : 0);
-  const r = (p+1)/(b+1);
-  const v2 = r>1.2 ? 1 : (r<0.8 ? -1 : 0);
-  const d3 = (p%3)-(b%3);
-  const v3 = d3>0 ? 1 : (d3<0 ? -1 : 0);
-  const v4 = Math.abs(p-b)>=4 ? (p>b ? 1 : -1) : 0;
-  const d5 = (p%4)-(b%4);
-  const v5 = d5>0 ? 1 : (d5<0 ? -1 : 0);
-  const v6 = Math.abs(p-b) <= DRAW_THRESHOLD ? 1 : 0;
-  return [v1,v2,v3,v4,v5,v6, r];
+  const v1=p>b?1:(p<b?-1:0);
+  const r=(p+1)/(b+1);
+  const v2=r>1.2?1:(r<0.8?-1:0);
+  const d3=(p%3)-(b%3);
+  const v3=d3>0?1:(d3<0?-1:0);
+  const v4=Math.abs(p-b)>=4?(p>b?1:-1):0;
+  const d5=(p%4)-(b%4);
+  const v5=d5>0?1:(d5<0?-1:0);
+  const v6=Math.abs(p-b)<=DRAW_THRESHOLD?1:0;
+  return [v1,v2,v3,v4,v5,v6];
 }
 
-function dot(w, vs){
-  let s=0; for(let i=0;i<vs.length;i++) s += (w[i]||0)*vs[i]; return s;
+function dot(w,vs){
+  let s=0;
+  for(let i=0;i<vs.length;i++) s+=(w[i]||0)*vs[i];
+  return s;
 }
 
 function shortTermBias(){
-  const hist = loadHistory();
-  if(hist.length < SHORT_TERM_N) return null;
-  const last = hist.slice(-SHORT_TERM_N);
-  const cnt = {PLAYER:0, BANKER:0, 'HÃ’A':0};
-  last.forEach(h=> cnt[h.result] = (cnt[h.result]||0)+1 );
-  if(cnt.PLAYER >= 2) return {who:'PLAYER', bias:1.0};
-  if(cnt.BANKER >= 2) return {who:'BANKER', bias:1.0};
+  const hist=loadHistory();
+  if(hist.length<SHORT_TERM_N) return null;
+  const last=hist.slice(-SHORT_TERM_N);
+  const cnt={PLAYER:0,BANKER:0};
+  last.forEach(h=>{
+    if(h.result==='PLAYER') cnt.PLAYER++;
+    if(h.result==='BANKER') cnt.BANKER++;
+  });
+  if(cnt.PLAYER>=2) return 'PLAYER';
+  if(cnt.BANKER>=2) return 'BANKER';
   return null;
 }
 
 function predict(p,b){
-  const wobj = loadWeights();
-  const f = features(p,b);
-  const vs = f.slice(0,6);
-  const r = f[6];
-  let sP = dot(wobj.P, vs);
-  let sB = dot(wobj.B, vs);
-  let sD = dot(wobj.D, vs);
-  const bias = shortTermBias();
-  if(bias){
-    if(bias.who === 'PLAYER') sP += bias.bias;
-    if(bias.who === 'BANKER') sB += bias.bias;
+  const w=loadWeights();
+  const vs=features(p,b);
+
+  let sP=dot(w.P,vs);
+  let sB=dot(w.B,vs);
+  let sD=dot(w.D,vs);
+
+  const bias=shortTermBias();
+  if(bias==='PLAYER') sP+=1;
+  if(bias==='BANKER') sB+=1;
+
+  if(vs[5]===1 && sD>=sP && sD>=sB) return 'HÒA';
+  return sP>=sB?'PLAYER':'BANKER';
+}
+
+/* ===== Predict Button ===== */
+document.getElementById('predictBtn').addEventListener('click',()=>{
+  const p=Number(document.getElementById('player').value);
+  const b=Number(document.getElementById('banker').value);
+
+  if(Number.isNaN(p)||Number.isNaN(b)){
+    alert('Nhập đủ PLAYER và BANKER');
+    return;
   }
-  if(vs[5] === 1 && sD >= sP && sD >= sB) return {final:'HÃ’A', scores:{P:sP,B:sB,D:sD}, vs, r: r.toFixed(3)};
-  const final = sP >= sB ? 'PLAYER' : 'BANKER';
-  return {final, scores:{P:sP,B:sB,D:sD}, vs, r: r.toFixed(3)};
-}
 
-// perceptron-like update (one-vs-all)
-function updateWeights(p,b,actual){
-  const wobj = loadWeights();
-  const f = features(p,b);
-  const vs = f.slice(0,6);
-  const lr = wobj.lr || LR_DEFAULT;
-  const target = {PLAYER:0, BANKER:0, 'HÃ’A':0};
-  target[actual] = 1;
-  ['PLAYER','BANKER','HÃ’A'].forEach(cls=>{
-    const arr = (cls==='PLAYER'? wobj.P : (cls==='BANKER'? wobj.B : wobj.D));
-    const t = target[cls];
-    if(t === 1){
-      for(let i=0;i<vs.length;i++) arr[i] = (arr[i]||0) + lr * vs[i];
-    } else {
-      for(let i=0;i<vs.length;i++) arr[i] = (arr[i]||0) - lr * vs[i]*0.4;
-    }
-  });
-  saveWeights(wobj);
-}
+  const result = predict(p,b);
 
-function record(actualTag, realP, realB){
-  const hist = loadHistory();
-  const last = window._lastPrediction || null;
-  if(!last){ alert('ChÆ°a cÃ³ dá»± Ä‘oÃ¡n'); return; }
-  const entry = {
-    inP: last.inP, inB: last.inB,
-    pred: last.out.final,
-    realP: realP, realB: realB,
-    result: actualTag,
-    time: Date.now()
-  };
-  hist.push(entry);
-  saveHistory(hist);
-  updateWeights(last.inP, last.inB, actualTag);
-  const stats = loadStats();
-  stats.total = (stats.total||0) + 1;
-  if(!stats.correct) stats.correct = 0;
-  if(actualTag === last.out.final) stats.correct += 1;
-  saveStats(stats);
-  setStatus('âœ… ÄÃ£ lÆ°u: ' + actualTag, actualTag === 'HÃ’A' ? '#28a745' : '#1c6ef2');
-}
+  document.getElementById('predictBox').style.display='block';
 
-function setStatus(text,color){
-  const el = document.getElementById('saveStatus');
-  el.style.display='block'; el.style.color = color || '#fff'; el.textContent = text;
-  setTimeout(()=>{ el.style.display='none'; }, 3000);
-}
+  const circle=document.getElementById('predCircle');
+  const resultEl=document.getElementById('predResult');
 
-let lastPrediction = null;
-
-document.getElementById('predictBtn').addEventListener('click', ()=>{
-  const p = Number(document.getElementById('player').value);
-  const b = Number(document.getElementById('banker').value);
-  if(Number.isNaN(p) || Number.isNaN(b)){ alert('Nháº­p Ä‘á»§ 2 sá»‘'); return; }
-  const out = predict(p,b);
-  window._lastPrediction = {inP:p, inB:b, out};
-  lastPrediction = window._lastPrediction;
-  document.getElementById('predictBox').style.display = 'block';
-  const resEl = document.getElementById('predResult');
-  resEl.textContent = out.final === 'PLAYER' ? 'PLAYER ðŸ”µ' : (out.final === 'BANKER' ? 'BANKER ðŸ”´' : 'HÃ’A ðŸŸ¢');
-  document.getElementById('predDetail').textContent = '';
-  document.getElementById('predCircle').textContent = out.final === 'PLAYER' ? 'P' : (out.final === 'BANKER' ? 'B' : 'H');
-  const cls = out.final === 'PLAYER' ? 'flash-blue' : (out.final === 'BANKER' ? 'flash-red' : 'flash-green');
-  document.getElementById('predCircle').className = 'circle ' + cls;
-  document.getElementById('realPlayer').value = ''; document.getElementById('realBanker').value = '';
-  document.getElementById('saveStatus').style.display = 'none'; document.getElementById('saveStatus').textContent = '';
-});
-
-// clear button: clear inputs and reset prediction display (do not touch history)
-document.getElementById('clearBtn').addEventListener('click', ()=>{
-  document.getElementById('player').value = '';
-  document.getElementById('banker').value = '';
-  document.getElementById('predictBox').style.display = 'none';
-  document.getElementById('predCircle').textContent = '?';
-  document.getElementById('predCircle').className = 'circle';
-  document.getElementById('predResult').textContent = 'â€”';
-  document.getElementById('predDetail').textContent = 'â€”';
-  window._lastPrediction = null;
-});
-
-document.getElementById('markCorrect').addEventListener('click', ()=>{
-  const rp = document.getElementById('realPlayer').value;
-  const rb = document.getElementById('realBanker').value;
-  record('PLAYER', rp === '' ? null : Number(rp), rb === '' ? null : Number(rb));
-});
-document.getElementById('markWrong').addEventListener('click', ()=>{
-  const rp = document.getElementById('realPlayer').value;
-  const rb = document.getElementById('realBanker').value;
-  record('BANKER', rp === '' ? null : Number(rp), rb === '' ? null : Number(rb));
-});
-document.getElementById('markDraw').addEventListener('click', ()=>{
-  const rp = document.getElementById('realPlayer').value;
-  const rb = document.getElementById('realBanker').value;
-  record('HÃ’A', rp === '' ? null : Number(rp), rb === '' ? null : Number(rb));
-});
-
-document.getElementById('showHistBtn').addEventListener('click', ()=>{
-  const box = document.getElementById('historyBox');
-  box.style.display = 'block';
-  const list = document.getElementById('historyList');
-  list.innerHTML = '';
-  const hist = loadHistory();
-  if(hist.length === 0){ list.innerHTML = '<div class="muted">ChÆ°a cÃ³ báº£n ghi nÃ o.</div>'; return; }
-  hist.forEach(h=>{
-    const d = document.createElement('div');
-    d.className = 'history-entry';
-    const inp = 'Nháº­p : PLAYER=' + h.inP + ', BANKER=' + h.inB;
-    const res = 'Káº¿t quáº£ : PLAYER=' + (h.realP===null?'-':h.realP) + ', BANKER=' + (h.realB===null?'-':h.realB);
-    const pred = '=> Káº¿t quáº£ dá»± Ä‘oÃ¡n : ' + h.result + ' (dá»± Ä‘oÃ¡n: ' + h.pred + ')';
-    const time = new Date(h.time).toLocaleString();
-    d.textContent = time + '\n' + inp + '\n' + res + '\n' + pred;
-    list.appendChild(d);
-  });
-});
-
-document.getElementById('closeHistBtn').addEventListener('click', ()=>{
-  document.getElementById('historyBox').style.display = 'none';
+  if(result==='PLAYER'){
+    circle.textContent='P';
+    circle.className='circle flash-blue';
+    resultEl.textContent='PLAYER 🔵';
+  }else if(result==='BANKER'){
+    circle.textContent='B';
+    circle.className='circle flash-red';
+    resultEl.textContent='BANKER 🔴';
+  }else{
+    circle.textContent='H';
+    circle.className='circle flash-green';
+    resultEl.textContent='HÒA 🟢';
+  }
 });
 </script>
 </body>
