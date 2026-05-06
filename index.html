@@ -292,6 +292,9 @@ function loadHistory(){
 }
 
 function saveHistory(h){
+  if(h.length > 100){
+    h = h.slice(-100);
+  }
   localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
 }
 
@@ -373,8 +376,9 @@ function baccaratFeature(p,b){
 
 function calcConfidence(finalScore){
   let vals = Object.values(finalScore).sort((a,b)=>b-a);
-  let diff = vals[0]-vals[1];
-  return Math.min(99, Math.max(55, CONFIG.confidenceBase + diff*6));
+  let diff = vals[0] - vals[1];
+
+  return Math.min(95, 55 + diff * 40);
 }
 
 function vipPredict(player, banker){
@@ -384,9 +388,9 @@ function vipPredict(player, banker){
   let trend = trendAnalysis();
   let markov = markovPrediction();
 
-  finalScore.P += base.P + trend.P*0.35 + markov.P*0.8;
-  finalScore.B += base.B + trend.B*0.35 + markov.B*0.8;
-  finalScore.D += base.D + trend.D*0.35 + markov.D*0.8;
+  finalScore.P += base.P + trend.P*0.25 + markov.P*0.4;
+finalScore.B += base.B + trend.B*0.25 + markov.B*0.4;
+finalScore.D += base.D + trend.D*0.25 + markov.D*0.4;
 
   if(chaosDetector()){
     finalScore.P*=0.85;
@@ -395,6 +399,7 @@ function vipPredict(player, banker){
   }
 
   finalScore.B*=1.06;
+  finalScore = normalizeScores(finalScore);
 
   let prediction="PLAYER";
 
@@ -434,6 +439,18 @@ function vipRecord(actual){
   saveHistory(hist);
 
   alert("AI đã học kết quả: " + actual);
+}
+
+function normalizeScores(score){
+  let sum = score.P + score.B + score.D;
+
+  if(sum === 0) return score;
+
+  return {
+    P: score.P / sum,
+    B: score.B / sum,
+    D: score.D / sum
+  };
 }
 
 /* ===== MAIN BUTTON ===== */
