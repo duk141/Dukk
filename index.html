@@ -3,150 +3,415 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool Dự Đoán Rồng Hổ</title>
+
+<title>Rồng Hổ AI</title>
 
 <style>
-body{
+
+*{
     margin:0;
     padding:0;
-    background:#0f172a;
-    color:white;
+    box-sizing:border-box;
     font-family:Arial;
-    text-align:center;
+}
+
+body{
+    height:100vh;
+    background:
+    radial-gradient(circle at top,#1e3a8a,#020617 70%);
+    overflow:hidden;
+    color:white;
+}
+
+body::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:#2563eb;
+    filter:blur(180px);
+    top:-150px;
+    left:-100px;
+    opacity:.4;
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:#ef4444;
+    filter:blur(180px);
+    bottom:-150px;
+    right:-100px;
+    opacity:.4;
 }
 
 .container{
-    padding:20px;
+    position:relative;
+    z-index:10;
+    width:95%;
+    max-width:900px;
+    margin:auto;
+    padding-top:30px;
+    text-align:center;
 }
 
-h1{
-    color:gold;
-    margin-bottom:20px;
+.title{
+    font-size:42px;
+    font-weight:bold;
+    margin-bottom:25px;
+    color:white;
+    text-shadow:
+    0 0 10px #fff,
+    0 0 20px #3b82f6,
+    0 0 40px #3b82f6;
+}
+
+.glass{
+
+    background:rgba(255,255,255,0.08);
+
+    border:1px solid rgba(255,255,255,0.2);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:25px;
+
+    padding:25px;
+
+    box-shadow:
+    0 0 10px rgba(255,255,255,0.1),
+    0 0 30px rgba(59,130,246,0.3);
+
 }
 
 .history{
+
     display:flex;
     flex-wrap:wrap;
-    justify-content:center;
     gap:10px;
-    margin-bottom:20px;
+    justify-content:center;
+    margin-bottom:25px;
+
 }
 
 .item{
-    width:60px;
-    height:60px;
-    border-radius:10px;
+
+    width:65px;
+    height:65px;
+
+    border-radius:18px;
+
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+
+    font-size:22px;
     font-weight:bold;
-    font-size:18px;
+
+    animation:pop .3s ease;
+
+    box-shadow:
+    0 0 10px rgba(255,255,255,0.4);
+
 }
 
 .dragon{
-    background:#ef4444;
+
+    background:rgba(239,68,68,0.25);
+
+    border:1px solid #ef4444;
+
+    color:#fff;
+
+    box-shadow:
+    0 0 10px #ef4444,
+    0 0 25px #ef4444;
+
 }
 
 .tiger{
-    background:#3b82f6;
+
+    background:rgba(59,130,246,0.25);
+
+    border:1px solid #3b82f6;
+
+    color:#fff;
+
+    box-shadow:
+    0 0 10px #3b82f6,
+    0 0 25px #3b82f6;
+
 }
 
 .tie{
-    background:#10b981;
+
+    background:rgba(16,185,129,0.25);
+
+    border:1px solid #10b981;
+
+    color:#fff;
+
+    box-shadow:
+    0 0 10px #10b981,
+    0 0 25px #10b981;
+
+}
+
+.buttons{
+
+    margin-top:10px;
+
 }
 
 button{
-    padding:12px 20px;
-    margin:5px;
+
+    width:140px;
+    padding:15px;
+
+    margin:8px;
+
     border:none;
-    border-radius:8px;
-    font-size:16px;
+
+    border-radius:18px;
+
+    font-size:18px;
+
     font-weight:bold;
+
     cursor:pointer;
+
+    color:white;
+
+    transition:.25s;
+
 }
 
-.result{
+button:hover{
+
+    transform:scale(1.07);
+
+}
+
+.btn-dragon{
+
+    background:#ef4444;
+
+    box-shadow:
+    0 0 10px #ef4444,
+    0 0 30px #ef4444;
+
+}
+
+.btn-tiger{
+
+    background:#3b82f6;
+
+    box-shadow:
+    0 0 10px #3b82f6,
+    0 0 30px #3b82f6;
+
+}
+
+.btn-tie{
+
+    background:#10b981;
+
+    box-shadow:
+    0 0 10px #10b981,
+    0 0 30px #10b981;
+
+}
+
+.btn-reset{
+
+    background:#f59e0b;
+
+    box-shadow:
+    0 0 10px #f59e0b,
+    0 0 30px #f59e0b;
+
+}
+
+.prediction{
+
     margin-top:25px;
-    font-size:28px;
-    color:gold;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:white;
+
+    text-shadow:
+    0 0 10px #fff,
+    0 0 25px #38bdf8;
+
 }
 
 .stats{
-    margin-top:20px;
-    font-size:18px;
+
+    margin-top:25px;
+
+    font-size:20px;
+
+    line-height:40px;
+
+    color:#cbd5e1;
+
 }
 
-.clear{
-    background:#f59e0b;
-    color:white;
+.led-line{
+
+    width:100%;
+    height:3px;
+
+    margin:20px 0;
+
+    background:linear-gradient(
+    90deg,
+    #ef4444,
+    #3b82f6,
+    #10b981,
+    #f59e0b
+    );
+
+    box-shadow:
+    0 0 10px #fff,
+    0 0 20px #3b82f6;
+
+    animation:move 3s linear infinite;
+
 }
+
+@keyframes move{
+
+    0%{
+        filter:hue-rotate(0deg);
+    }
+
+    100%{
+        filter:hue-rotate(360deg);
+    }
+
+}
+
+@keyframes pop{
+
+    from{
+        transform:scale(.5);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
 
-<h1>🐉 TOOL DỰ ĐOÁN RỒNG HỔ 🐯</h1>
+<div class="title">
+🐉 RỒNG HỔ AI 🐯
+</div>
+
+<div class="glass">
 
 <div class="history" id="history"></div>
 
-<div>
-<button class="dragon" onclick="addResult('R')">Rồng</button>
-<button class="tiger" onclick="addResult('H')">Hổ</button>
-<button class="tie" onclick="addResult('T')">Hòa</button>
-<button class="clear" onclick="resetGame()">Reset</button>
+<div class="led-line"></div>
+
+<div class="buttons">
+
+<button class="btn-dragon"
+onclick="addResult('R')">
+RỒNG
+</button>
+
+<button class="btn-tiger"
+onclick="addResult('H')">
+HỔ
+</button>
+
+<button class="btn-tie"
+onclick="addResult('T')">
+HÒA
+</button>
+
+<button class="btn-reset"
+onclick="resetGame()">
+RESET
+</button>
+
 </div>
 
-<div class="result" id="prediction">
-Đợi dữ liệu...
+<div class="prediction" id="prediction">
+ĐỢI DỮ LIỆU...
 </div>
 
 <div class="stats" id="stats"></div>
 
 </div>
 
+</div>
+
 <script>
 
-let data = [];
+let data=[];
 
 function addResult(type){
 
     data.push(type);
 
-    renderHistory();
+    render();
 
     predict();
 
 }
 
-function renderHistory(){
+function render(){
 
-    let historyDiv = document.getElementById("history");
+    let history=document.getElementById("history");
 
-    historyDiv.innerHTML = "";
+    history.innerHTML="";
 
-    data.slice(-20).forEach(item => {
+    data.slice(-20).forEach(item=>{
 
-        let div = document.createElement("div");
+        let div=document.createElement("div");
 
         div.classList.add("item");
 
-        if(item === "R"){
+        if(item==="R"){
+
             div.classList.add("dragon");
-            div.innerHTML = "R";
+
+            div.innerHTML="R";
+
         }
 
-        if(item === "H"){
+        if(item==="H"){
+
             div.classList.add("tiger");
-            div.innerHTML = "H";
+
+            div.innerHTML="H";
+
         }
 
-        if(item === "T"){
+        if(item==="T"){
+
             div.classList.add("tie");
-            div.innerHTML = "T";
+
+            div.innerHTML="T";
+
         }
 
-        historyDiv.appendChild(div);
+        history.appendChild(div);
 
     });
 
@@ -154,80 +419,83 @@ function renderHistory(){
 
 function predict(){
 
-    if(data.length < 3){
+    if(data.length<3){
 
-        document.getElementById("prediction").innerHTML =
-        "Cần thêm dữ liệu...";
+        document.getElementById("prediction")
+        .innerHTML="THÊM DỮ LIỆU...";
+
         return;
 
     }
 
-    let last = data[data.length - 1];
-    let countR = 0;
-    let countH = 0;
+    let last=data[data.length-1];
 
-    data.forEach(x => {
+    let text="";
 
-        if(x === "R") countR++;
-        if(x === "H") countH++;
+    if(last==="R"){
 
-    });
-
-    let predictText = "";
-
-    // AI logic fake demo
-
-    if(last === "R"){
-
-        predictText = "🔥 Dự đoán tiếp theo: HỔ";
-
-    }else if(last === "H"){
-
-        predictText = "🔥 Dự đoán tiếp theo: RỒNG";
-
-    }else{
-
-        predictText = "🔥 Dự đoán tiếp theo: RỒNG";
-    }
-
-    // cầu bệt
-
-    let last3 = data.slice(-3);
-
-    if(last3.every(x => x === "R")){
-
-        predictText = "🐉 Cầu bệt RỒNG mạnh";
+        text="🔥 AI DỰ ĐOÁN: HỔ";
 
     }
 
-    if(last3.every(x => x === "H")){
+    if(last==="H"){
 
-        predictText = "🐯 Cầu bệt HỔ mạnh";
+        text="🔥 AI DỰ ĐOÁN: RỒNG";
 
     }
 
-    document.getElementById("prediction").innerHTML =
-    predictText;
+    if(last==="T"){
 
-    document.getElementById("stats").innerHTML =
-    `
-    Tổng Rồng: ${countR} <br>
-    Tổng Hổ: ${countH} <br>
-    Tổng ván: ${data.length}
+        text="🔥 AI DỰ ĐOÁN: RỒNG";
+
+    }
+
+    let last3=data.slice(-3);
+
+    if(last3.every(x=>x==="R")){
+
+        text="🐉 CẦU BỆT RỒNG";
+
+    }
+
+    if(last3.every(x=>x==="H")){
+
+        text="🐯 CẦU BỆT HỔ";
+
+    }
+
+    document.getElementById("prediction")
+    .innerHTML=text;
+
+    let r=data.filter(x=>x==="R").length;
+
+    let h=data.filter(x=>x==="H").length;
+
+    let t=data.filter(x=>x==="T").length;
+
+    document.getElementById("stats")
+    .innerHTML=`
+
+    🐉 Rồng: ${r} <br>
+    🐯 Hổ: ${h} <br>
+    🟢 Hòa: ${t} <br>
+    🎮 Tổng: ${data.length}
+
     `;
 
 }
 
 function resetGame(){
 
-    data = [];
+    data=[];
 
-    document.getElementById("history").innerHTML = "";
+    document.getElementById("history").innerHTML="";
 
-    document.getElementById("prediction").innerHTML =
-    "Đợi dữ liệu...";
+    document.getElementById("prediction")
+    .innerHTML="ĐỢI DỮ LIỆU...";
 
-    document.getElementById("stats").innerHTML = "";
+    document.getElementById("stats")
+    .innerHTML="";
 
 }
 
