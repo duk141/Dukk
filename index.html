@@ -478,6 +478,11 @@ onclick="resetGame()">
 RESET
 </button>
 
+<button class="btn-reset"
+onclick="deleteLast()">
+XOÁ 1
+</button>
+
 </div>
 
 <div class="prediction" id="prediction">
@@ -1085,6 +1090,34 @@ function resetGame(){
     document.getElementById("prediction")
     .innerHTML =
     "ĐỢI DỮ LIỆU...";
+
+}
+
+function deleteLast(){
+
+    if(history.length <= 0){
+
+        return;
+
+    }
+
+    history.pop();
+
+    renderHistory();
+
+    renderStats();
+
+    predictNext();
+
+    // nếu xoá hết
+
+    if(history.length === 0){
+
+        document.getElementById("prediction")
+        .innerHTML =
+        "ĐỢI DỮ LIỆU...";
+
+    }
 
 }
 
