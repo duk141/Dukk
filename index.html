@@ -89,31 +89,60 @@ body::after{
 .history{
 
     display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    justify-content:center;
-    margin-bottom:25px;
+
+    flex-wrap:nowrap;
+
+    overflow-x:auto;
+
+    gap:12px;
+
+    padding:15px 5px;
+
+    justify-content:flex-start;
+
+    scroll-behavior:smooth;
 
 }
 
+/* thanh kéo */
+
+.history::-webkit-scrollbar{
+
+    height:6px;
+
+}
+
+.history::-webkit-scrollbar-thumb{
+
+    background:rgba(255,255,255,.25);
+
+    border-radius:20px;
+
+}
+
+/* item */
+
 .item{
 
-    width:65px;
+    min-width:65px;
+
     height:65px;
 
     border-radius:18px;
 
     display:flex;
+
     justify-content:center;
+
     align-items:center;
 
     font-size:22px;
+
     font-weight:bold;
 
-    animation:pop .3s ease;
+    animation:pop .25s ease;
 
-    box-shadow:
-    0 0 10px rgba(255,255,255,0.4);
+    flex-shrink:0;
 
 }
 
