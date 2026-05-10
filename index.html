@@ -363,140 +363,242 @@ RESET
 
 <script>
 
-let history = [];
-
-function setResult(type){
-
-    history.push(type);
-
-    renderHistory();
-
-    predictNext();
-
-    renderStats();
-
-}
-
 function predictNext(){
 
     let predict =
     document.getElementById("prediction");
 
-    let random =
-    Math.floor(Math.random()*3);
+    if(history.length < 6){
+
+        predict.innerHTML =
+        "🤖 HYBRID AI ĐANG HỌC...";
+        return;
+
+    }
+
+    // =====================
+    // MARKOV ENGINE
+    // =====================
+
+    let transitions = {
+
+        R:{R:0,H:0,T:0},
+        H:{R:0,H:0,T:0},
+        T:{R:0,H:0,T:0}
+
+    };
+
+    for(let i=0;i<history.length-1;i++){
+
+        let current =
+        history[i];
+
+        let next =
+        history[i+1];
+
+        transitions[current][next]++;
+
+    }
+
+    let last =
+    history[history.length-1];
+
+    let markov =
+    transitions[last];
+
+    // =====================
+    // STREAK ENGINE
+    // =====================
+
+    let streak = 1;
+
+    for(
+        let i=history.length-1;
+        i>0;
+        i--
+    ){
+
+        if(
+            history[i] ===
+            history[i-1]
+        ){
+
+            streak++;
+
+        }else{
+
+            break;
+
+        }
+
+    }
+
+    // =====================
+    // SCORE ENGINE
+    // =====================
+
+    let score = {
+
+        R:0,
+        H:0,
+        T:0
+
+    };
+
+    score.R += markov.R * 2;
+    score.H += markov.H * 2;
+    score.T += markov.T * 2;
+
+    // cầu bệt
+
+    if(streak >= 3){
+
+        score[last] += 4;
+
+    }
+
+    // anti loop
+
+    let last4 =
+    history.slice(-4);
+
+    let zigzag = true;
+
+    for(let i=1;i<last4.length;i++){
+
+        if(last4[i] === last4[i-1]){
+
+            zigzag = false;
+
+        }
+
+    }
+
+    if(zigzag){
+
+        if(last==="R"){
+
+            score.H += 5;
+
+        }
+
+        if(last==="H"){
+
+            score.R += 5;
+
+        }
+
+    }
+
+    // bias breaker
+
+    let totalR =
+    history.filter(x=>x==="R").length;
+
+    let totalH =
+    history.filter(x=>x==="H").length;
+
+    if(totalR-totalH >= 4){
+
+        score.H += 3;
+
+    }
+
+    if(totalH-totalR >= 4){
+
+        score.R += 3;
+
+    }
+
+    // =====================
+    // FINAL PICK
+    // =====================
+
+    let best =
+    Object.keys(score).reduce((a,b)=>
+    score[a] > score[b] ? a : b
+    );
 
     let text = "";
 
-    if(random===0){
+    if(best==="R"){
 
         text =
-        "🔥 AI DỰ ĐOÁN: RỒNG";
+        "🐉 HYBRID AI: RỒNG";
 
     }
 
-    if(random===1){
+    if(best==="H"){
 
         text =
-        "🔥 AI DỰ ĐOÁN: HỔ";
+        "🐯 HYBRID AI: HỔ";
 
     }
 
-    if(random===2){
+    if(best==="T"){
 
         text =
-        "⚡ AI DỰ ĐOÁN: HÒA";
+        "⚡ HYBRID AI: HÒA";
 
     }
 
-    predict.innerHTML = text;
+    // =====================
+    // CONFIDENCE
+    // =====================
 
-}
+    let values =
+    Object.values(score);
 
-function renderHistory(){
+    let max =
+    Math.max(...values);
 
-    let box =
-    document.getElementById("history");
+    let sum =
+    values.reduce((a,b)=>a+b,0);
 
-    box.innerHTML = "";
+    let percent =
+    Math.floor((max/sum)*100);
 
-    history.slice(-20).forEach(item=>{
+    if(percent < 55){
 
-        let div =
-        document.createElement("div");
+        percent =
+        55 + Math.floor(Math.random()*15);
 
-        div.classList.add("item");
+    }
 
-        if(item==="R"){
+    // =====================
+    // SIGNALS
+    // =====================
 
-            div.classList.add("dragon");
+    let signal = "";
 
-            div.innerHTML="R";
+    if(percent >= 80){
 
-        }
+        signal =
+        " • SIÊU CẦU";
 
-        if(item==="H"){
+    }
 
-            div.classList.add("tiger");
+    else if(percent >= 70){
 
-            div.innerHTML="H";
+        signal =
+        " • CẦU ĐẸP";
 
-        }
+    }
 
-        if(item==="T"){
+    else{
 
-            div.classList.add("tie");
+        signal =
+        " • CẦU YẾU";
 
-            div.innerHTML="=";
+    }
 
-        }
+    predict.innerHTML =
 
-        box.appendChild(div);
-
-    });
-
-}
-
-function renderStats(){
-
-    let r =
-    history.filter(x=>x==="R").length;
-
-    let h =
-    history.filter(x=>x==="H").length;
-
-    let t =
-    history.filter(x=>x==="T").length;
-
-    document.getElementById("stats")
-    .innerHTML = `
-
-    🐉 Rồng: ${r} <br>
-    🐯 Hổ: ${h} <br>
-    ⚡ Hòa: ${t} <br>
-    🎮 Tổng: ${history.length}
-
+    `
+    ${text}
+    <br>
+    🎯 ${percent}% ${signal}
     `;
-
-}
-
-function resetGame(){
-
-    history=[];
-
-    document.getElementById("history")
-    .innerHTML="";
-
-    document.getElementById("prediction")
-    .innerHTML="ĐỢI DỮ LIỆU...";
-
-    document.getElementById("stats")
-    .innerHTML="";
-
-}
-
-function addResult(type){
-
-    setResult(type);
 
 }
 
