@@ -363,117 +363,48 @@ RESET
 
 <script>
 
-let cards = [
-"A","2","3","4","5","6",
-"7","8","9","10","J","Q","K"
-];
-
 let history = [];
 
-function randomCard(){
+function setResult(type){
 
-    return cards[
-        Math.floor(Math.random()*cards.length)
-    ];
-
-}
-
-function cardValue(card){
-
-    if(card==="A") return 1;
-    if(card==="J") return 11;
-    if(card==="Q") return 12;
-    if(card==="K") return 13;
-
-    return parseInt(card);
-
-}
-
-function setResult(){
-
-    let left = randomCard();
-    let right = randomCard();
-
-    history.push({
-        left:left,
-        right:right
-    });
-
-    renderBoard(left,right);
-
-    predictNext();
+    history.push(type);
 
     renderHistory();
 
-}
+    predictNext();
 
-function renderBoard(left,right){
-
-    let leftBox =
-    document.getElementById("leftCard");
-
-    let rightBox =
-    document.getElementById("rightCard");
-
-    leftBox.innerHTML = left;
-    rightBox.innerHTML = right;
-
-    leftBox.className="card";
-    rightBox.className="card";
-
-    let lv = cardValue(left);
-    let rv = cardValue(right);
-
-    if(lv > rv){
-
-        leftBox.classList.add("winner");
-        rightBox.classList.add("lose");
-
-    }
-    else if(rv > lv){
-
-        rightBox.classList.add("winner");
-        leftBox.classList.add("lose");
-
-    }
-    else{
-
-        leftBox.classList.add("winner");
-        rightBox.classList.add("winner");
-
-    }
+    renderStats();
 
 }
 
 function predictNext(){
 
     let predict =
-    document.getElementById("predict");
+    document.getElementById("prediction");
 
-    let nextLeft = randomCard();
-    let nextRight = randomCard();
-
-    let lv = cardValue(nextLeft);
-    let rv = cardValue(nextRight);
+    let random =
+    Math.floor(Math.random()*3);
 
     let text = "";
 
-    if(lv > rv){
+    if(random===0){
 
         text =
-        `🔥 AI: ${nextLeft} > ${nextRight}`;
+        "🔥 AI DỰ ĐOÁN: RỒNG";
 
     }
-    else if(rv > lv){
+
+    if(random===1){
 
         text =
-        `🔥 AI: ${nextRight} > ${nextLeft}`;
+        "🔥 AI DỰ ĐOÁN: HỔ";
 
     }
-    else{
+
+    if(random===2){
 
         text =
-        `⚡ AI: ${nextLeft} = ${nextRight}`;
+        "⚡ AI DỰ ĐOÁN: HÒA";
 
     }
 
@@ -488,19 +419,63 @@ function renderHistory(){
 
     box.innerHTML = "";
 
-    history.slice(-10).forEach(item=>{
+    history.slice(-20).forEach(item=>{
 
         let div =
         document.createElement("div");
 
-        div.classList.add("dot");
+        div.classList.add("item");
 
-        div.innerHTML =
-        item.left + "-" + item.right;
+        if(item==="R"){
+
+            div.classList.add("dragon");
+
+            div.innerHTML="R";
+
+        }
+
+        if(item==="H"){
+
+            div.classList.add("tiger");
+
+            div.innerHTML="H";
+
+        }
+
+        if(item==="T"){
+
+            div.classList.add("tie");
+
+            div.innerHTML="=";
+
+        }
 
         box.appendChild(div);
 
     });
+
+}
+
+function renderStats(){
+
+    let r =
+    history.filter(x=>x==="R").length;
+
+    let h =
+    history.filter(x=>x==="H").length;
+
+    let t =
+    history.filter(x=>x==="T").length;
+
+    document.getElementById("stats")
+    .innerHTML = `
+
+    🐉 Rồng: ${r} <br>
+    🐯 Hổ: ${h} <br>
+    ⚡ Hòa: ${t} <br>
+    🎮 Tổng: ${history.length}
+
+    `;
 
 }
 
@@ -511,14 +486,17 @@ function resetGame(){
     document.getElementById("history")
     .innerHTML="";
 
-    document.getElementById("predict")
-    .innerHTML="ĐỢI AI PHÂN TÍCH...";
+    document.getElementById("prediction")
+    .innerHTML="ĐỢI DỮ LIỆU...";
 
-    document.getElementById("leftCard")
-    .innerHTML="?";
+    document.getElementById("stats")
+    .innerHTML="";
 
-    document.getElementById("rightCard")
-    .innerHTML="?";
+}
+
+function addResult(type){
+
+    setResult(type);
 
 }
 
