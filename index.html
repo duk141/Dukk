@@ -669,11 +669,97 @@ function predictNext(){
 
     predict.innerHTML = `
 
-    ${text}
-    <br>
-    🎯 ${percent}% • ${signal}
+<div style="
+display:flex;
+justify-content:center;
+gap:20px;
+margin-top:10px;
+">
 
-    `;
+<div style="
+width:85px;
+height:85px;
+border-radius:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:bold;
+background:${best==="R"
+? "#ef4444"
+: "rgba(255,255,255,.08)"};
+
+border:2px solid #ef4444;
+
+box-shadow:
+0 0 15px #ef4444,
+0 0 35px #ef4444;
+
+">
+D
+</div>
+
+<div style="
+width:85px;
+height:85px;
+border-radius:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:bold;
+background:${best==="H"
+? "#3b82f6"
+: "rgba(255,255,255,.08)"};
+
+border:2px solid #3b82f6;
+
+box-shadow:
+0 0 15px #3b82f6,
+0 0 35px #3b82f6;
+
+">
+T
+</div>
+
+<div style="
+width:85px;
+height:85px;
+border-radius:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:bold;
+background:${best==="T"
+? "#10b981"
+: "rgba(255,255,255,.08)"};
+
+border:2px solid #10b981;
+
+box-shadow:
+0 0 15px #10b981,
+0 0 35px #10b981;
+
+">
+H
+</div>
+
+</div>
+
+<div style="
+margin-top:15px;
+font-size:20px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 10px white;
+">
+
+🎯 ${percent}% • ${signal}
+
+</div>
+
+`;
 
 }
 
