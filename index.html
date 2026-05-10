@@ -445,14 +445,190 @@ function renderStats(){
     history.filter(x=>x==="T").length;
 
     document.getElementById("stats")
-    .innerHTML = `
+.innerHTML = `
 
-    🐉 Rồng: ${r} <br>
-    🐯 Hổ: ${h} <br>
-    ⚡ Hòa: ${t} <br>
-    🎮 Tổng: ${history.length}
+<div style="
+display:flex;
+justify-content:center;
+gap:18px;
+flex-wrap:wrap;
+margin-top:10px;
+">
 
-    `;
+<!-- RỒNG -->
+
+<div style="
+width:120px;
+padding:18px;
+border-radius:22px;
+background:rgba(239,68,68,.12);
+border:1px solid rgba(239,68,68,.5);
+backdrop-filter:blur(12px);
+
+box-shadow:
+0 0 15px rgba(239,68,68,.7),
+0 0 35px rgba(239,68,68,.4);
+
+">
+
+<div style="
+font-size:34px;
+">
+🐉
+</div>
+
+<div style="
+font-size:19px;
+margin-top:8px;
+font-weight:bold;
+">
+RỒNG
+</div>
+
+<div style="
+margin-top:10px;
+font-size:30px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 10px #fff;
+">
+${r}
+</div>
+
+</div>
+
+<!-- HỔ -->
+
+<div style="
+width:120px;
+padding:18px;
+border-radius:22px;
+background:rgba(59,130,246,.12);
+border:1px solid rgba(59,130,246,.5);
+backdrop-filter:blur(12px);
+
+box-shadow:
+0 0 15px rgba(59,130,246,.7),
+0 0 35px rgba(59,130,246,.4);
+
+">
+
+<div style="
+font-size:34px;
+">
+🐯
+</div>
+
+<div style="
+font-size:19px;
+margin-top:8px;
+font-weight:bold;
+">
+HỔ
+</div>
+
+<div style="
+margin-top:10px;
+font-size:30px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 10px #fff;
+">
+${h}
+</div>
+
+</div>
+
+<!-- HÒA -->
+
+<div style="
+width:120px;
+padding:18px;
+border-radius:22px;
+background:rgba(16,185,129,.12);
+border:1px solid rgba(16,185,129,.5);
+backdrop-filter:blur(12px);
+
+box-shadow:
+0 0 15px rgba(16,185,129,.7),
+0 0 35px rgba(16,185,129,.4);
+
+">
+
+<div style="
+font-size:34px;
+">
+⚡
+</div>
+
+<div style="
+font-size:19px;
+margin-top:8px;
+font-weight:bold;
+">
+HÒA
+</div>
+
+<div style="
+margin-top:10px;
+font-size:30px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 10px #fff;
+">
+${t}
+</div>
+
+</div>
+
+<!-- TỔNG -->
+
+<div style="
+width:140px;
+padding:18px;
+border-radius:22px;
+
+background:rgba(255,255,255,.08);
+
+border:1px solid rgba(255,255,255,.25);
+
+backdrop-filter:blur(12px);
+
+box-shadow:
+0 0 15px rgba(255,255,255,.25),
+0 0 35px rgba(59,130,246,.25);
+
+">
+
+<div style="
+font-size:34px;
+">
+🎮
+</div>
+
+<div style="
+font-size:19px;
+margin-top:8px;
+font-weight:bold;
+">
+TỔNG
+</div>
+
+<div style="
+margin-top:10px;
+font-size:30px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 10px #fff;
+">
+${history.length}
+</div>
+
+</div>
+
+</div>
+
+`;
 
 }
 
@@ -696,7 +872,30 @@ box-shadow:
 0 0 35px #ef4444;
 
 ">
-D
+R
+</div>
+
+<div style="
+width:85px;
+height:85px;
+border-radius:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:bold;
+background:${best==="="
+? "#3b82f6"
+: "rgba(255,255,255,.08)"};
+
+border:2px solid #3b82f6;
+
+box-shadow:
+0 0 15px #3b82f6,
+0 0 35px #3b82f6;
+
+">
+=
 </div>
 
 <div style="
@@ -709,29 +908,6 @@ justify-content:center;
 font-size:34px;
 font-weight:bold;
 background:${best==="H"
-? "#3b82f6"
-: "rgba(255,255,255,.08)"};
-
-border:2px solid #3b82f6;
-
-box-shadow:
-0 0 15px #3b82f6,
-0 0 35px #3b82f6;
-
-">
-T
-</div>
-
-<div style="
-width:85px;
-height:85px;
-border-radius:22px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:34px;
-font-weight:bold;
-background:${best==="T"
 ? "#10b981"
 : "rgba(255,255,255,.08)"};
 
