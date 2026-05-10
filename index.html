@@ -16,35 +16,135 @@
 }
 
 body{
-    height:100vh;
+
+    min-height:100vh;
+
     background:
-    radial-gradient(circle at top,#1e3a8a,#020617 70%);
-    overflow:hidden;
+    linear-gradient(
+    180deg,
+    #020617 0%,
+    #0f172a 35%,
+    #111827 100%
+    );
+
+    overflow-x:hidden;
+
     color:white;
+
+    position:relative;
+
 }
+
+/* glow top */
 
 body::before{
+
     content:"";
-    position:absolute;
-    width:500px;
-    height:500px;
+
+    position:fixed;
+
+    width:320px;
+    height:320px;
+
     background:#2563eb;
-    filter:blur(180px);
-    top:-150px;
-    left:-100px;
-    opacity:.4;
+
+    border-radius:50%;
+
+    filter:blur(140px);
+
+    top:-120px;
+    left:-120px;
+
+    opacity:.45;
+
+    z-index:0;
+
 }
 
+/* glow bottom */
+
 body::after{
+
     content:"";
-    position:absolute;
-    width:500px;
-    height:500px;
+
+    position:fixed;
+
+    width:320px;
+    height:320px;
+
     background:#ef4444;
-    filter:blur(180px);
-    bottom:-150px;
-    right:-100px;
+
+    border-radius:50%;
+
+    filter:blur(140px);
+
+    bottom:-120px;
+    right:-120px;
+
     opacity:.4;
+
+    z-index:0;
+
+}
+
+/* mobile */
+
+@media(max-width:700px){
+
+    .container{
+
+        width:100%;
+
+        padding:15px;
+
+        padding-top:20px;
+
+    }
+
+    .title{
+
+        font-size:30px;
+
+        margin-bottom:18px;
+
+    }
+
+    .glass{
+
+        padding:16px;
+
+        border-radius:22px;
+
+    }
+
+    button{
+
+        width:85px;
+
+        padding:12px;
+
+        font-size:15px;
+
+        border-radius:16px;
+
+    }
+
+    .prediction{
+
+        font-size:22px;
+
+    }
+
+    .item{
+
+        min-width:55px;
+
+        height:55px;
+
+        font-size:18px;
+
+    }
+
 }
 
 .container{
