@@ -363,6 +363,103 @@ RESET
 
 <script>
 
+let history = [];
+
+// ======================
+// ADD RESULT
+// ======================
+
+function addResult(type){
+
+    history.push(type);
+
+    renderHistory();
+
+    renderStats();
+
+    predictNext();
+
+}
+
+// ======================
+// HISTORY UI
+// ======================
+
+function renderHistory(){
+
+    let box =
+    document.getElementById("history");
+
+    box.innerHTML = "";
+
+    history.slice(-20).forEach(item=>{
+
+        let div =
+        document.createElement("div");
+
+        div.classList.add("item");
+
+        if(item==="R"){
+
+            div.classList.add("dragon");
+
+            div.innerHTML = "R";
+
+        }
+
+        if(item==="H"){
+
+            div.classList.add("tiger");
+
+            div.innerHTML = "H";
+
+        }
+
+        if(item==="T"){
+
+            div.classList.add("tie");
+
+            div.innerHTML = "=";
+
+        }
+
+        box.appendChild(div);
+
+    });
+
+}
+
+// ======================
+// STATS
+// ======================
+
+function renderStats(){
+
+    let r =
+    history.filter(x=>x==="R").length;
+
+    let h =
+    history.filter(x=>x==="H").length;
+
+    let t =
+    history.filter(x=>x==="T").length;
+
+    document.getElementById("stats")
+    .innerHTML = `
+
+    🐉 Rồng: ${r} <br>
+    🐯 Hổ: ${h} <br>
+    ⚡ Hòa: ${t} <br>
+    🎮 Tổng: ${history.length}
+
+    `;
+
+}
+
+// ======================
+// HYBRID AI
+// ======================
+
 function predictNext(){
 
     let predict =
@@ -375,10 +472,6 @@ function predictNext(){
         return;
 
     }
-
-    // =====================
-    // MARKOV ENGINE
-    // =====================
 
     let transitions = {
 
@@ -406,10 +499,6 @@ function predictNext(){
     let markov =
     transitions[last];
 
-    // =====================
-    // STREAK ENGINE
-    // =====================
-
     let streak = 1;
 
     for(
@@ -433,10 +522,6 @@ function predictNext(){
 
     }
 
-    // =====================
-    // SCORE ENGINE
-    // =====================
-
     let score = {
 
         R:0,
@@ -457,7 +542,7 @@ function predictNext(){
 
     }
 
-    // anti loop
+    // zigzag
 
     let last4 =
     history.slice(-4);
@@ -490,7 +575,7 @@ function predictNext(){
 
     }
 
-    // bias breaker
+    // lệch cầu
 
     let totalR =
     history.filter(x=>x==="R").length;
@@ -510,9 +595,7 @@ function predictNext(){
 
     }
 
-    // =====================
-    // FINAL PICK
-    // =====================
+    // FINAL
 
     let best =
     Object.keys(score).reduce((a,b)=>
@@ -542,10 +625,6 @@ function predictNext(){
 
     }
 
-    // =====================
-    // CONFIDENCE
-    // =====================
-
     let values =
     Object.values(score);
 
@@ -561,44 +640,60 @@ function predictNext(){
     if(percent < 55){
 
         percent =
-        55 + Math.floor(Math.random()*15);
+        55 + Math.floor(Math.random()*20);
 
     }
-
-    // =====================
-    // SIGNALS
-    // =====================
 
     let signal = "";
 
     if(percent >= 80){
 
         signal =
-        " • SIÊU CẦU";
+        "SIÊU CẦU";
 
     }
 
     else if(percent >= 70){
 
         signal =
-        " • CẦU ĐẸP";
+        "CẦU ĐẸP";
 
     }
 
     else{
 
         signal =
-        " • CẦU YẾU";
+        "CẦU YẾU";
 
     }
 
-    predict.innerHTML =
+    predict.innerHTML = `
 
-    `
     ${text}
     <br>
-    🎯 ${percent}% ${signal}
+    🎯 ${percent}% • ${signal}
+
     `;
+
+}
+
+// ======================
+// RESET
+// ======================
+
+function resetGame(){
+
+    history = [];
+
+    document.getElementById("history")
+    .innerHTML = "";
+
+    document.getElementById("stats")
+    .innerHTML = "";
+
+    document.getElementById("prediction")
+    .innerHTML =
+    "ĐỢI DỮ LIỆU...";
 
 }
 
