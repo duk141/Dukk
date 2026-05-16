@@ -352,7 +352,7 @@ h1{
 <script>
 
 const API =
-"https://corsproxy.io/?https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
+"https://api.allorigins.win/raw?url=https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
 
 let allTables = [];
 
@@ -372,7 +372,7 @@ async function loadData(){
 
     const res =
       await fetch(
-        API + "&t=" + Date.now(),
+        API + "?t=" + Date.now()
         {
           cache:"no-store",
           signal:controller.signal
