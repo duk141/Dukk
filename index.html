@@ -150,19 +150,28 @@ h1{
 
   margin-top:20px;
 
-  background:#2a2a2a;
+  background:
+  linear-gradient(
+    135deg,
+    #2d1b00,
+    #4d3200
+  );
 
-  padding:15px;
+  border:1px solid gold;
 
-  border-radius:10px;
+  padding:18px;
+
+  border-radius:14px;
 
   text-align:center;
 
-  font-size:24px;
+  font-size:22px;
 
   color:gold;
 
   font-weight:bold;
+
+  line-height:34px;
 
 }
 
@@ -357,31 +366,95 @@ function renderRoad(road){
 // predict
 function predict(road){
 
-  let last4 =
-    road.slice(-4);
-
-  if(last4==="BBBB")
-    return "➡ Theo Banker";
-
-  if(last4==="PPPP")
-    return "➡ Theo Player";
-
-  if(/BPBP$/.test(last4))
-    return "➡ Đánh Player";
-
-  if(/PBPB$/.test(last4))
-    return "➡ Đánh Banker";
+  if(!road || road.length < 4)
+    return "Chờ dữ liệu";
 
   let last =
     road.slice(-1);
 
-  if(last==="B")
-    return "➡ Banker";
+  let last2 =
+    road.slice(-2);
 
-  if(last==="P")
-    return "➡ Player";
+  let last4 =
+    road.slice(-4);
 
-  return "➡ Chờ";
+  // bệt banker
+  if(last4 === "BBBB"){
+
+    return `
+      🔥 Bệt Banker
+      <br>
+      ➡ Nên theo Banker
+    `;
+
+  }
+
+  // bệt player
+  if(last4 === "PPPP"){
+
+    return `
+      🔥 Bệt Player
+      <br>
+      ➡ Nên theo Player
+    `;
+
+  }
+
+  // cầu đơn
+  if(/BPBP$/.test(last4)){
+
+    return `
+      🔄 Cầu đơn
+      <br>
+      ➡ Dự đoán Player
+    `;
+
+  }
+
+  if(/PBPB$/.test(last4)){
+
+    return `
+      🔄 Cầu đơn
+      <br>
+      ➡ Dự đoán Banker
+    `;
+
+  }
+
+  // 2 banker
+  if(last2 === "BB"){
+
+    return `
+      📈 Banker đang mạnh
+      <br>
+      ➡ Ưu tiên Banker
+    `;
+
+  }
+
+  // 2 player
+  if(last2 === "PP"){
+
+    return `
+      📉 Player đang mạnh
+      <br>
+      ➡ Ưu tiên Player
+    `;
+
+  }
+
+  // fallback
+  if(last==="B"){
+
+    return `
+      🎯 Dự đoán Banker
+    `;
+
+  }
+
+  return `
+    🎯 Dự đoán Player
+  `;
 
 }
 
