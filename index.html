@@ -112,6 +112,44 @@ h1{
 
 }
 
+.mini-road{
+
+  margin-top:10px;
+
+  display:flex;
+
+  gap:4px;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+}
+
+.mini-b{
+
+  color:#ff4d4d;
+
+  font-weight:bold;
+
+}
+
+.mini-p{
+
+  color:#4da6ff;
+
+  font-weight:bold;
+
+}
+
+.mini-t{
+
+  color:#33cc66;
+
+  font-weight:bold;
+
+}
+
 .road{
 
   margin-top:20px;
@@ -125,6 +163,72 @@ h1{
   line-height:30px;
 
   word-break:break-all;
+
+}
+
+.big-road{
+
+  display:flex;
+
+  align-items:flex-start;
+
+  gap:4px;
+
+  overflow-x:auto;
+
+  padding:10px;
+
+  background:#111;
+
+  border-radius:12px;
+
+  margin-top:15px;
+
+}
+
+.road-col{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:4px;
+
+}
+
+.road-cell{
+
+  width:34px;
+
+  height:34px;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  color:white;
+
+  font-weight:bold;
+
+  font-size:16px;
+
+  flex-shrink:0;
+
+}
+
+.banker{
+
+  background:#ff3b3b;
+
+}
+
+.player{
+
+  background:#2d7dff;
 
 }
 
@@ -224,7 +328,7 @@ h1{
 
 <body>
 
-<h1>🎰 Baccarat Scanner</h1>
+<h1>ðŸŽ° Baccarat Scanner</h1>
 
 <div id="tables"></div>
 
@@ -236,7 +340,7 @@ h1{
 
     <div class="close"
     onclick="closeModal()">
-      ×
+      Ã—
     </div>
 
     <div id="detail"></div>
@@ -277,6 +381,13 @@ function renderTables(){
 
   allTables.forEach((t,i)=>{
 
+    const road =
+      t.results || "";
+
+    // ẨN bàn không hoạt động
+    if(road.length < 3)
+      return;
+
     const div =
       document.createElement("div");
 
@@ -291,7 +402,11 @@ function renderTables(){
       </div>
 
       <div class="good-road">
-        ${t.good_road || "Không có cầu"}
+        ${t.good_road || "Đang hoạt động"}
+      </div>
+
+      <div class="mini-road">
+        ${miniRoad(road)}
       </div>
 
     `;
@@ -302,7 +417,31 @@ function renderTables(){
 
 }
 
-// mở bàn
+function miniRoad(road){
+
+  return road
+  .slice(-10)
+  .split("")
+  .map(x=>{
+
+    let cls =
+      x==="B"
+      ? "mini-b"
+      : x==="P"
+      ? "mini-p"
+      : "mini-t";
+
+    return `
+    <span class="${cls}">
+      ${x}
+    </span>
+    `;
+
+  }).join("");
+
+}
+
+// má»Ÿ bÃ n
 function openTable(index){
 
   const t =
@@ -324,11 +463,11 @@ function openTable(index){
   .innerHTML = `
 
     <h2>
-      🎲 Bàn ${t.ban}
+      ðŸŽ² BÃ n ${t.ban}
     </h2>
 
     <div>
-      📌 ${t.good_road || "Không có cầu"}
+      ðŸ“Œ ${t.good_road || "KhÃ´ng cÃ³ cáº§u"}
     </div>
 
     <div class="road">
@@ -337,7 +476,7 @@ function openTable(index){
 
 <div class="last-result">
 
-  🎯 Ván trước:
+  ðŸŽ¯ VÃ¡n trÆ°á»›c:
   <br><br>
 
   ${lastResult(road)}
@@ -373,7 +512,7 @@ function openTable(index){
 
 }
 
-// đóng
+// Ä‘Ã³ng
 function closeModal(){
 
   document.getElementById("modal")
@@ -384,13 +523,81 @@ function closeModal(){
 // render road
 function renderRoad(road){
 
-  return road.split("").map(x=>{
+  if(!road) return "";
 
-    return `<span class="${x}">
-      ${x}
-    </span>`;
+  let cols = [];
+  let col = [];
 
-  }).join("");
+  for(let i=0;i<road.length;i++){
+
+    let curr = road[i];
+    let prev = road[i-1];
+
+    // bỏ tie
+    if(curr==="T"){
+
+  col[col.length-1] += "T";
+
+  continue;
+
+}
+
+    // bắt đầu
+    if(i===0){
+
+      col.push(curr);
+
+    }
+
+    // cùng màu -> xuống dưới
+    else if(curr===prev){
+
+      col.push(curr);
+
+    }
+
+    // đổi màu -> sang cột mới
+    else{
+
+      cols.push(col);
+
+      col = [curr];
+
+    }
+
+  }
+
+  cols.push(col);
+
+  let html =
+    `<div class="big-road">`;
+
+  cols.forEach(c=>{
+
+    html += `<div class="road-col">`;
+
+    c.forEach(item=>{
+
+      let cls =
+        item==="B"
+        ? "banker"
+        : "player";
+
+      html += `
+      <div class="road-cell ${cls}">
+        ${item}
+      </div>
+      `;
+
+    });
+
+    html += `</div>`;
+
+  });
+
+  html += `</div>`;
+
+  return html;
 
 }
 
@@ -398,7 +605,7 @@ function renderRoad(road){
 function predict(road){
 
   if(!road || road.length < 4)
-    return "Chờ dữ liệu";
+    return "Chá» dá»¯ liá»‡u";
 
   let last =
     road.slice(-1);
@@ -409,35 +616,35 @@ function predict(road){
   let last4 =
     road.slice(-4);
 
-  // bệt banker
+  // bá»‡t banker
   if(last4 === "BBBB"){
 
     return `
-      🔥 Bệt Banker
+      ðŸ”¥ Bá»‡t Banker
       <br>
-      ➡ Nên theo Banker
+      âž¡ NÃªn theo Banker
     `;
 
   }
 
-  // bệt player
+  // bá»‡t player
   if(last4 === "PPPP"){
 
     return `
-      🔥 Bệt Player
+      ðŸ”¥ Bá»‡t Player
       <br>
-      ➡ Nên theo Player
+      âž¡ NÃªn theo Player
     `;
 
   }
 
-  // cầu đơn
+  // cáº§u Ä‘Æ¡n
   if(/BPBP$/.test(last4)){
 
     return `
-      🔄 Cầu đơn
+      ðŸ”„ Cáº§u Ä‘Æ¡n
       <br>
-      ➡ Dự đoán Player
+      âž¡ Dá»± Ä‘oÃ¡n Player
     `;
 
   }
@@ -445,9 +652,9 @@ function predict(road){
   if(/PBPB$/.test(last4)){
 
     return `
-      🔄 Cầu đơn
+      ðŸ”„ Cáº§u Ä‘Æ¡n
       <br>
-      ➡ Dự đoán Banker
+      âž¡ Dá»± Ä‘oÃ¡n Banker
     `;
 
   }
@@ -456,9 +663,9 @@ function predict(road){
   if(last2 === "BB"){
 
     return `
-      📈 Banker đang mạnh
+      ðŸ“ˆ Banker Ä‘ang máº¡nh
       <br>
-      ➡ Ưu tiên Banker
+      âž¡ Æ¯u tiÃªn Banker
     `;
 
   }
@@ -467,9 +674,9 @@ function predict(road){
   if(last2 === "PP"){
 
     return `
-      📉 Player đang mạnh
+      ðŸ“‰ Player Ä‘ang máº¡nh
       <br>
-      ➡ Ưu tiên Player
+      âž¡ Æ¯u tiÃªn Player
     `;
 
   }
@@ -478,13 +685,13 @@ function predict(road){
   if(last==="B"){
 
     return `
-      🎯 Dự đoán Banker
+      ðŸŽ¯ Dá»± Ä‘oÃ¡n Banker
     `;
 
   }
 
   return `
-    🎯 Dự đoán Player
+    ðŸŽ¯ Dá»± Ä‘oÃ¡n Player
   `;
 
 }
@@ -492,18 +699,18 @@ function predict(road){
 function lastResult(road){
 
   if(!road || road.length===0)
-    return "Chưa có";
+    return "ChÆ°a cÃ³";
 
   let last =
     road.slice(-1);
 
   if(last==="B")
-    return "🔴 Banker";
+    return "ðŸ”´ Banker";
 
   if(last==="P")
-    return "🔵 Player";
+    return "ðŸ”µ Player";
 
-  return "🟢 Tie";
+  return "ðŸŸ¢ Tie";
 
 }
 
