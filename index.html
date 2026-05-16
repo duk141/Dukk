@@ -176,6 +176,8 @@ h1{
 
   overflow-x:auto;
 
+  overflow-y:hidden;
+
   padding:10px;
 
   background:#111;
@@ -184,6 +186,19 @@ h1{
 
   margin-top:15px;
 
+  max-width:100%;
+
+  -webkit-overflow-scrolling:touch;
+
+  touch-action:pan-x;
+
+}
+
+.road-col{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex-shrink:0;
 }
 
 .road-col{
