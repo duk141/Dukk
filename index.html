@@ -358,30 +358,38 @@ let allTables = [];
 
 let lastRoadMap = {};
 
+let isLoading = false;
+
 let controller;
 
 // LOAD API
 async function loadData(){
 
+  // đang load thì bỏ qua
+  if(isLoading) return;
+
+  isLoading = true;
+
   try{
 
-const res =
-  await fetch(
-    API + "?t=" + Date.now(),
-    {
-      cache:"no-store"
-    }
-  );
+    const res =
+      await fetch(
+        API + "?t=" + Date.now(),
+        {
+          cache:"no-store"
+        }
+      );
 
     const json =
       await res.json();
 
-    console.log(json);
+    if(!json.data){
 
-    if(!json.data)
+      isLoading = false;
       return;
 
-    // cập nhật data mới
+    }
+
     allTables = json.data;
 
     let changed = false;
@@ -394,12 +402,10 @@ const res =
       const oldRoad =
         lastRoadMap[table.ban] || "";
 
-      // có cầu mới
       if(newRoad !== oldRoad){
 
         changed = true;
 
-        // update cache
         lastRoadMap[table.ban] =
           newRoad;
 
@@ -430,13 +436,11 @@ const res =
 
   }catch(err){
 
-    if(err.name !== "AbortError"){
-
-      console.log(err);
-
-    }
+    console.log(err);
 
   }
+
+  isLoading = false;
 
 }
 
@@ -844,7 +848,7 @@ font-size:22px;
 // START
 loadData();
 
-setInterval(loadData,100);
+setInterval(loadData,150);
 </script>
 
 </body>
