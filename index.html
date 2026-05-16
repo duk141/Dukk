@@ -371,13 +371,13 @@ async function loadData(){
       new AbortController();
 
     const res =
-      await fetch(
-        API + "?t=" + Date.now()
-        {
-          cache:"no-store",
-          signal:controller.signal
-        }
-      );
+  await fetch(
+    API + "&t=" + Date.now(),
+    {
+      cache:"no-store",
+      signal:controller.signal
+    }
+  );
 
     const json =
       await res.json();
