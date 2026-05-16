@@ -356,8 +356,6 @@ const API =
   
 let allTables = [];
 
-let oldTables = {};
-
 let controller;
 
 // LOAD API
@@ -389,34 +387,9 @@ async function loadData(){
     if(!json.data)
       return;
 
-    json.data.forEach(table=>{
+    allTables = json.data;
 
-  const oldRoad =
-    oldTables[table.ban] || "";
-
-  const newRoad =
-    table.results || "";
-
-  // có kết quả mới
-  if(
-    newRoad.length >
-    oldRoad.length
-  ){
-
-    // update ngay
-    updateTableInstant(table);
-
-  }
-
-  // lưu cache
-  oldTables[table.ban] =
-    newRoad;
-
-});
-
-allTables = json.data;
-
-renderTables();
+    renderTables();
 
   }catch(err){
 
@@ -427,22 +400,6 @@ renderTables();
     }
 
   }
-
-}
-
-function updateTableInstant(t){
-
-  const card =
-    document.querySelector(
-      `[data-ban="${t.ban}"]`
-    );
-
-  if(!card) return;
-
-  card.querySelector(
-    ".mini-road"
-  ).innerHTML =
-    miniRoad(t.results);
 
 }
 
@@ -472,12 +429,7 @@ function renderTables(){
       card =
         document.createElement("div");
 
-      div.className = "card";
-
-div.setAttribute(
-  "data-ban",
-  t.ban
-);
+      card.className = "card";
 
       card.id =
         "table-"+i;
@@ -791,7 +743,7 @@ function lastResult(road){
 // START
 loadData();
 
-setInterval(loadData,400);
+setInterval(loadData,300);
 
 </script>
 
