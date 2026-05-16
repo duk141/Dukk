@@ -459,16 +459,15 @@ function renderTables(){
     const road =
       t.results || "";
 
-    // ẩn bàn chết
     if(road.length < 3)
       return;
 
     let card =
-      document.getElementById(
-        "table-"+i
+      document.querySelector(
+        `[data-ban="${t.ban}"]`
       );
 
-    // chưa có -> tạo mới
+    // tạo card ngay
     if(!card){
 
       card =
@@ -476,37 +475,50 @@ function renderTables(){
 
       card.className = "card";
 
-card.setAttribute(
-  "data-ban",
-  t.ban
-);
-
-      card.id =
-        "table-"+i;
+      card.setAttribute(
+        "data-ban",
+        t.ban
+      );
 
       card.onclick =
         ()=>openTable(i);
+
+      // hiện skeleton trước
+      card.innerHTML = `
+
+        <div class="table-name">
+          🎲 ${t.ban}
+        </div>
+
+        <div class="good-road">
+          Loading...
+        </div>
+
+        <div class="mini-road">
+          ...
+        </div>
+
+      `;
 
       tables.appendChild(card);
 
     }
 
-    // update nội dung
-    card.innerHTML = `
+    // update realtime
+    requestAnimationFrame(()=>{
 
-      <div class="table-name">
-        🎲 ${t.ban}
-      </div>
+      card.querySelector(
+        ".good-road"
+      ).innerHTML =
+        t.good_road ||
+        "Đang hoạt động";
 
-      <div class="good-road">
-        ${t.good_road || "Đang hoạt động"}
-      </div>
+      card.querySelector(
+        ".mini-road"
+      ).innerHTML =
+        miniRoad(road);
 
-      <div class="mini-road">
-        ${miniRoad(road)}
-      </div>
-
-    `;
+    });
 
   });
 
@@ -820,11 +832,23 @@ function lastResult(road){
 
 }
 
+// loading đầu tiên
+document.getElementById("tables")
+.innerHTML = `
+<div style="
+color:white;
+text-align:center;
+padding:30px;
+font-size:22px;
+">
+🔄 Đang tải bàn...
+</div>
+`;
+
 // START
 loadData();
 
-setInterval(loadData,100);
-
+setInterval(loadData,370);
 </script>
 
 </body>
