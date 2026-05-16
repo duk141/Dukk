@@ -356,6 +356,8 @@ const API =
   
 let allTables = [];
 
+let oldTables = {};
+
 let controller;
 
 // LOAD API
@@ -387,9 +389,34 @@ async function loadData(){
     if(!json.data)
       return;
 
-    allTables = json.data;
+    json.data.forEach(table=>{
 
-    renderTables();
+  const oldRoad =
+    oldTables[table.ban] || "";
+
+  const newRoad =
+    table.results || "";
+
+  // có kết quả mới
+  if(
+    newRoad.length >
+    oldRoad.length
+  ){
+
+    // update ngay
+    updateTableInstant(table);
+
+  }
+
+  // lưu cache
+  oldTables[table.ban] =
+    newRoad;
+
+});
+
+allTables = json.data;
+
+renderTables();
 
   }catch(err){
 
@@ -400,6 +427,22 @@ async function loadData(){
     }
 
   }
+
+}
+
+function updateTableInstant(t){
+
+  const card =
+    document.querySelector(
+      `[data-ban="${t.ban}"]`
+    );
+
+  if(!card) return;
+
+  card.querySelector(
+    ".mini-road"
+  ).innerHTML =
+    miniRoad(t.results);
 
 }
 
@@ -429,7 +472,12 @@ function renderTables(){
       card =
         document.createElement("div");
 
-      card.className = "card";
+      div.className = "card";
+
+div.setAttribute(
+  "data-ban",
+  t.ban
+);
 
       card.id =
         "table-"+i;
