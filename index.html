@@ -185,6 +185,26 @@ h1{
 
 }
 
+.last-result{
+
+  margin-top:20px;
+
+  background:#181818;
+
+  border:1px solid #333;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  text-align:center;
+
+  font-size:24px;
+
+  font-weight:bold;
+
+}
+
 .box{
 
   flex:1;
@@ -315,9 +335,20 @@ function openTable(index){
       ${renderRoad(road)}
     </div>
 
-    <div class="predict">
-      ${predict(road)}
-    </div>
+<div class="last-result">
+
+  🎯 Ván trước:
+  <br><br>
+
+  ${lastResult(road)}
+
+</div>
+
+<div class="predict">
+
+  ${predict(road)}
+
+</div>
 
     <div class="stats">
 
@@ -455,6 +486,24 @@ function predict(road){
   return `
     🎯 Dự đoán Player
   `;
+
+}
+
+function lastResult(road){
+
+  if(!road || road.length===0)
+    return "Chưa có";
+
+  let last =
+    road.slice(-1);
+
+  if(last==="B")
+    return "🔴 Banker";
+
+  if(last==="P")
+    return "🔵 Player";
+
+  return "🟢 Tie";
 
 }
 
