@@ -353,12 +353,12 @@ h1{
 
 const API =
 "https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
-  
+
 let allTables = [];
 
-// load API
 let controller;
 
+// LOAD API
 async function loadData(){
 
   try{
@@ -371,30 +371,28 @@ async function loadData(){
       new AbortController();
 
     const res =
-  await fetch(
-    API,
-    {
-      cache:"no-store",
-      signal:controller.signal
-    }
-  );
+      await fetch(
+        API + "?t=" + Date.now(),
+        {
+          cache:"no-store",
+          signal:controller.signal
+        }
+      );
 
-const text =
-  await res.text();
+    const json =
+      await res.json();
 
-const json =
-  JSON.parse(text);
+    console.log(json);
 
-if(!json.data)
-  return;
+    if(!json.data)
+      return;
 
-allTables = [...json.data];
+    allTables = json.data;
 
-renderTables();
+    renderTables();
 
   }catch(err){
 
-    // bỏ qua abort
     if(err.name !== "AbortError"){
 
       console.log(err);
@@ -405,16 +403,14 @@ renderTables();
 
 }
 
-// render list
+// RENDER LIST
 function renderTables(){
 
   const tables =
     document.getElementById("tables");
 
-  // xoá cũ
   tables.innerHTML = "";
 
-  // tạo fragment
   const fragment =
     document.createDocumentFragment();
 
@@ -423,7 +419,7 @@ function renderTables(){
     const road =
       t.results || "";
 
-    // ẩn bàn không hoạt động
+    // ẩn bàn chưa hoạt động
     if(road.length < 3)
       return;
 
@@ -450,41 +446,40 @@ function renderTables(){
 
     `;
 
-    // thêm vào fragment
     fragment.appendChild(div);
 
   });
 
-  // render 1 lần
   tables.appendChild(fragment);
 
 }
 
+// MINI ROAD
 function miniRoad(road){
 
   return road
-  .slice(-10)
-  .split("")
-  .map(x=>{
+    .slice(-10)
+    .split("")
+    .map(x=>{
 
-    let cls =
-      x==="B"
-      ? "mini-b"
-      : x==="P"
-      ? "mini-p"
-      : "mini-t";
+      let cls =
+        x==="B"
+        ? "mini-b"
+        : x==="P"
+        ? "mini-p"
+        : "mini-t";
 
-    return `
-    <span class="${cls}">
-      ${x}
-    </span>
-    `;
+      return `
+      <span class="${cls}">
+        ${x}
+      </span>
+      `;
 
-  }).join("");
+    }).join("");
 
 }
 
-// má»Ÿ bÃ n
+// OPEN TABLE
 function openTable(index){
 
   const t =
@@ -503,59 +498,59 @@ function openTable(index){
     (road.match(/T/g)||[]).length;
 
   document.getElementById("detail")
-.innerHTML = `
+  .innerHTML = `
 
-<h2>
-🎲 Bàn ${t.ban}
-</h2>
+  <h2>
+    🎲 Bàn ${t.ban}
+  </h2>
 
-<div>
-📌 ${t.good_road || "Không có cầu"}
-</div>
+  <div>
+    📌 ${t.good_road || "Không có cầu"}
+  </div>
 
-<div class="road">
-${renderRoad(road)}
-</div>
+  <div class="road">
+    ${renderRoad(road)}
+  </div>
 
-<div class="last-result">
+  <div class="last-result">
 
-🎯 Ván trước:
-<br><br>
+    🎯 Ván trước:
+    <br><br>
 
-${lastResult(road)}
+    ${lastResult(road)}
 
-</div>
+  </div>
 
-<div class="predict">
+  <div class="predict">
 
-${predict(road)}
+    ${predict(road)}
 
-</div>
+  </div>
 
-<div class="stats">
+  <div class="stats">
 
-<div class="box">
-Banker<br>${banker}
-</div>
+    <div class="box">
+      Banker<br>${banker}
+    </div>
 
-<div class="box">
-Player<br>${player}
-</div>
+    <div class="box">
+      Player<br>${player}
+    </div>
 
-<div class="box">
-Tie<br>${tie}
-</div>
+    <div class="box">
+      Tie<br>${tie}
+    </div>
 
-</div>
+  </div>
 
-`;
+  `;
 
   document.getElementById("modal")
   .style.display = "flex";
 
 }
 
-// Ä‘Ã³ng
+// CLOSE
 function closeModal(){
 
   document.getElementById("modal")
@@ -563,7 +558,7 @@ function closeModal(){
 
 }
 
-// render road
+// RENDER ROAD
 function renderRoad(road){
 
   if(!road) return "";
@@ -577,23 +572,21 @@ function renderRoad(road){
     let prev = road[i-1];
 
     // bỏ tie
-if(curr==="T") continue;
+    if(curr==="T")
+      continue;
 
-    // bắt đầu
     if(i===0){
 
       col.push(curr);
 
     }
 
-    // cùng màu -> xuống dưới
     else if(curr===prev){
 
       col.push(curr);
 
     }
 
-    // đổi màu -> sang cột mới
     else{
 
       cols.push(col);
@@ -638,7 +631,7 @@ if(curr==="T") continue;
 
 }
 
-// predict
+// PREDICT
 function predict(road){
 
   if(!road || road.length < 4)
@@ -653,7 +646,7 @@ function predict(road){
   let last4 =
     road.slice(-4);
 
-  if(last4 === "BBBB"){
+  if(last4==="BBBB"){
 
     return `
       🔥 Bệt Banker
@@ -663,7 +656,7 @@ function predict(road){
 
   }
 
-  if(last4 === "PPPP"){
+  if(last4==="PPPP"){
 
     return `
       🔥 Bệt Player
@@ -693,7 +686,7 @@ function predict(road){
 
   }
 
-  if(last2 === "BB"){
+  if(last2==="BB"){
 
     return `
       📈 Banker đang mạnh
@@ -703,7 +696,7 @@ function predict(road){
 
   }
 
-  if(last2 === "PP"){
+  if(last2==="PP"){
 
     return `
       📉 Player đang mạnh
@@ -720,6 +713,7 @@ function predict(road){
 
 }
 
+// LAST RESULT
 function lastResult(road){
 
   if(!road || road.length===0)
@@ -738,6 +732,7 @@ function lastResult(road){
 
 }
 
+// START
 loadData();
 
 setInterval(loadData,200);
