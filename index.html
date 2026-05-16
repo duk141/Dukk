@@ -359,15 +359,29 @@ let allTables = [];
 // load API
 async function loadData(){
 
-  const res =
-    await fetch(API);
+  try{
 
-  const json =
-    await res.json();
+    const res =
+      await fetch(
+        API + "?t=" + Date.now(),
+        {
+          cache:"no-store"
+        }
+      );
 
-  allTables = json.data;
+    const json =
+      await res.json();
 
-  renderTables();
+    allTables =
+      json.data || [];
+
+    renderTables();
+
+  }catch(err){
+
+    console.log(err);
+
+  }
 
 }
 
@@ -534,13 +548,7 @@ function renderRoad(road){
     let prev = road[i-1];
 
     // bỏ tie
-    if(curr==="T"){
-
-  col[col.length-1] += "T";
-
-  continue;
-
-}
+if(curr==="T") continue;
 
     // bắt đầu
     if(i===0){
@@ -716,7 +724,7 @@ function lastResult(road){
 
 loadData();
 
-setInterval(loadData,5000);
+setInterval(loadData,500);
 
 </script>
 
