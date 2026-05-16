@@ -561,22 +561,28 @@ function updateTable(t){
 
   }
 
-  // update toàn bộ card ngay lập tức
-  card.innerHTML = `
+  // update mini road
+  const mini =
+    card.querySelector(".mini-road");
 
-    <div class="table-name">
-      🎲 ${t.ban}
-    </div>
+  if(mini){
 
-    <div class="good-road">
-      ${t.good_road || "Đang hoạt động"}
-    </div>
+    mini.innerHTML =
+      miniRoad(t.results || "");
 
-    <div class="mini-road">
-      ${miniRoad(t.results || "")}
-    </div>
+  }
 
-  `;
+  // update good road
+  const good =
+    card.querySelector(".good-road");
+
+  if(good){
+
+    good.innerHTML =
+      t.good_road ||
+      "Đang hoạt động";
+
+  }
 
 }
 
