@@ -362,6 +362,8 @@ let isLoading = false;
 
 let controller;
 
+let currentTable = null;
+
 // LOAD API
 async function loadData(){
 
@@ -424,15 +426,24 @@ async function loadData(){
     }
 
     // update realtime
-    if(changed){
+if(changed){
 
-      json.data.forEach(table=>{
+  json.data.forEach(table=>{
 
-        updateTable(table);
+    updateTable(table);
 
-      });
+  });
 
-    }
+  // update modal realtime
+  if(currentTable !== null){
+
+    renderModal(
+      allTables[currentTable]
+    );
+
+  }
+
+}
 
   }catch(err){
 
@@ -582,8 +593,16 @@ function miniRoad(road){
 // OPEN TABLE
 function openTable(index){
 
+  currentTable = index;
+
   const t =
     allTables[index];
+
+  renderModal(t);
+
+}
+
+function renderModal(t){
 
   const road =
     t.results || "";
@@ -652,6 +671,8 @@ function openTable(index){
 
 // CLOSE
 function closeModal(){
+
+  currentTable = null;
 
   document.getElementById("modal")
   .style.display = "none";
