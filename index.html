@@ -356,6 +356,8 @@ const API =
   
 let allTables = [];
 
+let lastRoadMap = {};
+
 let controller;
 
 // LOAD API
@@ -387,9 +389,52 @@ async function loadData(){
     if(!json.data)
       return;
 
+    // cập nhật data mới
     allTables = json.data;
 
-    renderTables();
+    let changed = false;
+
+    json.data.forEach(table=>{
+
+      const newRoad =
+        table.results || "";
+
+      const oldRoad =
+        lastRoadMap[table.ban] || "";
+
+      // có cầu mới
+      if(newRoad !== oldRoad){
+
+        changed = true;
+
+        // update cache
+        lastRoadMap[table.ban] =
+          newRoad;
+
+      }
+
+    });
+
+    // render lần đầu
+    if(
+      document.getElementById("tables")
+      .children.length === 0
+    ){
+
+      renderTables();
+
+    }
+
+    // update realtime
+    if(changed){
+
+      json.data.forEach(table=>{
+
+        updateTable(table);
+
+      });
+
+    }
 
   }catch(err){
 
@@ -431,6 +476,11 @@ function renderTables(){
 
       card.className = "card";
 
+card.setAttribute(
+  "data-ban",
+  t.ban
+);
+
       card.id =
         "table-"+i;
 
@@ -459,6 +509,36 @@ function renderTables(){
     `;
 
   });
+
+}
+
+function updateTable(t){
+
+  let card =
+    document.querySelector(
+      `[data-ban="${t.ban}"]`
+    );
+
+  // chưa có card
+  if(!card){
+
+    renderTables();
+    return;
+
+  }
+
+  // update mini road ngay
+  card.querySelector(
+    ".mini-road"
+  ).innerHTML =
+    miniRoad(t.results);
+
+  // update good road
+  card.querySelector(
+    ".good-road"
+  ).innerHTML =
+    t.good_road ||
+    "Đang hoạt động";
 
 }
 
