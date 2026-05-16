@@ -5,12 +5,12 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1">
 
-<title>Baccarat API Tool</title>
+<title>Baccarat Tool</title>
 
 <style>
 
 body{
-  background:#0f0f0f;
+  background:#101010;
   color:white;
   font-family:Arial;
   margin:0;
@@ -19,7 +19,6 @@ body{
 
 h1{
   text-align:center;
-  margin-bottom:20px;
 }
 
 #tables{
@@ -27,66 +26,101 @@ h1{
   display:grid;
 
   grid-template-columns:
-  repeat(auto-fit,minmax(320px,1fr));
+  repeat(auto-fit,minmax(150px,1fr));
 
-  gap:12px;
+  gap:10px;
 
 }
 
 .card{
 
-  background:#1b1b1b;
+  background:#1d1d1d;
 
-  border-radius:14px;
+  border-radius:12px;
 
-  padding:14px;
+  padding:20px;
 
-  border:1px solid #2e2e2e;
+  text-align:center;
 
-  box-shadow:
-  0 0 10px rgba(0,0,0,.4);
+  border:1px solid #333;
+
+  cursor:pointer;
+
+  transition:.2s;
 
 }
 
-.top{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  margin-bottom:10px;
-
+.card:hover{
+  transform:scale(1.03);
 }
 
 .table-name{
-
   font-size:22px;
-
   font-weight:bold;
-
   color:gold;
-
 }
 
 .good-road{
-
+  margin-top:10px;
+  color:#00d0ff;
   font-size:13px;
+}
 
-  color:#00d2ff;
+/* MODAL */
+
+#modal{
+
+  position:fixed;
+
+  inset:0;
+
+  background:rgba(0,0,0,.8);
+
+  display:none;
+
+  align-items:center;
+
+  justify-content:center;
+
+  z-index:999;
+
+}
+
+.modal-box{
+
+  width:95%;
+
+  max-width:700px;
+
+  background:#1b1b1b;
+
+  border-radius:15px;
+
+  padding:20px;
+
+}
+
+.close{
+
+  float:right;
+
+  cursor:pointer;
+
+  font-size:28px;
+
+  color:red;
 
 }
 
 .road{
 
-  background:#101010;
+  margin-top:20px;
+
+  background:#111;
+
+  padding:15px;
 
   border-radius:10px;
-
-  padding:10px;
-
-  min-height:80px;
 
   line-height:30px;
 
@@ -95,52 +129,64 @@ h1{
 }
 
 .B{
-
   color:#ff4d4d;
-
+  font-size:24px;
   font-weight:bold;
-
-  font-size:22px;
-
 }
 
 .P{
-
   color:#4da6ff;
-
+  font-size:24px;
   font-weight:bold;
-
-  font-size:22px;
-
 }
 
 .T{
-
   color:#33cc66;
-
+  font-size:24px;
   font-weight:bold;
-
-  font-size:22px;
-
 }
 
 .predict{
 
-  margin-top:12px;
+  margin-top:20px;
 
   background:#2a2a2a;
+
+  padding:15px;
+
+  border-radius:10px;
+
+  text-align:center;
+
+  font-size:24px;
+
+  color:gold;
+
+  font-weight:bold;
+
+}
+
+.stats{
+
+  margin-top:15px;
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+.box{
+
+  flex:1;
+
+  background:#222;
 
   padding:10px;
 
   border-radius:10px;
 
   text-align:center;
-
-  font-size:20px;
-
-  color:gold;
-
-  font-weight:bold;
 
 }
 
@@ -153,74 +199,73 @@ h1{
 
 <div id="tables"></div>
 
+<!-- MODAL -->
+
+<div id="modal">
+
+  <div class="modal-box">
+
+    <div class="close"
+    onclick="closeModal()">
+      ×
+    </div>
+
+    <div id="detail"></div>
+
+  </div>
+
+</div>
+
 <script>
 
-// API của bạn
 const API =
-"https://YOUR_API_LINK";
+"https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
 
-// load data
+let allTables = [];
+
+// load API
 async function loadData(){
 
-  try{
+  const res =
+    await fetch(API);
 
-    const res =
-      await fetch(API);
+  const json =
+    await res.json();
 
-    const json =
-      await res.json();
+  allTables = json.data;
 
-    renderTables(json.data);
-
-  }catch(err){
-
-    console.log(err);
-
-  }
+  renderTables();
 
 }
 
-// render
-function renderTables(data){
+// render list
+function renderTables(){
 
   const tables =
     document.getElementById("tables");
 
   tables.innerHTML = "";
 
-  data.forEach(t => {
-
-    const road =
-      t.results || "";
+  allTables.forEach((t,i)=>{
 
     const div =
       document.createElement("div");
 
     div.className = "card";
 
+    div.onclick = () => openTable(i);
+
     div.innerHTML = `
 
-<div class="top">
+      <div class="table-name">
+        🎲 ${t.ban}
+      </div>
 
-  <div class="table-name">
-    🎲 ${t.ban}
-  </div>
+      <div class="good-road">
+        ${t.good_road || "Không có cầu"}
+      </div>
 
-  <div class="good-road">
-    ${t.good_road || "Không có cầu"}
-  </div>
-
-</div>
-
-<div class="road">
-  ${renderRoad(road)}
-</div>
-
-<div class="predict">
-  ${predict(road)}
-</div>
-
-`;
+    `;
 
     tables.appendChild(div);
 
@@ -228,10 +273,78 @@ function renderTables(data){
 
 }
 
-// màu road
+// mở bàn
+function openTable(index){
+
+  const t =
+    allTables[index];
+
+  const road =
+    t.results || "";
+
+  let banker =
+    (road.match(/B/g)||[]).length;
+
+  let player =
+    (road.match(/P/g)||[]).length;
+
+  let tie =
+    (road.match(/T/g)||[]).length;
+
+  document.getElementById("detail")
+  .innerHTML = `
+
+    <h2>
+      🎲 Bàn ${t.ban}
+    </h2>
+
+    <div>
+      📌 ${t.good_road || "Không có cầu"}
+    </div>
+
+    <div class="road">
+      ${renderRoad(road)}
+    </div>
+
+    <div class="predict">
+      ${predict(road)}
+    </div>
+
+    <div class="stats">
+
+      <div class="box">
+        Banker<br>${banker}
+      </div>
+
+      <div class="box">
+        Player<br>${player}
+      </div>
+
+      <div class="box">
+        Tie<br>${tie}
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById("modal")
+  .style.display = "flex";
+
+}
+
+// đóng
+function closeModal(){
+
+  document.getElementById("modal")
+  .style.display = "none";
+
+}
+
+// render road
 function renderRoad(road){
 
-  return road.split("").map(x => {
+  return road.split("").map(x=>{
 
     return `<span class="${x}">
       ${x}
@@ -241,28 +354,24 @@ function renderRoad(road){
 
 }
 
-// predict đơn giản
+// predict
 function predict(road){
 
   let last4 =
     road.slice(-4);
 
-  // bệt banker
   if(last4==="BBBB")
     return "➡ Theo Banker";
 
-  // bệt player
   if(last4==="PPPP")
     return "➡ Theo Player";
 
-  // cầu đơn
   if(/BPBP$/.test(last4))
     return "➡ Đánh Player";
 
   if(/PBPB$/.test(last4))
     return "➡ Đánh Banker";
 
-  // mặc định
   let last =
     road.slice(-1);
 
@@ -276,10 +385,8 @@ function predict(road){
 
 }
 
-// load lần đầu
 loadData();
 
-// auto refresh 5s
 setInterval(loadData,5000);
 
 </script>
