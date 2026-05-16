@@ -365,21 +365,13 @@ async function loadData(){
 
   try{
 
-    // huỷ request cũ
-    if(controller)
-      controller.abort();
-
-    controller =
-      new AbortController();
-
-    const res =
-      await fetch(
-        API + "?t=" + Date.now(),
-        {
-          cache:"no-store",
-          signal:controller.signal
-        }
-      );
+const res =
+  await fetch(
+    API + "?t=" + Date.now(),
+    {
+      cache:"no-store"
+    }
+  );
 
     const json =
       await res.json();
@@ -539,18 +531,22 @@ function updateTable(t){
 
   }
 
-  // update mini road ngay
-  card.querySelector(
-    ".mini-road"
-  ).innerHTML =
-    miniRoad(t.results);
+  // update toàn bộ card ngay lập tức
+  card.innerHTML = `
 
-  // update good road
-  card.querySelector(
-    ".good-road"
-  ).innerHTML =
-    t.good_road ||
-    "Đang hoạt động";
+    <div class="table-name">
+      🎲 ${t.ban}
+    </div>
+
+    <div class="good-road">
+      ${t.good_road || "Đang hoạt động"}
+    </div>
+
+    <div class="mini-road">
+      ${miniRoad(t.results || "")}
+    </div>
+
+  `;
 
 }
 
@@ -848,7 +844,7 @@ font-size:22px;
 // START
 loadData();
 
-setInterval(loadData,370);
+setInterval(loadData,100);
 </script>
 
 </body>
