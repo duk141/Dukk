@@ -352,7 +352,10 @@ h1{
 <script>
 
 const API =
-"https://api.allorigins.win/raw?url=https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
+"https://api.allorigins.win/raw?url=" +
+encodeURIComponent(
+  "https://employers-hormone-land-idaho.trycloudflare.com/api/bcr"
+);
   
 let allTables = [];
 
@@ -372,23 +375,25 @@ async function loadData(){
 
     const res =
   await fetch(
-    API + "&t=" + Date.now(),
+    API,
     {
       cache:"no-store",
       signal:controller.signal
     }
   );
 
-    const json =
-      await res.json();
+const text =
+  await res.text();
 
-    if(!json.data)
-      return;
+const json =
+  JSON.parse(text);
 
-    // cập nhật ngay
-    allTables = [...json.data];
+if(!json.data)
+  return;
 
-    renderTables();
+allTables = [...json.data];
+
+renderTables();
 
   }catch(err){
 
