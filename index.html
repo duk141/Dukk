@@ -328,7 +328,7 @@ h1{
 
 <body>
 
-<h1>ðŸŽ° Baccarat Scanner</h1>
+<h1>Baccarat Scanner</h1>
 
 <div id="tables"></div>
 
@@ -340,7 +340,7 @@ h1{
 
     <div class="close"
     onclick="closeModal()">
-      Ã—
+      ×
     </div>
 
     <div id="detail"></div>
@@ -352,34 +352,52 @@ h1{
 <script>
 
 const API =
-"https://corsproxy.io/?https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
+"https://api.allorigins.win/raw?url=https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
 
 let allTables = [];
 
 // load API
+let controller;
+
 async function loadData(){
 
   try{
 
+    // huỷ request cũ
+    if(controller)
+      controller.abort();
+
+    controller =
+      new AbortController();
+
     const res =
       await fetch(
-        API + "?t=" + Date.now(),
+        API + "&t=" + Date.now(),
         {
-          cache:"no-store"
+          cache:"no-store",
+          signal:controller.signal
         }
       );
 
     const json =
       await res.json();
 
-    allTables =
-      json.data || [];
+    if(!json.data)
+      return;
+
+    // cập nhật ngay
+    allTables = [...json.data];
 
     renderTables();
 
   }catch(err){
 
-    console.log(err);
+    // bỏ qua abort
+    if(err.name !== "AbortError"){
+
+      console.log(err);
+
+    }
 
   }
 
@@ -391,14 +409,19 @@ function renderTables(){
   const tables =
     document.getElementById("tables");
 
+  // xoá cũ
   tables.innerHTML = "";
+
+  // tạo fragment
+  const fragment =
+    document.createDocumentFragment();
 
   allTables.forEach((t,i)=>{
 
     const road =
       t.results || "";
 
-    // ẨN bàn không hoạt động
+    // ẩn bàn không hoạt động
     if(road.length < 3)
       return;
 
@@ -425,9 +448,13 @@ function renderTables(){
 
     `;
 
-    tables.appendChild(div);
+    // thêm vào fragment
+    fragment.appendChild(div);
 
   });
+
+  // render 1 lần
+  tables.appendChild(fragment);
 
 }
 
@@ -474,52 +501,52 @@ function openTable(index){
     (road.match(/T/g)||[]).length;
 
   document.getElementById("detail")
-  .innerHTML = `
+.innerHTML = `
 
-    <h2>
-      ðŸŽ² BÃ n ${t.ban}
-    </h2>
+<h2>
+🎲 Bàn ${t.ban}
+</h2>
 
-    <div>
-      ðŸ“Œ ${t.good_road || "KhÃ´ng cÃ³ cáº§u"}
-    </div>
+<div>
+📌 ${t.good_road || "Không có cầu"}
+</div>
 
-    <div class="road">
-      ${renderRoad(road)}
-    </div>
+<div class="road">
+${renderRoad(road)}
+</div>
 
 <div class="last-result">
 
-  ðŸŽ¯ VÃ¡n trÆ°á»›c:
-  <br><br>
+🎯 Ván trước:
+<br><br>
 
-  ${lastResult(road)}
+${lastResult(road)}
 
 </div>
 
 <div class="predict">
 
-  ${predict(road)}
+${predict(road)}
 
 </div>
 
-    <div class="stats">
+<div class="stats">
 
-      <div class="box">
-        Banker<br>${banker}
-      </div>
+<div class="box">
+Banker<br>${banker}
+</div>
 
-      <div class="box">
-        Player<br>${player}
-      </div>
+<div class="box">
+Player<br>${player}
+</div>
 
-      <div class="box">
-        Tie<br>${tie}
-      </div>
+<div class="box">
+Tie<br>${tie}
+</div>
 
-    </div>
+</div>
 
-  `;
+`;
 
   document.getElementById("modal")
   .style.display = "flex";
@@ -613,7 +640,7 @@ if(curr==="T") continue;
 function predict(road){
 
   if(!road || road.length < 4)
-    return "Chá» dá»¯ liá»‡u";
+    return "Chờ dữ liệu";
 
   let last =
     road.slice(-1);
@@ -624,35 +651,32 @@ function predict(road){
   let last4 =
     road.slice(-4);
 
-  // bá»‡t banker
   if(last4 === "BBBB"){
 
     return `
-      ðŸ”¥ Bá»‡t Banker
+      🔥 Bệt Banker
       <br>
-      âž¡ NÃªn theo Banker
+      ➡ Nên theo Banker
     `;
 
   }
 
-  // bá»‡t player
   if(last4 === "PPPP"){
 
     return `
-      ðŸ”¥ Bá»‡t Player
+      🔥 Bệt Player
       <br>
-      âž¡ NÃªn theo Player
+      ➡ Nên theo Player
     `;
 
   }
 
-  // cáº§u Ä‘Æ¡n
   if(/BPBP$/.test(last4)){
 
     return `
-      ðŸ”„ Cáº§u Ä‘Æ¡n
+      🔄 Cầu đơn
       <br>
-      âž¡ Dá»± Ä‘oÃ¡n Player
+      ➡ Dự đoán Player
     `;
 
   }
@@ -660,71 +684,61 @@ function predict(road){
   if(/PBPB$/.test(last4)){
 
     return `
-      ðŸ”„ Cáº§u Ä‘Æ¡n
+      🔄 Cầu đơn
       <br>
-      âž¡ Dá»± Ä‘oÃ¡n Banker
+      ➡ Dự đoán Banker
     `;
 
   }
 
-  // 2 banker
   if(last2 === "BB"){
 
     return `
-      ðŸ“ˆ Banker Ä‘ang máº¡nh
+      📈 Banker đang mạnh
       <br>
-      âž¡ Æ¯u tiÃªn Banker
+      ➡ Ưu tiên Banker
     `;
 
   }
 
-  // 2 player
   if(last2 === "PP"){
 
     return `
-      ðŸ“‰ Player Ä‘ang máº¡nh
+      📉 Player đang mạnh
       <br>
-      âž¡ Æ¯u tiÃªn Player
+      ➡ Ưu tiên Player
     `;
 
   }
 
-  // fallback
-  if(last==="B"){
+  if(last==="B")
+    return "🎯 Dự đoán Banker";
 
-    return `
-      ðŸŽ¯ Dá»± Ä‘oÃ¡n Banker
-    `;
-
-  }
-
-  return `
-    ðŸŽ¯ Dá»± Ä‘oÃ¡n Player
-  `;
+  return "🎯 Dự đoán Player";
 
 }
 
 function lastResult(road){
 
   if(!road || road.length===0)
-    return "ChÆ°a cÃ³";
+    return "Chưa có";
 
   let last =
     road.slice(-1);
 
   if(last==="B")
-    return "ðŸ”´ Banker";
+    return "🔴 Banker";
 
   if(last==="P")
-    return "ðŸ”µ Player";
+    return "🔵 Player";
 
-  return "ðŸŸ¢ Tie";
+  return "🟢 Tie";
 
 }
 
 loadData();
 
-setInterval(loadData,500);
+setInterval(loadData,200);
 
 </script>
 
