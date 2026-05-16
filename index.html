@@ -330,19 +330,6 @@ h1{
 
 <h1>Baccarat Scanner</h1>
 
-<div id="tables">
-
-<div style="
-color:white;
-text-align:center;
-padding:30px;
-font-size:22px;
-">
-🔄 Đang tải bàn...
-</div>
-
-</div>
-
 <div id="tables"></div>
 
 <!-- MODAL -->
@@ -472,15 +459,16 @@ function renderTables(){
     const road =
       t.results || "";
 
+    // ẩn bàn chết
     if(road.length < 3)
       return;
 
     let card =
-      document.querySelector(
-        `[data-ban="${t.ban}"]`
+      document.getElementById(
+        "table-"+i
       );
 
-    // tạo card ngay
+    // chưa có -> tạo mới
     if(!card){
 
       card =
@@ -488,50 +476,37 @@ function renderTables(){
 
       card.className = "card";
 
-      card.setAttribute(
-        "data-ban",
-        t.ban
-      );
+card.setAttribute(
+  "data-ban",
+  t.ban
+);
+
+      card.id =
+        "table-"+i;
 
       card.onclick =
         ()=>openTable(i);
-
-      // hiện skeleton trước
-      card.innerHTML = `
-
-        <div class="table-name">
-          🎲 ${t.ban}
-        </div>
-
-        <div class="good-road">
-          Loading...
-        </div>
-
-        <div class="mini-road">
-          ...
-        </div>
-
-      `;
 
       tables.appendChild(card);
 
     }
 
-    // update realtime
-    requestAnimationFrame(()=>{
+    // update nội dung
+    card.innerHTML = `
 
-      card.querySelector(
-        ".good-road"
-      ).innerHTML =
-        t.good_road ||
-        "Đang hoạt động";
+      <div class="table-name">
+        🎲 ${t.ban}
+      </div>
 
-      card.querySelector(
-        ".mini-road"
-      ).innerHTML =
-        miniRoad(road);
+      <div class="good-road">
+        ${t.good_road || "Đang hoạt động"}
+      </div>
 
-    });
+      <div class="mini-road">
+        ${miniRoad(road)}
+      </div>
+
+    `;
 
   });
 
