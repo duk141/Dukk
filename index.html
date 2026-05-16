@@ -409,28 +409,40 @@ function renderTables(){
   const tables =
     document.getElementById("tables");
 
-  tables.innerHTML = "";
-
-  const fragment =
-    document.createDocumentFragment();
-
   allTables.forEach((t,i)=>{
 
     const road =
       t.results || "";
 
-    // ẩn bàn chưa hoạt động
+    // ẩn bàn chết
     if(road.length < 3)
       return;
 
-    const div =
-      document.createElement("div");
+    let card =
+      document.getElementById(
+        "table-"+i
+      );
 
-    div.className = "card";
+    // chưa có -> tạo mới
+    if(!card){
 
-    div.onclick = () => openTable(i);
+      card =
+        document.createElement("div");
 
-    div.innerHTML = `
+      card.className = "card";
+
+      card.id =
+        "table-"+i;
+
+      card.onclick =
+        ()=>openTable(i);
+
+      tables.appendChild(card);
+
+    }
+
+    // update nội dung
+    card.innerHTML = `
 
       <div class="table-name">
         🎲 ${t.ban}
@@ -446,11 +458,7 @@ function renderTables(){
 
     `;
 
-    fragment.appendChild(div);
-
   });
-
-  tables.appendChild(fragment);
 
 }
 
@@ -735,7 +743,7 @@ function lastResult(road){
 // START
 loadData();
 
-setInterval(loadData,200);
+setInterval(loadData,400);
 
 </script>
 
