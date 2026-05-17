@@ -379,10 +379,12 @@ let controller;
 
 let currentTable = null;
 
+let roadScrollLeft = 0;
+
 // LOAD API
 async function loadData(){
 
-  // đang load thì bỏ qua
+  // ang load thì b qua
   if(isLoading) return;
 
   isLoading = true;
@@ -430,7 +432,7 @@ async function loadData(){
 
     });
 
-    // render lần đầu
+    // render ln u
     if(
       document.getElementById("tables")
       .children.length === 0
@@ -448,15 +450,6 @@ if(changed){
     updateTable(table);
 
   });
-
-  // update modal realtime
-  if(currentTable !== null){
-
-    renderModal(
-      allTables[currentTable]
-    );
-
-  }
 
 }
 
@@ -489,7 +482,7 @@ function renderTables(){
         `[data-ban="${t.ban}"]`
       );
 
-    // tạo card ngay
+    // to card ngay
     if(!card){
 
       card =
@@ -505,11 +498,11 @@ function renderTables(){
       card.onclick =
         ()=>openTable(i);
 
-      // hiện skeleton trước
+      // hin skeleton trc
       card.innerHTML = `
 
         <div class="table-name">
-          🎲 ${t.ban}
+           ${t.ban}
         </div>
 
         <div class="good-road">
@@ -533,7 +526,7 @@ function renderTables(){
         ".good-road"
       ).innerHTML =
         t.good_road ||
-        "Đang hoạt động";
+        "ang hot ng";
 
       card.querySelector(
         ".mini-road"
@@ -561,26 +554,158 @@ function updateTable(t){
 
   }
 
-  // update mini road
+  /* =========================
+     UPDATE MINI ROAD
+  ========================= */
+
   const mini =
-    card.querySelector(".mini-road");
+    card.querySelector(
+      ".mini-road"
+    );
 
   if(mini){
 
     mini.innerHTML =
-      miniRoad(t.results || "");
+      miniRoad(
+        t.results || ""
+      );
 
   }
 
-  // update good road
+  /* =========================
+     UPDATE GOOD ROAD
+  ========================= */
+
   const good =
-    card.querySelector(".good-road");
+    card.querySelector(
+      ".good-road"
+    );
 
   if(good){
 
     good.innerHTML =
       t.good_road ||
       "Đang hoạt động";
+
+  }
+
+  /* =========================
+     UPDATE MODAL REALTIME
+  ========================= */
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+  // modal đang mở
+  if(
+    modal &&
+    modal.style.display === "flex"
+  ){
+
+    const title =
+      document.querySelector(
+        "#detail h2"
+      );
+
+    // đúng bàn đang xem
+    if(
+      title &&
+      title.innerText.includes(
+        t.ban
+      )
+    ){
+
+      const roadWrap =
+        document.getElementById(
+          "road-wrap"
+        );
+
+      if(roadWrap){
+
+        roadWrap.innerHTML =
+          renderRoad(
+            t.results || ""
+          );
+
+      }
+
+      // update predict realtime
+      const predictBox =
+        document.getElementById(
+          "predict-box"
+        );
+
+      if(predictBox){
+
+        predictBox.innerHTML =
+          predict(
+            t.results || ""
+          );
+
+      }
+
+      // update last result realtime
+      const lastBox =
+        document.getElementById(
+          "last-result-box"
+        );
+
+      if(lastBox){
+
+        lastBox.innerHTML =
+          lastResult(
+            t.results || ""
+          );
+
+      }
+
+      // update stats realtime
+      const banker =
+        (
+          t.results.match(/B/g)
+          || []
+        ).length;
+
+      const player =
+        (
+          t.results.match(/P/g)
+          || []
+        ).length;
+
+      const tie =
+        (
+          t.results.match(/T/g)
+          || []
+        ).length;
+
+      const stats =
+        document.getElementById(
+          "stats-box"
+        );
+
+      if(stats){
+
+        stats.innerHTML = `
+
+        <div class="box">
+          Banker<br>${banker}
+        </div>
+
+        <div class="box">
+          Player<br>${player}
+        </div>
+
+        <div class="box">
+          Tie<br>${tie}
+        </div>
+
+        `;
+
+      }
+
+    }
 
   }
 
@@ -641,20 +766,20 @@ function renderModal(t){
   .innerHTML = `
 
   <h2>
-    🎲 Bàn ${t.ban}
+     Bàn ${t.ban}
   </h2>
 
   <div>
-    📌 ${t.good_road || "Không có cầu"}
+     ${t.good_road || "Không có cầu"}
   </div>
 
-  <div class="road">
-    ${renderRoad(road)}
-  </div>
+<div class="road" id="road-wrap">
+  ${renderRoad(road)}
+</div>
 
   <div class="last-result">
 
-    🎯 Ván trước:
+     Ván trc:
     <br><br>
 
     ${lastResult(road)}
@@ -687,6 +812,30 @@ function renderModal(t){
 
   document.getElementById("modal")
   .style.display = "flex";
+  
+  setTimeout(()=>{
+
+  const road =
+    document.querySelector(".big-road");
+
+  if(road){
+
+    road.scrollLeft =
+      roadScrollLeft;
+
+    road.addEventListener(
+      "scroll",
+      ()=>{
+
+        roadScrollLeft =
+          road.scrollLeft;
+
+      }
+    );
+
+  }
+
+},50);
 
 }
 
@@ -713,7 +862,7 @@ function renderRoad(road){
     let curr = road[i];
     let prev = road[i-1];
 
-    // bỏ tie
+    // b tie
     if(curr==="T")
       continue;
 
