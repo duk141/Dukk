@@ -565,7 +565,10 @@ API
 ========================= */
 
 const API =
-"https://api.allorigins.win/raw?url=https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
+"https://api.allorigins.win/raw?url=" +
+encodeURIComponent(
+  "https://employers-hormone-land-idaho.trycloudflare.com/api/bcr"
+);
 
 /* =========================
 TABLES
@@ -851,15 +854,8 @@ async function loadAPI(){
 
   try{
 
-    const res = await fetch(API,{
-
-      method:"GET",
-
-      headers:{
-        "Accept":"application/json"
-      }
-
-    });
+    const res =
+      await fetch(API);
 
     const text =
       await res.text();
@@ -869,18 +865,31 @@ async function loadAPI(){
     const json =
       JSON.parse(text);
 
+    /*
+    DEBUG
+    */
+
+    console.log(json);
+    
+    console.log(json.c01);
+
     TABLES.forEach(table=>{
 
+      let data =
+        json[table];
+
       /*
-      API phải có:
-      c01 c02 c03...
+      Nếu API không có
       */
 
-      let data =
-        json[table] || [];
+      if(!data){
+
+        data = [];
+
+      }
 
       /*
-      nếu API trả string:
+      Nếu API trả:
       "B,P,B,P"
       */
 
@@ -891,11 +900,25 @@ async function loadAPI(){
 
       }
 
+      /*
+      Chỉ nhận array
+      */
+
+      if(!Array.isArray(data)){
+
+        data = [];
+
+      }
+
       allData[table] = data;
 
     });
 
     renderLobby();
+
+    /*
+    popup đang mở
+    */
 
     const current =
       document
@@ -929,4 +952,4 @@ setInterval(loadAPI,1000);
 </script>
 
 </body>
-</html>
+  </html>
