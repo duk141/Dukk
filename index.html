@@ -1,1211 +1,519 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 
-<title>Baccarat Tool</title>
+<title>Baccarat API Lobby</title>
 
 <style>
 
-body{
-  background:#101010;
-  color:white;
-  font-family:Arial;
+*{
   margin:0;
-  padding:10px;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
 }
 
-h1{
+body{
+  background:#0f0f0f;
+  color:white;
+}
+
+/* ===== LOBBY ===== */
+
+#lobby{
+  padding:12px;
+}
+
+.title{
   text-align:center;
+  font-size:28px;
+  color:#00ffaa;
+  margin-bottom:18px;
+  font-weight:bold;
 }
 
-#tables{
-
+.tables{
   display:grid;
-
-  grid-template-columns:
-  repeat(auto-fit,minmax(150px,1fr));
-
-  gap:10px;
-
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:12px;
 }
 
 .card{
-
-  background:#1d1d1d;
-
-  border-radius:12px;
-
-  padding:20px;
-
-  text-align:center;
-
+  background:#1a1a1a;
   border:1px solid #333;
-
+  border-radius:14px;
+  padding:14px;
   cursor:pointer;
-
   transition:.2s;
-
 }
 
 .card:hover{
-  transform:scale(1.03);
+  border-color:#00ffaa;
+  transform:scale(1.02);
 }
 
-.table-name{
+.name{
   font-size:22px;
+  color:#00ffcc;
   font-weight:bold;
-  color:gold;
 }
 
-.good-road{
-  margin-top:10px;
-  color:#00d0ff;
+.status{
+  margin-top:5px;
+  color:#aaa;
   font-size:13px;
 }
 
-/* MODAL */
-
-#modal{
-
-  position:fixed;
-
-  inset:0;
-
-  background:rgba(0,0,0,.8);
-
-  display:none;
-
-  align-items:center;
-
-  justify-content:center;
-
-  z-index:999;
-
-}
-
-.modal-box{
-
-  width:95%;
-
-  max-width:700px;
-
-  background:#1b1b1b;
-
-  border-radius:15px;
-
-  padding:20px;
-
-}
-
-.close{
-
-  float:right;
-
-  cursor:pointer;
-
-  font-size:28px;
-
-  color:red;
-
-}
-
-.mini-road{
-
-  margin-top:10px;
-
+.preview-road{
   display:flex;
-
-  gap:4px;
-
-  justify-content:center;
-
   flex-wrap:wrap;
-
-}
-
-.mini-b{
-
-  color:#ff4d4d;
-
-  font-weight:bold;
-
-}
-
-.mini-p{
-
-  color:#4da6ff;
-
-  font-weight:bold;
-
-}
-
-.mini-t{
-
-  color:#33cc66;
-
-  font-weight:bold;
-
-}
-
-.road{
-
-  margin-top:20px;
-
-  background:#111;
-
-  padding:15px;
-
-  border-radius:10px;
-
-  line-height:30px;
-
-  word-break:break-all;
-
-}
-
-.big-road{
-
-  display:flex;
-
-  align-items:flex-start;
-
   gap:4px;
-
-  overflow-x:auto;
-
-  overflow-y:hidden;
-
-  padding:10px;
-
-  background:#111;
-
-  border-radius:12px;
-
-  margin-top:15px;
-
-  max-width:100%;
-
-  -webkit-overflow-scrolling:touch;
-
-  touch-action:pan-x;
-
-  scroll-behavior:smooth;
-
-  cursor:grab;
-
-  user-select:none;
-
+  margin-top:12px;
 }
 
-.big-road.dragging{
-  cursor:grabbing;
+/* ===== ROOM ===== */
+
+#room{
+  display:none;
+  padding:12px;
 }
 
-.road-col{
+.topbar{
   display:flex;
-  flex-direction:column;
-  gap:4px;
-  flex-shrink:0;
-}
-
-.road-col{
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:4px;
-
-}
-
-.road-cell{
-
-  width:34px;
-
-  height:34px;
-
-  border-radius:50%;
-
-  display:flex;
-
   align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
 
-  justify-content:center;
-
+.back{
+  border:none;
+  background:#222;
   color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
 
+.room-title{
+  font-size:24px;
+  color:#00ffaa;
   font-weight:bold;
-
-  font-size:16px;
-
-  flex-shrink:0;
-
 }
 
-.banker{
-
-  background:#ff3b3b;
-
+.predict-box{
+  background:#1a1a1a;
+  border:1px solid #333;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
 }
 
-.player{
+.predict-label{
+  color:#aaa;
+  margin-bottom:8px;
+}
 
-  background:#2d7dff;
+.predict-result{
+  font-size:42px;
+  font-weight:bold;
+}
 
+.road-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.dot{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:bold;
 }
 
 .B{
-  color:#ff4d4d;
-  font-size:24px;
-  font-weight:bold;
+  background:#0066ff;
 }
 
 .P{
-  color:#4da6ff;
-  font-size:24px;
-  font-weight:bold;
+  background:#ff0066;
 }
 
 .T{
-  color:#33cc66;
-  font-size:24px;
-  font-weight:bold;
-}
-
-.predict{
-
-  margin-top:20px;
-
-  background:
-  linear-gradient(
-    135deg,
-    #2d1b00,
-    #4d3200
-  );
-
-  border:1px solid gold;
-
-  padding:18px;
-
-  border-radius:14px;
-
-  text-align:center;
-
-  font-size:22px;
-
-  color:gold;
-
-  font-weight:bold;
-
-  line-height:34px;
-
+  background:#00aa55;
 }
 
 .stats{
-
-  margin-top:15px;
-
-  display:flex;
-
-  gap:10px;
-
-}
-
-.last-result{
-
-  margin-top:20px;
-
-  background:#181818;
-
+  margin-top:18px;
+  background:#1a1a1a;
   border:1px solid #333;
-
-  padding:15px;
-
-  border-radius:12px;
-
-  text-align:center;
-
-  font-size:24px;
-
-  font-weight:bold;
-
-}
-
-.box{
-
-  flex:1;
-
-  background:#222;
-
-  padding:10px;
-
-  border-radius:10px;
-
-  text-align:center;
-
+  border-radius:14px;
+  padding:14px;
+  line-height:1.8;
 }
 
 </style>
 </head>
-
 <body>
 
-<h1>Baccarat Scanner</h1>
+<!-- ================= -->
+<!-- LOBBY -->
+<!-- ================= -->
 
-<div id="tables"></div>
+<div id="lobby">
 
-<!-- MODAL -->
+  <div class="title">
+    Baccarat API Lobby
+  </div>
 
-<div id="modal">
+  <div class="tables" id="tables"></div>
 
-  <div class="modal-box">
+</div>
 
-    <div class="close"
-    onclick="closeModal()">
-      ×
+<!-- ================= -->
+<!-- ROOM -->
+<!-- ================= -->
+
+<div id="room">
+
+  <div class="topbar">
+
+    <button class="back"
+    onclick="backLobby()">
+      ← Back
+    </button>
+
+    <div class="room-title"
+    id="roomTitle">
+      C01
     </div>
 
-    <div id="detail"></div>
+  </div>
+
+  <div class="predict-box">
+
+    <div class="predict-label">
+      Dự đoán ván tiếp theo
+    </div>
+
+    <div class="predict-result"
+    id="predictResult">
+      B
+    </div>
 
   </div>
+
+  <div class="road-grid"
+  id="roomRoad"></div>
+
+  <div class="stats"
+  id="stats"></div>
 
 </div>
 
 <script>
 
+/*
+========================
+API
+========================
+
+Đổi link API tại đây
+*/
+
 const API =
 "https://corsproxy.io/?https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
-  
-let allTables = [];
 
-let lastRoadMap = {};
+/*
+========================
+TABLES
+========================
+*/
 
-let isLoading = false;
+const TABLES = [];
 
-let controller;
+for(let i=1;i<=20;i++){
 
-let currentTable = null;
+  TABLES.push(
+    "c" + String(i).padStart(2,"0")
+  );
 
-let roadScrollLeft = 0;
+}
 
-// LOAD API
-async function loadData(){
+/*
+========================
+DATA
+========================
+*/
 
-  // ang load thì b qua
-  if(isLoading) return;
+const allData = {};
 
-  isLoading = true;
+/*
+========================
+CREATE LOBBY
+========================
+*/
+
+const tablesDiv =
+document.getElementById("tables");
+
+function renderLobby(){
+
+  tablesDiv.innerHTML = "";
+
+  TABLES.forEach(table=>{
+
+    const results =
+      allData[table] || [];
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+    card.onclick = ()=>
+      openRoom(table);
+
+    card.innerHTML = `
+
+      <div class="name">
+        ${table.toUpperCase()}
+      </div>
+
+      <div class="status">
+        Online
+      </div>
+
+      <div class="preview-road">
+
+        ${results.slice(-12).map(r=>`
+
+          <div class="dot ${r}">
+            ${r}
+          </div>
+
+        `).join("")}
+
+      </div>
+
+    `;
+
+    tablesDiv.appendChild(card);
+
+  });
+
+}
+
+/*
+========================
+OPEN ROOM
+========================
+*/
+
+function openRoom(table){
+
+  document
+  .getElementById("lobby")
+  .style.display = "none";
+
+  document
+  .getElementById("room")
+  .style.display = "block";
+
+  document
+  .getElementById("roomTitle")
+  .innerText =
+    table.toUpperCase();
+
+  const results =
+    allData[table] || [];
+
+  renderRoom(results);
+
+}
+
+/*
+========================
+BACK
+========================
+*/
+
+function backLobby(){
+
+  document
+  .getElementById("room")
+  .style.display = "none";
+
+  document
+  .getElementById("lobby")
+  .style.display = "block";
+
+}
+
+/*
+========================
+PREDICT
+========================
+*/
+
+function predict(results){
+
+  if(results.length < 2)
+    return "B";
+
+  const last =
+    results[results.length-1];
+
+  const last2 =
+    results[results.length-2];
+
+  // bệt
+  if(last === last2){
+
+    return last;
+
+  }
+
+  // đảo cầu
+  if(last === "B")
+    return "P";
+
+  if(last === "P")
+    return "B";
+
+  return "B";
+
+}
+
+/*
+========================
+RENDER ROOM
+========================
+*/
+
+function renderRoom(results){
+
+  const road =
+    document.getElementById("roomRoad");
+
+  road.innerHTML = "";
+
+  results.forEach(r=>{
+
+    road.innerHTML += `
+
+      <div class="dot ${r}">
+        ${r}
+      </div>
+
+    `;
+
+  });
+
+  const next =
+    predict(results);
+
+  const predictBox =
+    document.getElementById("predictResult");
+
+  predictBox.className =
+    `predict-result ${next}`;
+
+  predictBox.innerText =
+    next;
+
+  const b =
+    results.filter(x=>x==="B").length;
+
+  const p =
+    results.filter(x=>x==="P").length;
+
+  const t =
+    results.filter(x=>x==="T").length;
+
+  document
+  .getElementById("stats")
+  .innerHTML = `
+
+    Banker: ${b}<br>
+    Player: ${p}<br>
+    Tie: ${t}<br>
+    Tổng lịch sử: ${results.length}
+
+  `;
+
+}
+
+/*
+========================
+LOAD API
+========================
+
+Ví dụ JSON API:
+
+{
+  "c01":["B","P","B","P"],
+  "c02":["P","P","B"],
+  "c03":["B","B","T"]
+}
+
+*/
+
+async function loadAPI(){
 
   try{
 
     const res =
-      await fetch(
-        API + "?t=" + Date.now(),
-        {
-          cache:"no-store"
-        }
-      );
+      await fetch(API);
 
     const json =
       await res.json();
 
-    if(!json.data){
+    TABLES.forEach(table=>{
 
-      isLoading = false;
-      return;
-
-    }
-
-    allTables = json.data;
-
-    let changed = false;
-
-    json.data.forEach(table=>{
-
-      const newRoad =
-        table.results || "";
-
-      const oldRoad =
-        lastRoadMap[table.ban] || "";
-
-      if(newRoad !== oldRoad){
-
-        changed = true;
-
-        lastRoadMap[table.ban] =
-          newRoad;
-
-      }
+      allData[table] =
+        json[table] || [];
 
     });
 
-    // render ln u
-    if(
-      document.getElementById("tables")
-      .children.length === 0
-    ){
+    renderLobby();
 
-      renderTables();
+    // nếu đang mở phòng
+    const current =
+      document
+      .getElementById("roomTitle")
+      .innerText
+      .toLowerCase();
+
+    if(TABLES.includes(current)){
+
+      renderRoom(
+        allData[current]
+      );
 
     }
-
-    // update realtime
-if(changed){
-
-  json.data.forEach(table=>{
-
-    updateTable(table);
-
-  });
-
-}
 
   }catch(err){
 
-    console.log(err);
-
-  }
-
-  isLoading = false;
-
-}
-
-// RENDER LIST
-function renderTables(){
-
-  const tables =
-    document.getElementById("tables");
-
-  allTables.forEach((t,i)=>{
-
-    const road =
-      t.results || "";
-
-    if(road.length < 3)
-      return;
-
-    let card =
-      document.querySelector(
-        `[data-ban="${t.ban}"]`
-      );
-
-    // to card ngay
-    if(!card){
-
-      card =
-        document.createElement("div");
-
-      card.className = "card";
-
-      card.setAttribute(
-        "data-ban",
-        t.ban
-      );
-
-      card.onclick =
-        ()=>openTable(i);
-
-      // hin skeleton trc
-      card.innerHTML = `
-
-        <div class="table-name">
-           ${t.ban}
-        </div>
-
-        <div class="good-road">
-          Loading...
-        </div>
-
-        <div class="mini-road">
-          ...
-        </div>
-
-      `;
-
-      tables.appendChild(card);
-
-    }
-
-    // update realtime
-    requestAnimationFrame(()=>{
-
-      card.querySelector(
-        ".good-road"
-      ).innerHTML =
-        t.good_road ||
-        "ang hot ng";
-
-      card.querySelector(
-        ".mini-road"
-      ).innerHTML =
-        miniRoad(road);
-
-    });
-
-  });
-
-}
-
-function updateTable(t){
-
-  let card =
-    document.querySelector(
-      `[data-ban="${t.ban}"]`
+    console.log(
+      "API ERROR",
+      err
     );
-
-  // chưa có card
-  if(!card){
-
-    renderTables();
-    return;
-
-  }
-
-  /* =========================
-     UPDATE MINI ROAD
-  ========================= */
-
-  const mini =
-    card.querySelector(
-      ".mini-road"
-    );
-
-  if(mini){
-
-    mini.innerHTML =
-      miniRoad(
-        t.results || ""
-      );
-
-  }
-
-  /* =========================
-     UPDATE GOOD ROAD
-  ========================= */
-
-  const good =
-    card.querySelector(
-      ".good-road"
-    );
-
-  if(good){
-
-    good.innerHTML =
-      t.good_road ||
-      "Đang hoạt động";
-
-  }
-
-  /* =========================
-     UPDATE MODAL REALTIME
-  ========================= */
-
-  const modal =
-    document.getElementById(
-      "modal"
-    );
-
-  // modal đang mở
-  if(
-    modal &&
-    modal.style.display === "flex"
-  ){
-
-    const title =
-      document.querySelector(
-        "#detail h2"
-      );
-
-    // đúng bàn đang xem
-    if(
-      title &&
-      title.innerText.includes(
-        t.ban
-      )
-    ){
-
-      const roadWrap =
-        document.getElementById(
-          "road-wrap"
-        );
-
-      if(roadWrap){
-
-  const oldRoad =
-    roadWrap.getAttribute(
-      "data-road"
-    );
-
-  const newRoad =
-    t.results || "";
-
-  if(oldRoad !== newRoad){
-
-    const oldScroll =
-      roadScrollLeft;
-
-    roadWrap.innerHTML =
-      renderRoad(newRoad);
-
-    roadWrap.setAttribute(
-      "data-road",
-      newRoad
-    );
-
-    enableRoadDrag();
-
-    setTimeout(()=>{
-
-      const road =
-        document.querySelector(
-          ".big-road"
-        );
-
-      if(road){
-
-        road.scrollLeft =
-          oldScroll;
-
-      }
-
-    },30);
 
   }
 
 }
 
-      // update predict realtime
-      const predictBox =
-        document.getElementById(
-          "predict-box"
-        );
+loadAPI();
 
-      if(predictBox){
+setInterval(loadAPI,1000);
 
-        predictBox.innerHTML =
-          predict(
-            t.results || ""
-          );
-
-      }
-
-      // update last result realtime
-      const lastBox =
-        document.getElementById(
-          "last-result-box"
-        );
-
-      if(lastBox){
-
-        lastBox.innerHTML =
-          lastResult(
-            t.results || ""
-          );
-
-      }
-
-      // update stats realtime
-      const banker =
-        (
-          t.results.match(/B/g)
-          || []
-        ).length;
-
-      const player =
-        (
-          t.results.match(/P/g)
-          || []
-        ).length;
-
-      const tie =
-        (
-          t.results.match(/T/g)
-          || []
-        ).length;
-
-      const stats =
-        document.getElementById(
-          "stats-box"
-        );
-
-      if(stats){
-
-        stats.innerHTML = `
-
-        <div class="box">
-          Banker<br>${banker}
-        </div>
-
-        <div class="box">
-          Player<br>${player}
-        </div>
-
-        <div class="box">
-          Tie<br>${tie}
-        </div>
-
-        `;
-
-      }
-
-    }
-
-  }
-
-}
-
-// MINI ROAD
-function miniRoad(road){
-
-  return road
-    .slice(-10)
-    .split("")
-    .map(x=>{
-
-      let cls =
-        x==="B"
-        ? "mini-b"
-        : x==="P"
-        ? "mini-p"
-        : "mini-t";
-
-      return `
-      <span class="${cls}">
-        ${x}
-      </span>
-      `;
-
-    }).join("");
-
-}
-
-// OPEN TABLE
-function openTable(index){
-
-  currentTable = index;
-
-  const t =
-    allTables[index];
-
-  renderModal(t);
-
-}
-
-function renderModal(t){
-
-  const road =
-    t.results || "";
-
-  let banker =
-    (road.match(/B/g)||[]).length;
-
-  let player =
-    (road.match(/P/g)||[]).length;
-
-  let tie =
-    (road.match(/T/g)||[]).length;
-
-  document.getElementById("detail")
-  .innerHTML = `
-
-  <h2>
-     Bàn ${t.ban}
-  </h2>
-
-  <div>
-     ${t.good_road || "Không có cầu"}
-  </div>
-
-<div class="road" id="road-wrap">
-  ${renderRoad(road)}
-</div>
-
-  <div class="last-result">
-
-     Ván trc:
-    <br><br>
-
-    ${lastResult(road)}
-
-  </div>
-
-  <div class="predict">
-
-    ${predict(road)}
-
-  </div>
-
-  <div class="stats">
-
-    <div class="box">
-      Banker<br>${banker}
-    </div>
-
-    <div class="box">
-      Player<br>${player}
-    </div>
-
-    <div class="box">
-      Tie<br>${tie}
-    </div>
-
-  </div>
-
-  `;
-
-document.getElementById("modal")
-.style.display = "flex";
-
-setTimeout(()=>{
-
-  enableRoadDrag();
-
-  const road =
-    document.querySelector(
-      ".big-road"
-    );
-
-  if(road){
-
-    road.scrollLeft =
-      road.scrollWidth;
-
-  }
-
-},50);
-
-}
-
-// CLOSE
-function closeModal(){
-
-  currentTable = null;
-
-  document.getElementById("modal")
-  .style.display = "none";
-
-}
-
-// RENDER ROAD
-function renderRoad(road){
-
-  if(!road) return "";
-
-  let cols = [];
-  let col = [];
-
-  for(let i=0;i<road.length;i++){
-
-    let curr = road[i];
-    let prev = road[i-1];
-
-    // b tie
-    if(curr==="T")
-      continue;
-
-    if(i===0){
-
-      col.push(curr);
-
-    }
-
-    else if(curr===prev){
-
-      col.push(curr);
-
-    }
-
-    else{
-
-      cols.push(col);
-
-      col = [curr];
-
-    }
-
-  }
-
-  cols.push(col);
-
-  let html =
-    `<div class="big-road">`;
-
-  cols.forEach(c=>{
-
-    html += `<div class="road-col">`;
-
-    c.forEach(item=>{
-
-      let cls =
-        item==="B"
-        ? "banker"
-        : "player";
-
-      html += `
-      <div class="road-cell ${cls}">
-        ${item}
-      </div>
-      `;
-
-    });
-
-    html += `</div>`;
-
-  });
-
-  html += `</div>`;
-
-  return html;
-
-}
-
-// PREDICT
-function predict(road){
-
-  if(!road || road.length < 4)
-    return "Chờ dữ liệu";
-
-  let last =
-    road.slice(-1);
-
-  let last2 =
-    road.slice(-2);
-
-  let last4 =
-    road.slice(-4);
-
-  if(last4==="BBBB"){
-
-    return `
-      🔥 Bệt Banker
-      <br>
-      ➡ Nên theo Banker
-    `;
-
-  }
-
-  if(last4==="PPPP"){
-
-    return `
-      🔥 Bệt Player
-      <br>
-      ➡ Nên theo Player
-    `;
-
-  }
-
-  if(/BPBP$/.test(last4)){
-
-    return `
-      🔄 Cầu đơn
-      <br>
-      ➡ Dự đoán Player
-    `;
-
-  }
-
-  if(/PBPB$/.test(last4)){
-
-    return `
-      🔄 Cầu đơn
-      <br>
-      ➡ Dự đoán Banker
-    `;
-
-  }
-
-  if(last2==="BB"){
-
-    return `
-      📈 Banker đang mạnh
-      <br>
-      ➡ Ưu tiên Banker
-    `;
-
-  }
-
-  if(last2==="PP"){
-
-    return `
-      📉 Player đang mạnh
-      <br>
-      ➡ Ưu tiên Player
-    `;
-
-  }
-
-  if(last==="B")
-    return "🎯 Dự đoán Banker";
-
-  return "🎯 Dự đoán Player";
-
-}
-
-// LAST RESULT
-function lastResult(road){
-
-  if(!road || road.length===0)
-    return "Chưa có";
-
-  let last =
-    road.slice(-1);
-
-  if(last==="B")
-    return "🔴 Banker";
-
-  if(last==="P")
-    return "🔵 Player";
-
-  return "🟢 Tie";
-
-}
-
-// loading đầu tiên
-document.getElementById("tables")
-.innerHTML = `
-<div style="
-color:white;
-text-align:center;
-padding:30px;
-font-size:22px;
-">
-🔄 Đang tải bàn...
-</div>
-`;
-
-function enableRoadDrag(){
-
-  document
-  .querySelectorAll(".big-road")
-  .forEach(road=>{
-
-    if(road.dataset.drag)
-      return;
-
-    road.dataset.drag = "1";
-
-    let isDown = false;
-
-    let startX = 0;
-
-    let scrollLeft = 0;
-
-    // desktop
-    road.addEventListener(
-      "mousedown",
-      e=>{
-
-        isDown = true;
-
-        road.classList.add(
-          "dragging"
-        );
-
-        startX =
-          e.pageX -
-          road.offsetLeft;
-
-        scrollLeft =
-          road.scrollLeft;
-
-      }
-    );
-
-    road.addEventListener(
-      "mouseleave",
-      ()=>{
-
-        isDown = false;
-
-        road.classList.remove(
-          "dragging"
-        );
-
-      }
-    );
-
-    road.addEventListener(
-      "mouseup",
-      ()=>{
-
-        isDown = false;
-
-        road.classList.remove(
-          "dragging"
-        );
-
-      }
-    );
-
-    road.addEventListener(
-      "mousemove",
-      e=>{
-
-        if(!isDown)
-          return;
-
-        e.preventDefault();
-
-        const x =
-          e.pageX -
-          road.offsetLeft;
-
-        const walk =
-          (x - startX) * 1.5;
-
-        road.scrollLeft =
-          scrollLeft - walk;
-
-      }
-    );
-
-    // mobile
-    let touchStart = 0;
-
-    let touchScroll = 0;
-
-    road.addEventListener(
-      "touchstart",
-      e=>{
-
-        touchStart =
-          e.touches[0].pageX;
-
-        touchScroll =
-          road.scrollLeft;
-
-      },
-      {passive:true}
-    );
-
-    road.addEventListener(
-      "touchmove",
-      e=>{
-
-        const move =
-          e.touches[0].pageX;
-
-        const walk =
-          (move - touchStart)
-          * 1.5;
-
-        road.scrollLeft =
-          touchScroll - walk;
-
-      },
-      {passive:true}
-    );
-
-  });
-
-}
-// START
-loadData();
-
-setInterval(loadData,1000);
 </script>
 
 </body>
