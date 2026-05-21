@@ -565,7 +565,7 @@ API
 ========================= */
 
 const API =
-"https://corsproxy.io/?https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
+"https://employers-hormone-land-idaho.trycloudflare.com/api/bcr";
 
 /* =========================
 TABLES
@@ -851,16 +851,47 @@ async function loadAPI(){
 
   try{
 
-    const res =
-      await fetch(API);
+    const res = await fetch(API,{
+
+      method:"GET",
+
+      headers:{
+        "Accept":"application/json"
+      }
+
+    });
+
+    const text =
+      await res.text();
+
+    console.log(text);
 
     const json =
-      await res.json();
+      JSON.parse(text);
 
     TABLES.forEach(table=>{
 
-      allData[table] =
+      /*
+      API phải có:
+      c01 c02 c03...
+      */
+
+      let data =
         json[table] || [];
+
+      /*
+      nếu API trả string:
+      "B,P,B,P"
+      */
+
+      if(typeof data === "string"){
+
+        data =
+          data.split(",");
+
+      }
+
+      allData[table] = data;
 
     });
 
@@ -882,7 +913,10 @@ async function loadAPI(){
 
   }catch(err){
 
-    console.log(err);
+    console.log(
+      "API ERROR",
+      err
+    );
 
   }
 
