@@ -310,6 +310,108 @@ ROAD
 }
 
 /* =========================
+CHART
+========================= */
+
+.chart-box{
+
+  margin-bottom:18px;
+
+  background:#19263d;
+
+  padding:14px;
+
+  border-radius:16px;
+
+}
+
+.chart-item{
+
+  margin-bottom:14px;
+
+}
+
+.chart-label{
+
+  margin-bottom:6px;
+
+  font-size:13px;
+
+  color:#ccc;
+
+}
+
+.chart-bar-bg{
+
+  width:100%;
+
+  height:18px;
+
+  background:#0f1726;
+
+  border-radius:30px;
+
+  overflow:hidden;
+
+}
+
+.chart-bar{
+
+  height:100%;
+
+  border-radius:30px;
+
+  width:0%;
+
+  transition:.3s;
+
+}
+
+.banker-bar{
+
+  background:#1976ff;
+
+}
+
+.player-bar{
+
+  background:#ff2f6d;
+
+}
+
+.tie-bar{
+
+  background:#00b16a;
+
+}
+
+.chart-value{
+
+  margin-top:4px;
+
+  font-size:13px;
+
+  color:#aaa;
+
+}
+
+/* =========================
+HISTORY TITLE
+========================= */
+
+.history-title{
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  margin-bottom:12px;
+
+  color:#00ffd5;
+
+}
+
+/* =========================
 STATS
 ========================= */
 
@@ -361,24 +463,96 @@ STATS
 
     </div>
 
-    <div class="predict">
+<div class="predict">
 
-      <div class="predict-label">
-        Dự đoán tiếp theo
-      </div>
+  <div class="predict-label">
+    Dự đoán tiếp theo
+  </div>
 
-      <div class="predict-result"
-      id="predictResult">
-        B
-      </div>
+  <div class="predict-result"
+  id="predictResult">
+    B
+  </div>
+
+</div>
+
+<!-- BIỂU ĐỒ -->
+
+<div class="chart-box">
+
+  <div class="chart-item">
+
+    <div class="chart-label">
+      BANKER
+    </div>
+
+    <div class="chart-bar-bg">
+
+      <div class="chart-bar banker-bar"
+      id="bankerBar"></div>
 
     </div>
 
-    <div class="road"
-    id="road"></div>
+    <div class="chart-value"
+    id="bankerText">
+      0%
+    </div>
 
-    <div class="stats"
-    id="stats"></div>
+  </div>
+
+  <div class="chart-item">
+
+    <div class="chart-label">
+      PLAYER
+    </div>
+
+    <div class="chart-bar-bg">
+
+      <div class="chart-bar player-bar"
+      id="playerBar"></div>
+
+    </div>
+
+    <div class="chart-value"
+    id="playerText">
+      0%
+    </div>
+
+  </div>
+
+  <div class="chart-item">
+
+    <div class="chart-label">
+      TIE
+    </div>
+
+    <div class="chart-bar-bg">
+
+      <div class="chart-bar tie-bar"
+      id="tieBar"></div>
+
+    </div>
+
+    <div class="chart-value"
+    id="tieText">
+      0%
+    </div>
+
+  </div>
+
+</div>
+
+<!-- LỊCH SỬ CẦU -->
+
+<div class="history-title">
+  LỊCH SỬ CẦU
+</div>
+
+<div class="road"
+id="road"></div>
+
+<div class="stats"
+id="stats"></div>
 
   </div>
 
@@ -544,6 +718,10 @@ function renderRoom(results){
 
   road.innerHTML = "";
 
+  /*
+  LỊCH SỬ CẦU
+  */
+
   results.forEach(r=>{
 
     road.innerHTML += `
@@ -555,6 +733,10 @@ function renderRoom(results){
     `;
 
   });
+
+  /*
+  DỰ ĐOÁN
+  */
 
   const next =
     predict(results);
@@ -568,6 +750,10 @@ function renderRoom(results){
   predictBox.innerText =
     next;
 
+  /*
+  THỐNG KÊ
+  */
+
   const b =
     results.filter(x=>x==="B").length;
 
@@ -576,6 +762,64 @@ function renderRoom(results){
 
   const t =
     results.filter(x=>x==="T").length;
+
+  const total =
+    results.length || 1;
+
+  /*
+  PHẦN TRĂM
+  */
+
+  const bPercent =
+    ((b/total)*100).toFixed(0);
+
+  const pPercent =
+    ((p/total)*100).toFixed(0);
+
+  const tPercent =
+    ((t/total)*100).toFixed(0);
+
+  /*
+  UPDATE BAR
+  */
+
+  document
+  .getElementById("bankerBar")
+  .style.width =
+    bPercent + "%";
+
+  document
+  .getElementById("playerBar")
+  .style.width =
+    pPercent + "%";
+
+  document
+  .getElementById("tieBar")
+  .style.width =
+    tPercent + "%";
+
+  /*
+  UPDATE TEXT
+  */
+
+  document
+  .getElementById("bankerText")
+  .innerText =
+    bPercent + "%";
+
+  document
+  .getElementById("playerText")
+  .innerText =
+    pPercent + "%";
+
+  document
+  .getElementById("tieText")
+  .innerText =
+    tPercent + "%";
+
+  /*
+  STATS
+  */
 
   document
   .getElementById("stats")
