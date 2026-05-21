@@ -192,6 +192,16 @@ h1{
 
   touch-action:pan-x;
 
+  scroll-behavior:smooth;
+
+  cursor:grab;
+
+  user-select:none;
+
+}
+
+.big-road.dragging{
+  cursor:grabbing;
 }
 
 .road-col{
@@ -624,12 +634,48 @@ function updateTable(t){
 
       if(roadWrap){
 
-        roadWrap.innerHTML =
-          renderRoad(
-            t.results || ""
-          );
+  const oldRoad =
+    roadWrap.getAttribute(
+      "data-road"
+    );
+
+  const newRoad =
+    t.results || "";
+
+  if(oldRoad !== newRoad){
+
+    const oldScroll =
+      roadScrollLeft;
+
+    roadWrap.innerHTML =
+      renderRoad(newRoad);
+
+    roadWrap.setAttribute(
+      "data-road",
+      newRoad
+    );
+
+    enableRoadDrag();
+
+    setTimeout(()=>{
+
+      const road =
+        document.querySelector(
+          ".big-road"
+        );
+
+      if(road){
+
+        road.scrollLeft =
+          oldScroll;
 
       }
+
+    },30);
+
+  }
+
+}
 
       // update predict realtime
       const predictBox =
@@ -810,28 +856,22 @@ function renderModal(t){
 
   `;
 
-  document.getElementById("modal")
-  .style.display = "flex";
-  
-  setTimeout(()=>{
+document.getElementById("modal")
+.style.display = "flex";
+
+setTimeout(()=>{
+
+  enableRoadDrag();
 
   const road =
-    document.querySelector(".big-road");
+    document.querySelector(
+      ".big-road"
+    );
 
   if(road){
 
     road.scrollLeft =
-      roadScrollLeft;
-
-    road.addEventListener(
-      "scroll",
-      ()=>{
-
-        roadScrollLeft =
-          road.scrollLeft;
-
-      }
-    );
+      road.scrollWidth;
 
   }
 
@@ -1036,10 +1076,136 @@ font-size:22px;
 </div>
 `;
 
+function enableRoadDrag(){
+
+  document
+  .querySelectorAll(".big-road")
+  .forEach(road=>{
+
+    if(road.dataset.drag)
+      return;
+
+    road.dataset.drag = "1";
+
+    let isDown = false;
+
+    let startX = 0;
+
+    let scrollLeft = 0;
+
+    // desktop
+    road.addEventListener(
+      "mousedown",
+      e=>{
+
+        isDown = true;
+
+        road.classList.add(
+          "dragging"
+        );
+
+        startX =
+          e.pageX -
+          road.offsetLeft;
+
+        scrollLeft =
+          road.scrollLeft;
+
+      }
+    );
+
+    road.addEventListener(
+      "mouseleave",
+      ()=>{
+
+        isDown = false;
+
+        road.classList.remove(
+          "dragging"
+        );
+
+      }
+    );
+
+    road.addEventListener(
+      "mouseup",
+      ()=>{
+
+        isDown = false;
+
+        road.classList.remove(
+          "dragging"
+        );
+
+      }
+    );
+
+    road.addEventListener(
+      "mousemove",
+      e=>{
+
+        if(!isDown)
+          return;
+
+        e.preventDefault();
+
+        const x =
+          e.pageX -
+          road.offsetLeft;
+
+        const walk =
+          (x - startX) * 1.5;
+
+        road.scrollLeft =
+          scrollLeft - walk;
+
+      }
+    );
+
+    // mobile
+    let touchStart = 0;
+
+    let touchScroll = 0;
+
+    road.addEventListener(
+      "touchstart",
+      e=>{
+
+        touchStart =
+          e.touches[0].pageX;
+
+        touchScroll =
+          road.scrollLeft;
+
+      },
+      {passive:true}
+    );
+
+    road.addEventListener(
+      "touchmove",
+      e=>{
+
+        const move =
+          e.touches[0].pageX;
+
+        const walk =
+          (move - touchStart)
+          * 1.5;
+
+        road.scrollLeft =
+          touchScroll - walk;
+
+      },
+      {passive:true}
+    );
+
+  });
+
+}
 // START
 loadData();
 
-setInterval(loadData,100);
+setInterval(loadData,1000);
 </script>
 
 </body>
