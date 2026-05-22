@@ -165,14 +165,6 @@
     </style>
 </head>
 <body>
-    <div id="authLoading" class="auth-loading">
-        <div>Đang xác thực...</div>
-    </div>
-    
-    <div id="errorMessage" class="error-message">
-        <i class="fas fa-exclamation-circle"></i>
-        <span id="errorText"></span>
-    </div>
     
     <div id="mainContent" style="display: none;">
         <iframe id="gameFrame" src="https://play.sum.vin/?domain=sum.vin&packname=home" allowfullscreen></iframe>
@@ -192,147 +184,117 @@
         <button class="close-btn" onclick="window.history.back()">×</button>
     </div>
 
-    <script>
-    // Hàm lấy tham số từ URL
-    function getQueryParam(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }
+<script>
+// Bỏ toàn bộ phần check key + redirect login
 
-    // Lấy key từ URL hoặc localStorage (nếu có)
-    let accessKey = getQueryParam('key') || localStorage.getItem('accessKey');
-    
-    // Nếu không có key, chuyển hướng về trang đăng nhập
-    if (!accessKey) {
-        window.location.href = 'login.html';
-    } else {
-        // Lưu key vào localStorage để sử dụng sau
-        localStorage.setItem('accessKey', accessKey);
-        
-        // Gửi yêu cầu xác thực đến server
-        fetch('check_key.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'key=' + encodeURIComponent(accessKey)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Ẩn loading xác thực
-            document.getElementById('authLoading').style.display = 'none';
-            
-            if (data.success) {
-                // Hiển thị nội dung chính
-                document.getElementById('mainContent').style.display = 'block';
-                
-                // Khởi tạo ứng dụng
-                initApp();
-            } else {
-                // Xóa key không hợp lệ
-                localStorage.removeItem('accessKey');
-                
-                // Hiển thị thông báo lỗi
-                showError('Key truy cập không hợp lệ. Vui lòng đăng nhập lại.');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 3000);
-            }
-        })
-        .catch(error => {
-            console.error('Lỗi xác thực:', error);
-            document.getElementById('authLoading').style.display = 'none';
-            showError('Có lỗi xảy ra khi xác thực. Vui lòng thử lại.');
-        });
-    }
+function initApp() {
+    // Make robot draggable
+    const robotContainer = document.getElementById('robotContainer');
+    let isDragging = false;
+    let offsetX, offsetY;
 
-    function showError(message) {
-        const errorElement = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
-        errorText.textContent = message;
-        errorElement.style.display = 'block';
-    }
+    robotContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - robotContainer.getBoundingClientRect().left;
+        offsetY = e.clientY - robotContainer.getBoundingClientRect().top;
+        robotContainer.style.cursor = 'grabbing';
+    });
 
-    function initApp() {
-        // Make robot draggable
-        const robotContainer = document.getElementById('robotContainer');
-        let isDragging = false;
-        let offsetX, offsetY;
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
 
-        robotContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offsetX = e.clientX - robotContainer.getBoundingClientRect().left;
-            offsetY = e.clientY - robotContainer.getBoundingClientRect().top;
-            robotContainer.style.cursor = 'grabbing';
-        });
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const x = e.clientX - offsetX;
-            const y = e.clientY - offsetY;
-            
-            robotContainer.style.left = `${x}px`;
-            robotContainer.style.top = `${y}px`;
-            robotContainer.style.transform = 'none';
-        });
+        robotContainer.style.left = `${x}px`;
+        robotContainer.style.top = `${y}px`;
+        robotContainer.style.transform = 'none';
+    });
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            robotContainer.style.cursor = 'move';
-        });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        robotContainer.style.cursor = 'move';
+    });
 
-        // Touch support for mobile devices
-        robotContainer.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            const touch = e.touches[0];
-            offsetX = touch.clientX - robotContainer.getBoundingClientRect().left;
-            offsetY = touch.clientY - robotContainer.getBoundingClientRect().top;
-        });
+    // Touch mobile
+    robotContainer.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        const touch = e.touches[0];
+        offsetX = touch.clientX - robotContainer.getBoundingClientRect().left;
+        offsetY = touch.clientY - robotContainer.getBoundingClientRect().top;
+    });
 
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            
-            const touch = e.touches[0];
-            const x = touch.clientX - offsetX;
-            const y = touch.clientY - offsetY;
-            
-            robotContainer.style.left = `${x}px`;
-            robotContainer.style.top = `${y}px`;
-            robotContainer.style.transform = 'none';
-        });
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
 
-        document.addEventListener('touchend', () => {
-            isDragging = false;
-        });
+        e.preventDefault();
 
-        // Fetch data from API
-        async function fetchData() {
-            try {
-                document.getElementById('loadingIndicator').style.display = 'block';
-                
-                const response = await fetch('apimd5.php?source=sumclub');
-                const data = await response.json();
-                
-                // Update robot text
-                document.getElementById('line1').innerHTML = `#Phiên: <strong>${data.Phien + 1}</strong>`;
-                document.getElementById('line2').innerHTML = `Dự đoán: <span class="${data.Du_doan === 'Tài' ? 'tai' : 'xiu'}">${data.Du_doan}</span>`;
-                
-                document.getElementById('loadingIndicator').style.display = 'none';
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                document.getElementById('line1').innerHTML = '#Phiên: Lỗi';
-                document.getElementById('line2').innerHTML = 'Dự đoán: Lỗi kết nối';
-                document.getElementById('loadingIndicator').style.display = 'none';
-            }
+        const touch = e.touches[0];
+
+        const x = touch.clientX - offsetX;
+        const y = touch.clientY - offsetY;
+
+        robotContainer.style.left = `${x}px`;
+        robotContainer.style.top = `${y}px`;
+        robotContainer.style.transform = 'none';
+    });
+
+    document.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    // Fetch API
+    async function fetchData() {
+        try {
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            const response = await fetch('apimd5.php?source=sumclub');
+            const data = await response.json();
+
+            document.getElementById('line1').innerHTML =
+                `#Phiên: <strong>${data.Phien + 1}</strong>`;
+
+            document.getElementById('line2').innerHTML =
+                `Dự đoán:
+                <span class="${
+                    data.Du_doan === 'Tài'
+                    ? 'tai'
+                    : 'xiu'
+                }">${data.Du_doan}</span>`;
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById('line1').innerHTML =
+                '#Phiên: Lỗi';
+
+            document.getElementById('line2').innerHTML =
+                'Dự đoán: Lỗi kết nối';
+
+            document.getElementById('loadingIndicator').style.display = 'none';
         }
-
-        // Fetch data every 10 seconds
-        fetchData();
-        setInterval(fetchData, 10000);
     }
-    </script>
+
+    fetchData();
+    setInterval(fetchData, 10000);
+}
+
+// Chạy luôn app
+window.onload = () => {
+
+    // Ẩn loading auth
+    document.getElementById('authLoading').style.display = 'none';
+
+    // Hiện nội dung
+    document.getElementById('mainContent').style.display = 'block';
+
+    // Khởi tạo app
+    initApp();
+};
+</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </body>
 </html>
