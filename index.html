@@ -2,7 +2,8 @@
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport"  
-content="width=device-width, initial-scale=1.0">  <title>TX FLOAT</title>  <style>  
+content="width=device-width, initial-scale=1.0">  <title>TX FLOAT</title>
+<style>  
   
 *{  
   margin:0;  
@@ -25,684 +26,801 @@ body{
   height:100%;  
   border:none;  
 }  
-  
-/* FLOAT MENU */  
-  
-#menu{  
-  
-  position:fixed;  
-  
-  top:100px;  
-  left:10px;  
-  
-  width:170px;  
-  
-  background:#ffc400;  
-  
-  border:2px solid #111;  
-  
-  border-radius:16px;  
-  
-  padding:10px;  
-  
-  z-index:99999;  
-  
-  box-shadow:  
-  0 4px 10px rgba(0,0,0,.4);  
-  
-  user-select:none;  
-  
-  touch-action:none;  
-}  
-  
-/* HEADER */  
-  
-.header{  
-  
-  display:flex;  
-  
-  justify-content:space-between;  
-  
-  align-items:center;  
-  
-  font-size:16px;  
-  
-  font-weight:bold;  
-  
-  margin-bottom:8px;  
-  
-  cursor:move;  
-}  
-  
-/* RESULT */  
-  
-.result{  
-  
-  text-align:center;  
-  
-  font-size:24px;  
-  
-  font-weight:bold;  
-  
-  margin:8px 0;  
-  
-  color:#111;  
-}  
-  
-/* PREDICT */  
-  
-.predict{  
-  
-  background:#111;  
-  
-  color:#00ff90;  
-  
-  padding:10px;  
-  
-  border-radius:10px;  
-  
-  text-align:center;  
-  
-  font-size:15px;  
-  
-  font-weight:bold;  
-  
-  min-height:45px;  
-  
-  display:flex;  
-  
-  align-items:center;  
-  
-  justify-content:center;  
-  
-  white-space:nowrap;  
-  
-  overflow:hidden;  
-  
-  box-shadow:  
-  0 0 10px #00ff90;  
-}  
-  
-/* BUTTON */  
-  
-.btn{  
-  
-  width:100%;  
-  
-  border:none;  
-  
-  border-radius:10px;  
-  
-  height:36px;  
-  
-  margin-top:8px;  
-  
-  font-size:13px;  
-  
-  font-weight:bold;  
-}  
-  
-.open{  
-  background:#00c853;  
-  color:white;  
-}  
-  
-.hide{  
-  background:#ff3b30;  
-  color:white;  
-}  
-  
-/* INFO */  
-  
-.info{  
-  
-  margin-top:8px;  
-  
-  background:white;  
-  
-  border-radius:10px;  
-  
-  padding:6px;  
-  
-  color:#111;  
-  
-  font-size:12px;  
-  
-  line-height:1.5;  
-}  
-  
-/* HISTORY */  
-  
-.history{  
-  
-  display:flex;  
-  
-  flex-wrap:wrap;  
-  
-  gap:4px;  
-  
-  margin-top:8px;  
-}  
-  
-.item{  
-  
-  width:24px;  
-  height:24px;  
-  
-  border-radius:50%;  
-  
-  display:flex;  
-  
-  align-items:center;  
-  
-  justify-content:center;  
-  
-  color:white;  
-  
-  font-size:12px;  
-  
-  font-weight:bold;  
-}  
-  
-.tai{  
-  background:#ff3b30;  
-}  
-  
-.xiu{  
-  background:#007aff;  
-}  
-  
-</style>  </head>  
+
+/* ROBOT */
+
+#robot{
+
+  position:fixed;
+
+  top:120px;
+  left:10px;
+
+  z-index:999999;
+
+  user-select:none;
+
+  touch-action:none;
+}
+
+/* HEAD */
+
+#robotHead{
+
+  width:70px;
+  height:70px;
+
+  border-radius:50%;
+
+  background:#111;
+
+  border:4px solid #00ff90;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:34px;
+
+  box-shadow:
+  0 0 20px #00ff90;
+
+  margin:auto;
+
+  cursor:move;
+}
+
+/* BODY */
+
+#robotBody{
+
+  margin-top:8px;
+
+  width:220px;
+
+  background:#111;
+
+  border:2px solid #00ff90;
+
+  border-radius:20px;
+
+  padding:12px;
+
+  color:white;
+
+  box-shadow:
+  0 0 20px rgba(0,255,144,.5);
+}
+
+/* TEXT */
+
+.line{
+
+  margin-bottom:10px;
+
+  font-size:15px;
+
+  font-weight:bold;
+
+  line-height:1.5;
+}
+
+.predictText{
+
+  color:#00ff90;
+
+  font-size:17px;
+}
+
+  
+</style> 
+
+</head> 
+
 <body>  <!-- GAME -->  <iframe  
 id="game"  
 src="https://play.sum.vin/">  
-</iframe>  <!-- FLOAT -->  <div id="menu">    <div class="header">  <span id="session">  
-  #0000  
-</span>  
+</iframe>  <!-- FLOAT -->  
+<!-- ROBOT -->
 
-<span onclick="hideFloat()">  
-  ✕  
-</span>
+<div id="robot">
 
-  </div>    <div class="result"  
-  id="result">  
-    ...  
-  </div>    <div class="predict"  
-  id="predict">  
-    ĐANG PHÂN TÍCH  
-  </div>  <button  
-class="btn open"  
-onclick="location.reload()">
+  <div id="robotHead">
+    🤖
+  </div>
 
-REFRESH
+  <div id="robotBody">
 
-  </button>  <button  
-class="btn hide"  
-onclick="hideFloat()">
-
-ẨN MENU
-
-  </button>    <div class="info"  
-  id="info">  ĐANG TẢI...
-
-  </div>  <script>  
-  
-// ===================  
-// API  
-// ===================  
-  
-const API =  
-"https://corsproxy.io/?https://cricket-compressed-list-suppose.trycloudflare.com/api/md5";  
-// ===================  
-// DATA  
-// ===================  
-  
-let historyData =  
-JSON.parse(  
-localStorage.getItem("tx")  
-) || [];  
-  
-let lastSession = "";  
-  
-// ===================  
-// NORMALIZE  
-// ===================  
-  
-function normalizeResult(text){  
-  
-  if(!text) return "";  
-  
-  text = text  
-  .toString()  
-  .trim()  
-  .toLowerCase();  
-  
-  if(  
-    text.includes("tài")  
-    || text.includes("tai")  
-  ){  
-    return "tai";  
-  }  
-  
-  return "xiu";  
-}  
-  
-// ===================  
-// GET API  
-// ===================  
-  
-async function getData(){  
-  
-  try{  
-  
-    let res =  
-    await fetch(API,{  
-  
-      method:"GET",  
-  
-      cache:"no-cache",  
-  
-      headers:{  
-        "Accept":"application/json"  
-      }  
-  
-    });  
-  
-    // check api  
-  
-    if(!res.ok){  
-  
-      throw new Error(  
-        "API ERROR"  
-      );  
-  
-    }  
-  
-    let data =  
-    await res.json();  
-  
-    console.log(data);  
-  
-    // check data  
-  
-    if(  
-      !data  
-      || !data.phien  
-    ){  
-      return;  
-    }  
-  
-    // fix string  
-  
-    let currentSession =  
-    String(data.phien);  
-  
-    // chống trùng phiên  
-  
-    if(  
-      currentSession  
-      === lastSession  
-    ){  
-      return;  
-    }  
-  
-    lastSession =  
-    currentSession;  
-  
-    updateUI(data);  
-  
-  }catch(err){  
-  
-    console.log(  
-      "API ERROR:",  
-      err  
-    );  
-  
-    document  
-    .getElementById("predict")  
-    .innerHTML =  
-    "LỖI API";  
-  }  
-}  
-  
-// ===================  
-// UPDATE UI  
-// ===================  
-  
-function updateUI(data){  
-  
-  // SESSION  
-  
-  document  
-  .getElementById("session")  
-  .innerHTML =  
-  "#" + data.phien;  
-  
-  // RESULT  
-  
-  let result =  
-  normalizeResult(  
-    data.ket_qua  
-  );  
-  
-  document  
-  .getElementById("result")  
-  .innerHTML =  
-  result==="tai"  
-  ? "TÀI"  
-  : "XỈU";  
-  
-  // HISTORY  
-  
-  historyData.push(result);  
-  
-  // max 20  
-  
-  if(historyData.length > 20){  
-  
-    historyData.shift();  
-  
-  }  
-  
-  // save local  
-  
-  localStorage.setItem(  
-    "tx",  
-    JSON.stringify(historyData)  
-  );  
-  
-  // predict  
-  
-  let next =  
-  analyze();  
-  
-  document  
-  .getElementById("predict")  
-  .innerHTML =  
-  "DỰ ĐOÁN "  
-  + next;  
-  
-  // INFO  
-  
-  let taiPlayer =  
-  data.total_tai  
-  || data.betting_info?.nguoi_cuoc?.tai  
-  || 0;  
-  
-  let xiuPlayer =  
-  data.total_xiu  
-  || data.betting_info?.nguoi_cuoc?.xiu  
-  || 0;  
-  
-  let taiMoney =  
-  data.total_bet_tai  
-  || data.betting_info?.tien_cuoc?.tai  
-  || 0;  
-  
-  let xiuMoney =  
-  data.total_bet_xiu  
-  || data.betting_info?.tien_cuoc?.xiu  
-  || 0;  
-  
-document  
-.getElementById("info")  
-.innerHTML = `  
-  
-🎲 ${data.xuc_xac_1}  
-- ${data.xuc_xac_2}  
-- ${data.xuc_xac_3}  
-  
-<br>  
-  
-Tổng:  
-${data.tong}  
-  
-<br>  
-  
-🕒 ${data.update_at}  
-  
-`;  
-}  
-  
-// ===================  
-// HISTORY  
-// ===================  
-  
-function renderHistory(){
-
-  let history =
-  document.getElementById(
-    "history"
-  );
-
-  if(!history) return;
-
-  let html = "";
-
-  historyData
-  .slice()
-  .reverse()
-  .forEach(item=>{
-
-    html += `
-
-    <div class="
-    item ${item}">
-
-    ${item==="tai"
-    ? "T"
-    : "X"}
-
+    <div class="line">
+      📌 Phiên:
+      <span id="session">
+        #0000
+      </span>
     </div>
 
-    `;
+    <div class="line">
+      🎯 Ván trước:
+      <span id="result">
+        ...
+      </span>
+    </div>
+
+    <div class="line predictText">
+      🔮
+      <span id="predict">
+        ĐANG PHÂN TÍCH
+      </span>
+    </div>
+
+    <div class="line">
+      📅
+      <span id="date">
+        ...
+      </span>
+    </div>
+
+  </div>
+
+</div>
+<script>
+
+// ===================
+// API
+// ===================
+
+const API =
+"https://corsproxy.io/?https://cricket-compressed-list-suppose.trycloudflare.com/api/md5";
+
+// ===================
+// DATA
+// ===================
+
+let historyData =
+JSON.parse(
+localStorage.getItem("tx")
+) || [];
+
+let lastSession = "";
+
+// ===================
+// NORMALIZE
+// ===================
+
+function normalizeResult(text){
+
+  if(!text) return "";
+
+  text = text
+  .toString()
+  .trim()
+  .toLowerCase();
+
+  if(
+    text.includes("tài")
+    || text.includes("tai")
+  ){
+    return "tai";
+  }
+
+  return "xiu";
+}
+
+// ===================
+// GET API
+// ===================
+
+async function getData(){
+
+  try{
+
+    let res =
+    await fetch(API,{
+
+      method:"GET",
+
+      cache:"no-cache",
+
+      headers:{
+        "Accept":"application/json"
+      }
+
+    });
+
+    if(!res.ok){
+
+      throw new Error("API ERROR");
+
+    }
+
+    let data =
+    await res.json();
+
+    console.log(data);
+
+    if(
+      !data
+      || !data.phien
+    ){
+      return;
+    }
+
+    let currentSession =
+    String(data.phien);
+
+    if(
+      currentSession
+      === lastSession
+    ){
+      return;
+    }
+
+    lastSession =
+    currentSession;
+
+    updateUI(data);
+
+  }catch(err){
+
+    console.log(
+      "API ERROR:",
+      err
+    );
+
+    document
+    .getElementById("predict")
+    .innerHTML =
+    "LỖI API";
+  }
+}
+
+// ===================
+// UPDATE UI
+// ===================
+
+function updateUI(data){
+
+  // SESSION
+
+  document
+  .getElementById("session")
+  .innerHTML =
+  "#" + data.phien;
+
+  // RESULT
+
+  let result =
+  normalizeResult(
+    data.ket_qua
+  );
+
+  document
+  .getElementById("result")
+  .innerHTML =
+  result==="tai"
+  ? "TÀI"
+  : "XỈU";
+
+  // HISTORY
+
+  historyData.push(result);
+
+  if(historyData.length > 20){
+
+    historyData.shift();
+
+  }
+
+  localStorage.setItem(
+    "tx",
+    JSON.stringify(historyData)
+  );
+
+  // PREDICT
+
+  let next =
+  analyze();
+
+  document
+  .getElementById("predict")
+  .innerHTML =
+  "DỰ ĐOÁN " + next;
+
+  // DATE
+
+  document
+  .getElementById("date")
+  .innerHTML =
+  data.update_at || "...";
+
+}
+
+// ===================
+// AI
+// ===================
+
+function analyze(){
+
+  // =====================
+  // CHƯA ĐỦ DỮ LIỆU
+  // =====================
+
+  if(historyData.length < 6){
+
+    return "ĐANG HỌC";
+
+  }
+
+  // =====================
+  // DATA
+  // =====================
+
+  let h =
+  historyData;
+
+  let last1 =
+  h[h.length-1];
+
+  let last2 =
+  h[h.length-2];
+
+  let last3 =
+  h.slice(-3);
+
+  let last4 =
+  h.slice(-4);
+
+  let last5 =
+  h.slice(-5);
+
+  let last6 =
+  h.slice(-6);
+
+  let p3 =
+  last3.join("-");
+
+  let p4 =
+  last4.join("-");
+
+  let p5 =
+  last5.join("-");
+
+  let p6 =
+  last6.join("-");
+
+  // =====================
+  // ĐẾM 10 PHIÊN
+  // =====================
+
+  let tai = 0;
+  let xiu = 0;
+
+  h.slice(-10).forEach(i=>{
+
+    if(i==="tai"){
+
+      tai++;
+
+    }else{
+
+      xiu++;
+
+    }
 
   });
 
-  history.innerHTML =
-  html;
+  // =====================
+  // CẦU BỆT
+  // =====================
+
+  // TTT
+
+  if(
+    last3.every(
+      x=>x==="tai"
+    )
+  ){
+
+    return "XỈU";
+
+  }
+
+  // XXX
+
+  if(
+    last3.every(
+      x=>x==="xiu"
+    )
+  ){
+
+    return "TÀI";
+
+  }
+
+  // =====================
+  // CẦU ĐƠN
+  // =====================
+
+  // T X T X
+
+  if(
+    p4===
+    "tai-xiu-tai-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // X T X T
+
+  if(
+    p4===
+    "xiu-tai-xiu-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // =====================
+  // CẦU ĐÔI
+  // =====================
+
+  // TT XX
+
+  if(
+    p4===
+    "tai-tai-xiu-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // XX TT
+
+  if(
+    p4===
+    "xiu-xiu-tai-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // =====================
+  // CẦU KÉP
+  // =====================
+
+  // TXX
+
+  if(
+    p3===
+    "tai-xiu-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // XTT
+
+  if(
+    p3===
+    "xiu-tai-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // =====================
+  // CẦU ĐẢO
+  // =====================
+
+  if(last1 !== last2){
+
+    return last1==="tai"
+    ? "XỈU"
+    : "TÀI";
+
+  }
+
+  // =====================
+  // CẦU 1-2-3
+  // =====================
+
+  // T XX TTT
+
+  if(
+    p6===
+    "tai-xiu-xiu-tai-tai-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // X TT XXX
+
+  if(
+    p6===
+    "xiu-tai-tai-xiu-xiu-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // =====================
+  // CẦU 3-2-1
+  // =====================
+
+  // TTT XX T
+
+  if(
+    p6===
+    "tai-tai-tai-xiu-xiu-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // XXX TT X
+
+  if(
+    p6===
+    "xiu-xiu-xiu-tai-tai-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // =====================
+  // CẦU 2-1-2
+  // =====================
+
+  // TT X TT
+
+  if(
+    p5===
+    "tai-tai-xiu-tai-tai"
+  ){
+
+    return "XỈU";
+
+  }
+
+  // XX T XX
+
+  if(
+    p5===
+    "xiu-xiu-tai-xiu-xiu"
+  ){
+
+    return "TÀI";
+
+  }
+
+  // =====================
+  // NGHIÊNG CẦU
+  // =====================
+
+  if(tai >= 8){
+
+    return "XỈU";
+
+  }
+
+  if(xiu >= 8){
+
+    return "TÀI";
+
+  }
+
+  // =====================
+  // PHÂN TÍCH NHỊP
+  // =====================
+
+  let streak = 1;
+
+  for(
+    let i=h.length-1;
+    i>0;
+    i--
+  ){
+
+    if(h[i]===h[i-1]){
+
+      streak++;
+
+    }else{
+
+      break;
+
+    }
+  }
+
+  // bệt dài đảo
+
+  if(streak >= 4){
+
+    return last1==="tai"
+    ? "XỈU"
+    : "TÀI";
+
+  }
+
+  // =====================
+  // AI RANDOM THÔNG MINH
+  // =====================
+
+  let scoreTai = 0;
+  let scoreXiu = 0;
+
+  // thống kê
+
+  if(tai > xiu){
+
+    scoreTai += 2;
+
+  }else{
+
+    scoreXiu += 2;
+
+  }
+
+  // nhịp cuối
+
+  if(last1==="tai"){
+
+    scoreTai++;
+
+  }else{
+
+    scoreXiu++;
+
+  }
+
+  // random nhẹ
+
+  let rand =
+  Math.random();
+
+  if(rand > 0.5){
+
+    scoreTai++;
+
+  }else{
+
+    scoreXiu++;
+
+  }
+
+  // =====================
+  // FINAL
+  // =====================
+
+  return scoreTai >= scoreXiu
+  ? "TÀI"
+  : "XỈU";
+
 }
-  
-// ===================  
-// AI  
-// ===================  
-  
-function analyze(){  
-  
-  // chưa đủ dữ liệu  
-  
-  if(historyData.length < 3){  
-  
-    return "ĐANG HỌC";  
-  
-  }  
-  
-  // lấy 6 phiên gần nhất  
-  
-  let last6 =  
-  historyData.slice(-6);  
-  
-  let tai = 0;  
-  let xiu = 0;  
-  
-  last6.forEach(item=>{  
-  
-    if(item==="tai"){  
-  
-      tai++;  
-  
-    }else{  
-  
-      xiu++;  
-  
-    }  
-  
-  });  
-  
-  // ===== BỆT CẦU =====  
-  
-  // tài nhiều -> theo tài  
-  
-  if(tai >= 4){  
-  
-    return "TÀI";  
-  
-  }  
-  
-  // xỉu nhiều -> theo xỉu  
-  
-  if(xiu >= 4){  
-  
-    return "XỈU";  
-  
-  }  
-  
-  // ===== CẦU 1-1 =====  
-  
-  let last1 =  
-  last6[last6.length-1];  
-  
-  let last2 =  
-  last6[last6.length-2];  
-  
-  // đảo nếu 1-1  
-  
-  if(last1 !== last2){  
-  
-    return last1==="tai"  
-    ? "XỈU"  
-    : "TÀI";  
-  }  
-  
-  // ===== MẶC ĐỊNH =====  
-  
-  return tai >= xiu  
-  ? "TÀI"  
-  : "XỈU";  
-}  
-  
-// ===================  
-// HIDE  
-// ===================  
-  
-function hideFloat(){  
-  
-  document  
-  .getElementById("menu")  
-  .style.display =  
-  "none";  
-}  
-  
-// ===================  
-// DRAG  
-// ===================  
-  
-const menu =  
-document.getElementById("menu");  
-  
-let isDragging = false;  
-  
-let offsetX = 0;  
-let offsetY = 0;  
-  
-// MOBILE  
-  
-menu.addEventListener(  
-"touchstart",  
-e=>{  
-  
-  isDragging = true;  
-  
-  offsetX =  
-  e.touches[0].clientX  
-  - menu.offsetLeft;  
-  
-  offsetY =  
-  e.touches[0].clientY  
-  - menu.offsetTop;  
-});  
-  
-document.addEventListener(  
-"touchmove",  
-e=>{  
-  
-  if(!isDragging) return;  
-  
-  menu.style.left =  
-  (  
-    e.touches[0].clientX  
-    - offsetX  
-  ) + "px";  
-  
-  menu.style.top =  
-  (  
-    e.touches[0].clientY  
-    - offsetY  
-  ) + "px";  
-});  
-  
-document.addEventListener(  
-"touchend",  
-()=>{  
-  
-  isDragging = false;  
-  
-});  
-  
-// PC  
-  
-menu.addEventListener(  
-"mousedown",  
-e=>{  
-  
-  isDragging = true;  
-  
-  offsetX =  
-  e.clientX  
-  - menu.offsetLeft;  
-  
-  offsetY =  
-  e.clientY  
-  - menu.offsetTop;  
-});  
-  
-document.addEventListener(  
-"mousemove",  
-e=>{  
-  
-  if(!isDragging) return;  
-  
-  menu.style.left =  
-  (  
-    e.clientX  
-    - offsetX  
-  ) + "px";  
-  
-  menu.style.top =  
-  (  
-    e.clientY  
-    - offsetY  
-  ) + "px";  
-});  
-  
-document.addEventListener(  
-"mouseup",  
-()=>{  
-  
-  isDragging = false;  
-  
-});  
-  
-// ===================  
-// AUTO  
-// ===================  
-  
-getData();  
-  
-setInterval(()=>{  
-  
-  getData();  
-  
-},3000);  
-  
+
+// ===================
+// DRAG ROBOT
+// ===================
+
+const robot =
+document.getElementById("robot");
+
+let isDragging = false;
+
+let offsetX = 0;
+let offsetY = 0;
+
+// MOBILE
+
+robot.addEventListener(
+"touchstart",
+e=>{
+
+  isDragging = true;
+
+  offsetX =
+  e.touches[0].clientX
+  - robot.offsetLeft;
+
+  offsetY =
+  e.touches[0].clientY
+  - robot.offsetTop;
+});
+
+document.addEventListener(
+"touchmove",
+e=>{
+
+  if(!isDragging) return;
+
+  robot.style.left =
+  (
+    e.touches[0].clientX
+    - offsetX
+  ) + "px";
+
+  robot.style.top =
+  (
+    e.touches[0].clientY
+    - offsetY
+  ) + "px";
+});
+
+document.addEventListener(
+"touchend",
+()=>{
+
+  isDragging = false;
+
+});
+
+// PC
+
+robot.addEventListener(
+"mousedown",
+e=>{
+
+  isDragging = true;
+
+  offsetX =
+  e.clientX
+  - robot.offsetLeft;
+
+  offsetY =
+  e.clientY
+  - robot.offsetTop;
+});
+
+document.addEventListener(
+"mousemove",
+e=>{
+
+  if(!isDragging) return;
+
+  robot.style.left =
+  (
+    e.clientX
+    - offsetX
+  ) + "px";
+
+  robot.style.top =
+  (
+    e.clientY
+    - offsetY
+  ) + "px";
+});
+
+document.addEventListener(
+"mouseup",
+()=>{
+
+  isDragging = false;
+
+});
+
+// ===================
+// AUTO
+// ===================
+
+getData();
+
+setInterval(()=>{
+
+  getData();
+
+},5000);
+
 </script>
