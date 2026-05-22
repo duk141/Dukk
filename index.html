@@ -1,398 +1,338 @@
-// ==UserScript==
-// @name         LC79 Club - Robot Dự Đoán Chẵn/Lẻ 
-// @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Robot dự đoán chẵn/lẻ 
-// @author       LC79 Robot
-// @match        https://lc79b.bet/*
-// @match        http://lc79b.bet/*
-// @match        https://play.lc79.bet/*
-// @match        http://play.lc79.bet/*
-// @grant        GM_addStyle
-// @grant        GM_xmlhttpRequest
-// @connect      chanlelc79.onrender.com
-// @run-at       document-end
-// ==/UserScript==
-
-(function() {
-    'use strict';
-
-    GM_addStyle(`
-        .lc79-robot-draggable {
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUMCLUB - Tài Xỉu MD5</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        #gameFrame {
             position: fixed;
-            top: 24px;
-            left: 140px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 1;
+        }
+        
+        #robotContainer {
+            position: fixed;
+            top: 50%;
+            left: 30px;
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
-            gap: 12px;
-            z-index: 999999;
-            cursor: grab;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+            z-index: 9999;
+            cursor: move;
+            touch-action: none;
         }
-        .lc79-robot-draggable:active {
-            cursor: grabbing;
-        }
-        .lc79-robot-container img {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: radial-gradient(circle, rgba(0,255,200,0.15), transparent);
-            padding: 3px;
-            border: 1.5px solid rgba(0,230,200,0.4);
-            pointer-events: none;
-        }
-        .lc79-prediction-box {
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 16px;
-            min-width: 260px;
-            box-shadow: 0 0 0 2px rgba(0,230,200,0.1);
-            pointer-events: none;
-        }
-        .lc79-session-line {
+
+        #robotInner {
+            transform: rotate(90deg);
+            transform-origin: left center;
             display: flex;
-            justify-content: flex-start;
-            align-items: baseline;
-            font-weight: 600;
-            font-size: 13px;
-            margin: 5px 0;
+            align-items: center;
+        }
+
+        #robotIcon {
+            width: 120px;
+            height: 120px;
+            margin-right: 15px;
+            pointer-events: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        #robotText {
+            background: rgba(147, 39, 143, 0.7);
+            color: #ffffff;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.4;
+            box-shadow: 0 3px 10px rgba(199, 21, 133, 0.5);
             white-space: nowrap;
+            max-width: 280px;
+            position: relative;
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-        .lc79-session-line .lc79-label {
-            color: #aaa;
-            padding-right: 8px;
-            min-width: 70px;
+
+        #line1, #line2 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        strong {
             font-weight: bold;
         }
-        .lc79-value.lc79-chan {
-            color: #2ecc71;
-        }
-        .lc79-value.lc79-le {
-            color: #e74c3c;
-        }
-        .lc79-waiting-text {
-            font-weight: bold;
-            font-size: 14px;
+
+        #loadingIndicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(147, 39, 143, 0.9);
+            color: #ffb6c1;
+            padding: 20px 30px;
+            border-radius: 12px;
+            z-index: 1002;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+            font-size: 18px;
             text-align: center;
-            color: #f1c40f;
-            padding: 12px 6px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 40px;
         }
-        .lc79-menu-panel {
+
+        .tai {
+            color: #98fb98;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(152, 251, 152, 0.7);
+        }
+
+        .xiu {
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.7);
+        }
+        
+        .close-btn {
             position: fixed;
             top: 20px;
-            left: 20px;
-            z-index: 999999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .lc79-menu-button, .lc79-toggle-button {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 8px 14px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.7);
             color: white;
-            font-weight: bold;
-            font-size: 13px;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
             cursor: pointer;
+            z-index: 10000;
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 100px;
+            justify-content: center;
+            transition: all 0.3s;
         }
-        .lc79-toggle-button.lc79-active i.fa-toggle-on {
-            color: #2ecc71;
+        
+        .close-btn:hover {
+            background: rgba(255, 0, 0, 0.9);
+            transform: scale(1.1);
         }
-        .lc79-toggle-button.lc79-inactive i.fa-toggle-off {
-            color: #e74c3c;
-        }
-        .lc79-menu-controls {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .lc79-menu-controls.lc79-open {
+        
+        .auth-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
-        }
-    `);
-
-    const API_URL = "https://chanlelc79.onrender.com/predict";
-    const REFRESH_MS = 800;
-
-    let isRobotEnabled = true;
-    let lastData = null;
-    let currentPhien = 1;
-
-    function toBold(str) {
-        if (!str) return "";
-        const map = {
-            'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋',
-            'M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗',
-            'Y':'𝐘','Z':'𝐙','a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣',
-            'k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯',
-            'w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳','0':'𝟎','1':'𝟏','2':'𝟐','3':'𝟑','4':'𝟒','5':'𝟓','6':'𝟔','7':'𝟕',
-            '8':'𝟖','9':'𝟗'
-        };
-        let result = "";
-        for(let ch of str) result += map[ch] || ch;
-        return result;
-    }
-
-    function formatDices(dicesStr) {
-        if (!dicesStr) return "---";
-        let str = dicesStr.toLowerCase();
-        str = str.replace(/do/g, '🔴 ĐỎ');
-        str = str.replace(/trang/g, '⚪ TRẮNG');
-        return str.toUpperCase();
-    }
-
-    function updateUI(phien, duDoan, doTinCay, ketQuaTruoc, dicesDuDoan) {
-        const phienElem = document.getElementById('lc79-phien-text');
-        const duDoanElem = document.getElementById('lc79-du-doan-text');
-        const tinCayElem = document.getElementById('lc79-do-tin-cay-text');
-        const truocElem = document.getElementById('lc79-ketqua-truoc-text');
-        const dicesElem = document.getElementById('lc79-dices-text');
-        
-        if (phienElem) {
-            phienElem.textContent = toBold(String(phien));
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            color: white;
+            font-size: 1.5rem;
+            flex-direction: column;
         }
         
-        let duDoanText = duDoan === "chan" ? "Chẵn" : (duDoan === "le" ? "Lẻ" : duDoan);
-        duDoanElem.textContent = toBold(duDoanText);
-        duDoanElem.className = 'lc79-value';
-        duDoanElem.classList.add(duDoanText === "Chẵn" ? 'lc79-chan' : 'lc79-le');
-        
-        tinCayElem.textContent = toBold(doTinCay || "?%");
-        
-        let truocText = ketQuaTruoc === "chan" ? "Chẵn" : (ketQuaTruoc === "le" ? "Lẻ" : (ketQuaTruoc || "---"));
-        truocElem.textContent = toBold(truocText);
-        truocElem.className = 'lc79-value';
-        if (truocText === "Chẵn") truocElem.classList.add('lc79-chan');
-        else if (truocText === "Lẻ") truocElem.classList.add('lc79-le');
-        
-        if (dicesElem) {
-            dicesElem.textContent = toBold(formatDices(dicesDuDoan));
+        .error-message {
+            background: rgba(255, 65, 108, 0.2);
+            border: 1px solid #ff416c;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10002;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-    }
-
-    function showError(msg) {
-        document.getElementById('lc79-phien-text').textContent = toBold("?");
-        document.getElementById('lc79-du-doan-text').textContent = toBold(msg);
-        document.getElementById('lc79-do-tin-cay-text').textContent = toBold("---");
-        document.getElementById('lc79-ketqua-truoc-text').textContent = toBold("---");
-        const dicesElem = document.getElementById('lc79-dices-text');
-        if (dicesElem) dicesElem.textContent = toBold("---");
-    }
-
-    function fetchData() {
-        if (!isRobotEnabled) return;
+    </style>
+</head>
+<body>
+    <div id="authLoading" class="auth-loading">
+        <div>Đang xác thực...</div>
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorText"></span>
+    </div>
+    
+    <div id="mainContent" style="display: none;">
+        <iframe id="gameFrame" src="https://play.sum.vin/?domain=sum.vin&packname=home" allowfullscreen></iframe>
         
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: API_URL + "?t=" + Date.now(),
-            timeout: 6000,
-            onload: function(res) {
-                if (res.status === 200) {
-                    try {
-                        let data = JSON.parse(res.responseText);
-                        console.log("API Data:", data);
-                        
-                        let duDoan = null;
-                        let doTinCay = null;
-                        let ketQuaTruoc = null;
-                        let dicesDuDoan = null;
-                        let soPhien = null;
-                        
-                        if (data.phien_nay) {
-                            duDoan = data.phien_nay.du_doan;
-                            doTinCay = data.phien_nay.do_tin_cay;
-                            dicesDuDoan = data.phien_nay.dices_du_doan;
-                            soPhien = data.phien_nay.so_phien;
-                        }
-                        if (data.phien_truoc) {
-                            ketQuaTruoc = data.phien_truoc.ket_qua;
-                        }
-                        
-                        if (duDoan) {
-                            let phienValue = soPhien;
-                            if (!phienValue || phienValue === "tiếp theo") {
-                                phienValue = currentPhien;
-                                currentPhien++;
-                            } else {
-                                currentPhien = parseInt(phienValue) + 1;
-                            }
-                            
-                            let currentData = JSON.stringify({duDoan, doTinCay, ketQuaTruoc, dicesDuDoan, phienValue});
-                            if (lastData !== currentData) {
-                                lastData = currentData;
-                                updateUI(phienValue, duDoan, doTinCay, ketQuaTruoc, dicesDuDoan);
-                            }
-                        } else {
-                            showError("𝐊𝐡ô𝐧𝐠 𝐜ó 𝐝ự 𝐝𝐨á𝐧");
-                        }
-                    } catch(e) {
-                        console.error("Parse error:", e);
-                        showError("𝐋ỗ𝐢 𝐱𝐮̛̉ 𝐥ý");
-                    }
-                } else {
-                    showError("𝐊ế𝐭 𝐧ố𝐢 𝐭𝐡ấ𝐭 𝐛ạ𝐢");
-                }
-            },
-            onerror: function() {
-                showError("𝐌ấ𝐭 𝐤ế𝐭 𝐧ố𝐢");
-            },
-            ontimeout: function() {
-                showError("𝐐𝐮á 𝐭𝐡ờ𝐢 𝐠𝐢𝐚𝐧");
-            }
-        });
-    }
-
-    function createUI() {
-        const robotDiv = document.createElement('div');
-        robotDiv.className = 'lc79-robot-draggable';
-        robotDiv.id = 'lc79Robot';
-        robotDiv.innerHTML = `
-            <div class="lc79-robot-container">
-                <img src="https://i.postimg.cc/63bdy9D9/robotics-1.gif" alt="Robot">
-            </div>
-            <div class="lc79-prediction-box">
-                <div id="lc79-prediction-content">
-                    <div class="lc79-session-line">
-                        <span class="lc79-label">📌 #𝐏𝐡𝐢ê𝐧:</span>
-                        <span class="lc79-value" id="lc79-phien-text">---</span>
-                    </div>
-                    <div class="lc79-session-line">
-                        <span class="lc79-label">🎲 𝐃ự 𝐃𝐨á𝐧:</span>
-                        <span class="lc79-value" id="lc79-du-doan-text">---</span>
-                    </div>
-                    <div class="lc79-session-line">
-                        <span class="lc79-label">Dices:?:</span>
-                        <span class="lc79-value" id="lc79-dices-text">---</span>
-                    </div>
-                    <div class="lc79-session-line">
-                        <span class="lc79-label">📈 𝐓𝐢𝐧 𝐂ậ𝐲:</span>
-                        <span class="lc79-value" id="lc79-do-tin-cay-text">---</span>
-                    </div>
-                    <div class="lc79-session-line">
-                        <span class="lc79-label">📜 𝐊ế𝐭 𝐪𝐮ả 𝐭𝐫ướ𝐜:</span>
-                        <span class="lc79-value" id="lc79-ketqua-truoc-text">---</span>
-                    </div>
+        <div id="robotContainer">
+            <div id="robotInner">
+                <img id="robotIcon" src="https://i.postimg.cc/rwkZQhxp/Robot.gif" alt="Robot">
+                <div id="robotText">
+                    <div id="line1">#Phiên: Loading...</div>
+                    <div id="line2">Dự đoán: Loading...</div>
                 </div>
             </div>
-        `;
-        document.body.appendChild(robotDiv);
+        </div>
         
-        const menuPanel = document.createElement('div');
-        menuPanel.className = 'lc79-menu-panel';
-        menuPanel.innerHTML = `
-            <button class="lc79-menu-button" id="lc79-menuBtn"><i class="fas fa-bars"></i> 𝐌𝐞𝐧𝐮</button>
-            <div class="lc79-menu-controls" id="lc79-menuCtrl">
-                <button class="lc79-toggle-button lc79-active" id="lc79-toggleBtn">
-                    <i class="fas fa-toggle-on"></i> 𝐁ậ𝐭 𝐑𝐨𝐛𝐨𝐭
-                </button>
-            </div>
-        `;
-        document.body.appendChild(menuPanel);
+        <div id="loadingIndicator">Đang cập nhật dự đoán...</div>
         
-        document.getElementById('lc79-menuBtn').onclick = () => {
-            document.getElementById('lc79-menuCtrl').classList.toggle('lc79-open');
-        };
+        <button class="close-btn" onclick="window.history.back()">×</button>
+    </div>
+
+    <script>
+    // Hàm lấy tham số từ URL
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    // Lấy key từ URL hoặc localStorage (nếu có)
+    let accessKey = getQueryParam('key') || localStorage.getItem('accessKey');
+    
+    // Nếu không có key, chuyển hướng về trang đăng nhập
+    if (!accessKey) {
+        window.location.href = 'login.html';
+    } else {
+        // Lưu key vào localStorage để sử dụng sau
+        localStorage.setItem('accessKey', accessKey);
         
-        document.getElementById('lc79-toggleBtn').onclick = () => {
-            isRobotEnabled = !isRobotEnabled;
-            const btn = document.getElementById('lc79-toggleBtn');
-            if (isRobotEnabled) {
-                btn.innerHTML = '<i class="fas fa-toggle-on"></i> 𝐁ậ𝐭 𝐑𝐨𝐛𝐨𝐭';
-                btn.classList.remove('lc79-inactive');
-                btn.classList.add('lc79-active');
-                robotDiv.style.display = 'flex';
-                fetchData();
+        // Gửi yêu cầu xác thực đến server
+        fetch('check_key.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'key=' + encodeURIComponent(accessKey)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Ẩn loading xác thực
+            document.getElementById('authLoading').style.display = 'none';
+            
+            if (data.success) {
+                // Hiển thị nội dung chính
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Khởi tạo ứng dụng
+                initApp();
             } else {
-                btn.innerHTML = '<i class="fas fa-toggle-off"></i> 𝐓ắ𝐭 𝐑𝐨𝐛𝐨𝐭';
-                btn.classList.remove('lc79-active');
-                btn.classList.add('lc79-inactive');
-                robotDiv.style.display = 'none';
+                // Xóa key không hợp lệ
+                localStorage.removeItem('accessKey');
+                
+                // Hiển thị thông báo lỗi
+                showError('Key truy cập không hợp lệ. Vui lòng đăng nhập lại.');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
             }
-            document.getElementById('lc79-menuCtrl').classList.remove('lc79-open');
-        };
-        
-        // DRAG FUNCTION
-        let offsetX, offsetY, isDragging = false;
-        
-        const onMouseMove = (e) => {
+        })
+        .catch(error => {
+            console.error('Lỗi xác thực:', error);
+            document.getElementById('authLoading').style.display = 'none';
+            showError('Có lỗi xảy ra khi xác thực. Vui lòng thử lại.');
+        });
+    }
+
+    function showError(message) {
+        const errorElement = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        errorText.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    function initApp() {
+        // Make robot draggable
+        const robotContainer = document.getElementById('robotContainer');
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        robotContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - robotContainer.getBoundingClientRect().left;
+            offsetY = e.clientY - robotContainer.getBoundingClientRect().top;
+            robotContainer.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            e.preventDefault();
-            let x = e.clientX - offsetX;
-            let y = e.clientY - offsetY;
-            x = Math.max(0, Math.min(x, window.innerWidth - robotDiv.offsetWidth));
-            y = Math.max(0, Math.min(y, window.innerHeight - robotDiv.offsetHeight));
-            robotDiv.style.left = x + 'px';
-            robotDiv.style.top = y + 'px';
-        };
-        
-        const onMouseUp = () => {
-            if (!isDragging) return;
+            
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            
+            robotContainer.style.left = `${x}px`;
+            robotContainer.style.top = `${y}px`;
+            robotContainer.style.transform = 'none';
+        });
+
+        document.addEventListener('mouseup', () => {
             isDragging = false;
-            robotDiv.style.cursor = 'grab';
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        };
-        
-        robotDiv.addEventListener('mousedown', (e) => {
-            if (e.target.closest('.lc79-menu-button') || e.target.closest('.lc79-toggle-button')) return;
-            e.preventDefault();
-            isDragging = true;
-            const rect = robotDiv.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            robotDiv.style.cursor = 'grabbing';
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            robotContainer.style.cursor = 'move';
         });
-        
-        robotDiv.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.lc79-menu-button') || e.target.closest('.lc79-toggle-button')) return;
+
+        // Touch support for mobile devices
+        robotContainer.addEventListener('touchstart', (e) => {
+            isDragging = true;
             const touch = e.touches[0];
-            const rect = robotDiv.getBoundingClientRect();
-            offsetX = touch.clientX - rect.left;
-            offsetY = touch.clientY - rect.top;
-            isDragging = true;
+            offsetX = touch.clientX - robotContainer.getBoundingClientRect().left;
+            offsetY = touch.clientY - robotContainer.getBoundingClientRect().top;
         });
-        
+
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             e.preventDefault();
+            
             const touch = e.touches[0];
-            let x = touch.clientX - offsetX;
-            let y = touch.clientY - offsetY;
-            x = Math.max(0, Math.min(x, window.innerWidth - robotDiv.offsetWidth));
-            y = Math.max(0, Math.min(y, window.innerHeight - robotDiv.offsetHeight));
-            robotDiv.style.left = x + 'px';
-            robotDiv.style.top = y + 'px';
+            const x = touch.clientX - offsetX;
+            const y = touch.clientY - offsetY;
+            
+            robotContainer.style.left = `${x}px`;
+            robotContainer.style.top = `${y}px`;
+            robotContainer.style.transform = 'none';
         });
-        
+
         document.addEventListener('touchend', () => {
             isDragging = false;
         });
-    }
 
-    function addFontAwesome() {
-        if (!document.querySelector('link[href*="font-awesome"]')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
-            document.head.appendChild(link);
+        // Fetch data from API
+        async function fetchData() {
+            try {
+                document.getElementById('loadingIndicator').style.display = 'block';
+                
+                const response = await fetch('apimd5.php?source=sumclub');
+                const data = await response.json();
+                
+                // Update robot text
+                document.getElementById('line1').innerHTML = `#Phiên: <strong>${data.Phien + 1}</strong>`;
+                document.getElementById('line2').innerHTML = `Dự đoán: <span class="${data.Du_doan === 'Tài' ? 'tai' : 'xiu'}">${data.Du_doan}</span>`;
+                
+                document.getElementById('loadingIndicator').style.display = 'none';
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('line1').innerHTML = '#Phiên: Lỗi';
+                document.getElementById('line2').innerHTML = 'Dự đoán: Lỗi kết nối';
+                document.getElementById('loadingIndicator').style.display = 'none';
+            }
         }
-    }
 
-    addFontAwesome();
-    createUI();
-    setInterval(fetchData, REFRESH_MS);
-    fetchData();
-})();
+        // Fetch data every 10 seconds
+        fetchData();
+        setInterval(fetchData, 10000);
+    }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</body>
+</html>
