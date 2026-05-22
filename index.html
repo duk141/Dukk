@@ -1,300 +1,708 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUMCLUB - Tài Xỉu MD5</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        #gameFrame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1;
-        }
-        
-        #robotContainer {
-            position: fixed;
-            top: 50%;
-            left: 30px;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            z-index: 9999;
-            cursor: move;
-            touch-action: none;
-        }
+<!DOCTYPE html>  <html lang="vi">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport"  
+content="width=device-width, initial-scale=1.0">  <title>TX FLOAT</title>  <style>  
+  
+*{  
+  margin:0;  
+  padding:0;  
+  box-sizing:border-box;  
+  font-family:Arial;  
+}  
+  
+body{  
+  overflow:hidden;  
+  background:#111;  
+}  
+  
+/* GAME */  
+  
+#game{  
+  position:fixed;  
+  inset:0;  
+  width:100%;  
+  height:100%;  
+  border:none;  
+}  
+  
+/* FLOAT MENU */  
+  
+#menu{  
+  
+  position:fixed;  
+  
+  top:100px;  
+  left:10px;  
+  
+  width:170px;  
+  
+  background:#ffc400;  
+  
+  border:2px solid #111;  
+  
+  border-radius:16px;  
+  
+  padding:10px;  
+  
+  z-index:99999;  
+  
+  box-shadow:  
+  0 4px 10px rgba(0,0,0,.4);  
+  
+  user-select:none;  
+  
+  touch-action:none;  
+}  
+  
+/* HEADER */  
+  
+.header{  
+  
+  display:flex;  
+  
+  justify-content:space-between;  
+  
+  align-items:center;  
+  
+  font-size:16px;  
+  
+  font-weight:bold;  
+  
+  margin-bottom:8px;  
+  
+  cursor:move;  
+}  
+  
+/* RESULT */  
+  
+.result{  
+  
+  text-align:center;  
+  
+  font-size:24px;  
+  
+  font-weight:bold;  
+  
+  margin:8px 0;  
+  
+  color:#111;  
+}  
+  
+/* PREDICT */  
+  
+.predict{  
+  
+  background:#111;  
+  
+  color:#00ff90;  
+  
+  padding:10px;  
+  
+  border-radius:10px;  
+  
+  text-align:center;  
+  
+  font-size:15px;  
+  
+  font-weight:bold;  
+  
+  min-height:45px;  
+  
+  display:flex;  
+  
+  align-items:center;  
+  
+  justify-content:center;  
+  
+  white-space:nowrap;  
+  
+  overflow:hidden;  
+  
+  box-shadow:  
+  0 0 10px #00ff90;  
+}  
+  
+/* BUTTON */  
+  
+.btn{  
+  
+  width:100%;  
+  
+  border:none;  
+  
+  border-radius:10px;  
+  
+  height:36px;  
+  
+  margin-top:8px;  
+  
+  font-size:13px;  
+  
+  font-weight:bold;  
+}  
+  
+.open{  
+  background:#00c853;  
+  color:white;  
+}  
+  
+.hide{  
+  background:#ff3b30;  
+  color:white;  
+}  
+  
+/* INFO */  
+  
+.info{  
+  
+  margin-top:8px;  
+  
+  background:white;  
+  
+  border-radius:10px;  
+  
+  padding:6px;  
+  
+  color:#111;  
+  
+  font-size:12px;  
+  
+  line-height:1.5;  
+}  
+  
+/* HISTORY */  
+  
+.history{  
+  
+  display:flex;  
+  
+  flex-wrap:wrap;  
+  
+  gap:4px;  
+  
+  margin-top:8px;  
+}  
+  
+.item{  
+  
+  width:24px;  
+  height:24px;  
+  
+  border-radius:50%;  
+  
+  display:flex;  
+  
+  align-items:center;  
+  
+  justify-content:center;  
+  
+  color:white;  
+  
+  font-size:12px;  
+  
+  font-weight:bold;  
+}  
+  
+.tai{  
+  background:#ff3b30;  
+}  
+  
+.xiu{  
+  background:#007aff;  
+}  
+  
+</style>  </head>  
+<body>  <!-- GAME -->  <iframe  
+id="game"  
+src="https://play.sum.vin/">  
+</iframe>  <!-- FLOAT -->  <div id="menu">    <div class="header">  <span id="session">  
+  #0000  
+</span>  
 
-        #robotInner {
-            transform: rotate(90deg);
-            transform-origin: left center;
-            display: flex;
-            align-items: center;
-        }
+<span onclick="hideFloat()">  
+  ✕  
+</span>
 
-        #robotIcon {
-            width: 120px;
-            height: 120px;
-            margin-right: 15px;
-            pointer-events: none;
-            border: none;
-            box-shadow: none;
-        }
+  </div>    <div class="result"  
+  id="result">  
+    ...  
+  </div>    <div class="predict"  
+  id="predict">  
+    ĐANG PHÂN TÍCH  
+  </div>  <button  
+class="btn open"  
+onclick="location.reload()">
 
-        #robotText {
-            background: rgba(147, 39, 143, 0.7);
-            color: #ffffff;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-size: 15px;
-            line-height: 1.4;
-            box-shadow: 0 3px 10px rgba(199, 21, 133, 0.5);
-            white-space: nowrap;
-            max-width: 280px;
-            position: relative;
-            border: 1px solid rgba(255, 182, 193, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
+REFRESH
 
-        #line1, #line2 {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  </button>  <button  
+class="btn hide"  
+onclick="hideFloat()">
 
-        strong {
-            font-weight: bold;
-        }
+ẨN MENU
 
-        #loadingIndicator {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(147, 39, 143, 0.9);
-            color: #ffb6c1;
-            padding: 20px 30px;
-            border-radius: 12px;
-            z-index: 1002;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 182, 193, 0.5);
-            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
-            font-size: 18px;
-            text-align: center;
-        }
+  </button>    <div class="info"  
+  id="info">  ĐANG TẢI...
 
-        .tai {
-            color: #98fb98;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(152, 251, 152, 0.7);
-        }
+  </div>  <script>  
+  
+// ===================  
+// API  
+// ===================  
+  
+const API =  
+"https://corsproxy.io/?https://cricket-compressed-list-suppose.trycloudflare.com/api/md5";  
+// ===================  
+// DATA  
+// ===================  
+  
+let historyData =  
+JSON.parse(  
+localStorage.getItem("tx")  
+) || [];  
+  
+let lastSession = "";  
+  
+// ===================  
+// NORMALIZE  
+// ===================  
+  
+function normalizeResult(text){  
+  
+  if(!text) return "";  
+  
+  text = text  
+  .toString()  
+  .trim()  
+  .toLowerCase();  
+  
+  if(  
+    text.includes("tài")  
+    || text.includes("tai")  
+  ){  
+    return "tai";  
+  }  
+  
+  return "xiu";  
+}  
+  
+// ===================  
+// GET API  
+// ===================  
+  
+async function getData(){  
+  
+  try{  
+  
+    let res =  
+    await fetch(API,{  
+  
+      method:"GET",  
+  
+      cache:"no-cache",  
+  
+      headers:{  
+        "Accept":"application/json"  
+      }  
+  
+    });  
+  
+    // check api  
+  
+    if(!res.ok){  
+  
+      throw new Error(  
+        "API ERROR"  
+      );  
+  
+    }  
+  
+    let data =  
+    await res.json();  
+  
+    console.log(data);  
+  
+    // check data  
+  
+    if(  
+      !data  
+      || !data.phien  
+    ){  
+      return;  
+    }  
+  
+    // fix string  
+  
+    let currentSession =  
+    String(data.phien);  
+  
+    // chống trùng phiên  
+  
+    if(  
+      currentSession  
+      === lastSession  
+    ){  
+      return;  
+    }  
+  
+    lastSession =  
+    currentSession;  
+  
+    updateUI(data);  
+  
+  }catch(err){  
+  
+    console.log(  
+      "API ERROR:",  
+      err  
+    );  
+  
+    document  
+    .getElementById("predict")  
+    .innerHTML =  
+    "LỖI API";  
+  }  
+}  
+  
+// ===================  
+// UPDATE UI  
+// ===================  
+  
+function updateUI(data){  
+  
+  // SESSION  
+  
+  document  
+  .getElementById("session")  
+  .innerHTML =  
+  "#" + data.phien;  
+  
+  // RESULT  
+  
+  let result =  
+  normalizeResult(  
+    data.ket_qua  
+  );  
+  
+  document  
+  .getElementById("result")  
+  .innerHTML =  
+  result==="tai"  
+  ? "TÀI"  
+  : "XỈU";  
+  
+  // HISTORY  
+  
+  historyData.push(result);  
+  
+  // max 20  
+  
+  if(historyData.length > 20){  
+  
+    historyData.shift();  
+  
+  }  
+  
+  // save local  
+  
+  localStorage.setItem(  
+    "tx",  
+    JSON.stringify(historyData)  
+  );  
+  
+  // predict  
+  
+  let next =  
+  analyze();  
+  
+  document  
+  .getElementById("predict")  
+  .innerHTML =  
+  "DỰ ĐOÁN "  
+  + next;  
+  
+  // INFO  
+  
+  let taiPlayer =  
+  data.total_tai  
+  || data.betting_info?.nguoi_cuoc?.tai  
+  || 0;  
+  
+  let xiuPlayer =  
+  data.total_xiu  
+  || data.betting_info?.nguoi_cuoc?.xiu  
+  || 0;  
+  
+  let taiMoney =  
+  data.total_bet_tai  
+  || data.betting_info?.tien_cuoc?.tai  
+  || 0;  
+  
+  let xiuMoney =  
+  data.total_bet_xiu  
+  || data.betting_info?.tien_cuoc?.xiu  
+  || 0;  
+  
+document  
+.getElementById("info")  
+.innerHTML = `  
+  
+🎲 ${data.xuc_xac_1}  
+- ${data.xuc_xac_2}  
+- ${data.xuc_xac_3}  
+  
+<br>  
+  
+Tổng:  
+${data.tong}  
+  
+<br>  
+  
+🕒 ${data.update_at}  
+  
+`;  
+}  
+  
+// ===================  
+// HISTORY  
+// ===================  
+  
+function renderHistory(){
 
-        .xiu {
-            color: #ff6b6b;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255, 107, 107, 0.7);
-        }
-        
-        .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        
-        .close-btn:hover {
-            background: rgba(255, 0, 0, 0.9);
-            transform: scale(1.1);
-        }
-        
-        .auth-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10001;
-            color: white;
-            font-size: 1.5rem;
-            flex-direction: column;
-        }
-        
-        .error-message {
-            background: rgba(255, 65, 108, 0.2);
-            border: 1px solid #ff416c;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10002;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-    </style>
-</head>
-<body>
-    
-    <div id="mainContent" style="display: none;">
-        <iframe id="gameFrame" src="https://play.sum.vin/?domain=sum.vin&packname=home" allowfullscreen></iframe>
-        
-        <div id="robotContainer">
-            <div id="robotInner">
-                <img id="robotIcon" src="https://i.postimg.cc/rwkZQhxp/Robot.gif" alt="Robot">
-                <div id="robotText">
-                    <div id="line1">#Phiên: Loading...</div>
-                    <div id="line2">Dự đoán: Loading...</div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="loadingIndicator">Đang cập nhật dự đoán...</div>
-        
-        <button class="close-btn" onclick="window.history.back()">×</button>
+  let history =
+  document.getElementById(
+    "history"
+  );
+
+  if(!history) return;
+
+  let html = "";
+
+  historyData
+  .slice()
+  .reverse()
+  .forEach(item=>{
+
+    html += `
+
+    <div class="
+    item ${item}">
+
+    ${item==="tai"
+    ? "T"
+    : "X"}
+
     </div>
 
-<script>
-// Bỏ toàn bộ phần check key + redirect login
+    `;
 
-function initApp() {
-    // Make robot draggable
-    const robotContainer = document.getElementById('robotContainer');
-    let isDragging = false;
-    let offsetX, offsetY;
+  });
 
-    robotContainer.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - robotContainer.getBoundingClientRect().left;
-        offsetY = e.clientY - robotContainer.getBoundingClientRect().top;
-        robotContainer.style.cursor = 'grabbing';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-
-        robotContainer.style.left = `${x}px`;
-        robotContainer.style.top = `${y}px`;
-        robotContainer.style.transform = 'none';
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        robotContainer.style.cursor = 'move';
-    });
-
-    // Touch mobile
-    robotContainer.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        const touch = e.touches[0];
-        offsetX = touch.clientX - robotContainer.getBoundingClientRect().left;
-        offsetY = touch.clientY - robotContainer.getBoundingClientRect().top;
-    });
-
-    document.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-
-        e.preventDefault();
-
-        const touch = e.touches[0];
-
-        const x = touch.clientX - offsetX;
-        const y = touch.clientY - offsetY;
-
-        robotContainer.style.left = `${x}px`;
-        robotContainer.style.top = `${y}px`;
-        robotContainer.style.transform = 'none';
-    });
-
-    document.addEventListener('touchend', () => {
-        isDragging = false;
-    });
-
-    // Fetch API
-    async function fetchData() {
-        try {
-            document.getElementById('loadingIndicator').style.display = 'block';
-
-            const response = await fetch('apimd5.php?source=sumclub');
-            const data = await response.json();
-
-            document.getElementById('line1').innerHTML =
-                `#Phiên: <strong>${data.Phien + 1}</strong>`;
-
-            document.getElementById('line2').innerHTML =
-                `Dự đoán:
-                <span class="${
-                    data.Du_doan === 'Tài'
-                    ? 'tai'
-                    : 'xiu'
-                }">${data.Du_doan}</span>`;
-
-            document.getElementById('loadingIndicator').style.display = 'none';
-
-        } catch (error) {
-
-            console.error(error);
-
-            document.getElementById('line1').innerHTML =
-                '#Phiên: Lỗi';
-
-            document.getElementById('line2').innerHTML =
-                'Dự đoán: Lỗi kết nối';
-
-            document.getElementById('loadingIndicator').style.display = 'none';
-        }
-    }
-
-    fetchData();
-    setInterval(fetchData, 10000);
+  history.innerHTML =
+  html;
 }
-
-// Chạy luôn app
-window.onload = () => {
-
-    // Ẩn loading auth
-    document.getElementById('authLoading').style.display = 'none';
-
-    // Hiện nội dung
-    document.getElementById('mainContent').style.display = 'block';
-
-    // Khởi tạo app
-    initApp();
-};
+  
+// ===================  
+// AI  
+// ===================  
+  
+function analyze(){  
+  
+  // chưa đủ dữ liệu  
+  
+  if(historyData.length < 3){  
+  
+    return "ĐANG HỌC";  
+  
+  }  
+  
+  // lấy 6 phiên gần nhất  
+  
+  let last6 =  
+  historyData.slice(-6);  
+  
+  let tai = 0;  
+  let xiu = 0;  
+  
+  last6.forEach(item=>{  
+  
+    if(item==="tai"){  
+  
+      tai++;  
+  
+    }else{  
+  
+      xiu++;  
+  
+    }  
+  
+  });  
+  
+  // ===== BỆT CẦU =====  
+  
+  // tài nhiều -> theo tài  
+  
+  if(tai >= 4){  
+  
+    return "TÀI";  
+  
+  }  
+  
+  // xỉu nhiều -> theo xỉu  
+  
+  if(xiu >= 4){  
+  
+    return "XỈU";  
+  
+  }  
+  
+  // ===== CẦU 1-1 =====  
+  
+  let last1 =  
+  last6[last6.length-1];  
+  
+  let last2 =  
+  last6[last6.length-2];  
+  
+  // đảo nếu 1-1  
+  
+  if(last1 !== last2){  
+  
+    return last1==="tai"  
+    ? "XỈU"  
+    : "TÀI";  
+  }  
+  
+  // ===== MẶC ĐỊNH =====  
+  
+  return tai >= xiu  
+  ? "TÀI"  
+  : "XỈU";  
+}  
+  
+// ===================  
+// HIDE  
+// ===================  
+  
+function hideFloat(){  
+  
+  document  
+  .getElementById("menu")  
+  .style.display =  
+  "none";  
+}  
+  
+// ===================  
+// DRAG  
+// ===================  
+  
+const menu =  
+document.getElementById("menu");  
+  
+let isDragging = false;  
+  
+let offsetX = 0;  
+let offsetY = 0;  
+  
+// MOBILE  
+  
+menu.addEventListener(  
+"touchstart",  
+e=>{  
+  
+  isDragging = true;  
+  
+  offsetX =  
+  e.touches[0].clientX  
+  - menu.offsetLeft;  
+  
+  offsetY =  
+  e.touches[0].clientY  
+  - menu.offsetTop;  
+});  
+  
+document.addEventListener(  
+"touchmove",  
+e=>{  
+  
+  if(!isDragging) return;  
+  
+  menu.style.left =  
+  (  
+    e.touches[0].clientX  
+    - offsetX  
+  ) + "px";  
+  
+  menu.style.top =  
+  (  
+    e.touches[0].clientY  
+    - offsetY  
+  ) + "px";  
+});  
+  
+document.addEventListener(  
+"touchend",  
+()=>{  
+  
+  isDragging = false;  
+  
+});  
+  
+// PC  
+  
+menu.addEventListener(  
+"mousedown",  
+e=>{  
+  
+  isDragging = true;  
+  
+  offsetX =  
+  e.clientX  
+  - menu.offsetLeft;  
+  
+  offsetY =  
+  e.clientY  
+  - menu.offsetTop;  
+});  
+  
+document.addEventListener(  
+"mousemove",  
+e=>{  
+  
+  if(!isDragging) return;  
+  
+  menu.style.left =  
+  (  
+    e.clientX  
+    - offsetX  
+  ) + "px";  
+  
+  menu.style.top =  
+  (  
+    e.clientY  
+    - offsetY  
+  ) + "px";  
+});  
+  
+document.addEventListener(  
+"mouseup",  
+()=>{  
+  
+  isDragging = false;  
+  
+});  
+  
+// ===================  
+// AUTO  
+// ===================  
+  
+getData();  
+  
+setInterval(()=>{  
+  
+  getData();  
+  
+},3000);  
+  
 </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</body>
-</html>
