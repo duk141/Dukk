@@ -1,1030 +1,398 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-
-<title>Baccarat Lobby</title>
-
-<style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,sans-serif;
-}
-
-body{
-  background:#0b0f1a;
-  color:white;
-  padding:12px;
-}
-
-/* =========================
-TITLE
-========================= */
-
-.title{
-  text-align:center;
-  font-size:30px;
-  font-weight:bold;
-  margin-bottom:18px;
-  color:#00ffd5;
-}
-
-/* =========================
-LOBBY
-========================= */
-
-.tables{
-
-  display:grid;
-
-  grid-template-columns:
-  repeat(2,1fr);
-
-  gap:12px;
-
-}
-
-.card{
-
-  background:
-  linear-gradient(
-    145deg,
-    #162033,
-    #0d1524
-  );
-
-  border-radius:18px;
-
-  padding:14px;
-
-  border:1px solid #26354f;
-
-  cursor:pointer;
-
-  transition:.2s;
-
-  box-shadow:
-  0 0 15px rgba(0,0,0,.4);
-
-}
-
-.card:hover{
-
-  transform:scale(1.02);
-
-  border-color:#00ffd5;
-
-}
-
-.card-top{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-}
-
-.table-name{
-
-  font-size:24px;
-
-  font-weight:bold;
-
-  color:#00ffd5;
-
-}
-
-.online{
-
-  background:#00c853;
-
-  width:10px;
-
-  height:10px;
-
-  border-radius:50%;
-
-  box-shadow:
-  0 0 10px #00ff88;
-
-}
-
-.preview-road{
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:4px;
-
-  margin-top:14px;
-
-}
-
-.dot{
-
-  width:28px;
-
-  height:28px;
-
-  border-radius:50%;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  font-size:12px;
-
-  font-weight:bold;
-
-}
-
-.B{
-  background:#1976ff;
-}
-
-.P{
-  background:#ff2f6d;
-}
-
-.T{
-  background:#00b16a;
-}
-
-/* =========================
-POPUP
-========================= */
-
-.popup{
-
-  position:fixed;
-
-  inset:0;
-
-  background:
-  rgba(0,0,0,.7);
-
-  display:none;
-
-  justify-content:center;
-
-  align-items:center;
-
-  z-index:999;
-
-}
-
-.popup-box{
-
-  width:95%;
-
-  max-width:700px;
-
-  background:#111827;
-
-  border-radius:22px;
-
-  padding:18px;
-
-  border:1px solid #2d405f;
-
-  animation:show .2s ease;
-
-}
-
-@keyframes show{
-
-  from{
-    transform:scale(.8);
-    opacity:0;
-  }
-
-  to{
-    transform:scale(1);
-    opacity:1;
-  }
-
-}
-
-.popup-top{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  margin-bottom:16px;
-
-}
-
-.room-name{
-
-  font-size:28px;
-
-  font-weight:bold;
-
-  color:#00ffd5;
-
-}
-
-.close{
-
-  background:#ff3355;
-
-  border:none;
-
-  color:white;
-
-  width:40px;
-
-  height:40px;
-
-  border-radius:50%;
-
-  font-size:18px;
-
-  cursor:pointer;
-
-}
-
-/* =========================
-PREDICT
-========================= */
-
-.predict{
-
-  background:
-  linear-gradient(
-    145deg,
-    #1b2a45,
-    #121c30
-  );
-
-  border-radius:18px;
-
-  padding:18px;
-
-  text-align:center;
-
-  margin-bottom:18px;
-
-}
-
-.predict-label{
-
-  color:#aaa;
-
-  margin-bottom:10px;
-
-}
-
-.predict-result{
-
-  font-size:48px;
-
-  font-weight:bold;
-
-}
-
-/* =========================
-ROAD
-========================= */
-
-.road{
-
-  display:flex;
-
-  flex-wrap:nowrap;
-
-  overflow-x:auto;
-
-  gap:6px;
-
-  padding-bottom:6px;
-
-}
-
-/* =========================
-CHART
-========================= */
-
-.chart-box{
-
-  margin-bottom:18px;
-
-  background:#19263d;
-
-  padding:14px;
-
-  border-radius:16px;
-
-}
-
-.chart-item{
-
-  margin-bottom:14px;
-
-}
-
-.chart-label{
-
-  margin-bottom:6px;
-
-  font-size:13px;
-
-  color:#ccc;
-
-}
-
-.chart-bar-bg{
-
-  width:100%;
-
-  height:18px;
-
-  background:#0f1726;
-
-  border-radius:30px;
-
-  overflow:hidden;
-
-}
-
-.chart-bar{
-
-  height:100%;
-
-  border-radius:30px;
-
-  width:0%;
-
-  transition:.3s;
-
-}
-
-.banker-bar{
-
-  background:#1976ff;
-
-}
-
-.player-bar{
-
-  background:#ff2f6d;
-
-}
-
-.tie-bar{
-
-  background:#00b16a;
-
-}
-
-.chart-value{
-
-  margin-top:4px;
-
-  font-size:13px;
-
-  color:#aaa;
-
-}
-
-/* =========================
-HISTORY TITLE
-========================= */
-
-.history-title{
-
-  font-size:18px;
-
-  font-weight:bold;
-
-  margin-bottom:12px;
-
-  color:#00ffd5;
-
-}
-
-/* =========================
-STATS
-========================= */
-
-.stats{
-
-  margin-top:18px;
-
-  background:#19263d;
-
-  border-radius:16px;
-
-  padding:14px;
-
-  line-height:1.8;
-
-  color:#ddd;
-
-}
-
-</style>
-</head>
-<body>
-
-<div class="title">
-  BACCARAT LOBBY
-</div>
-
-<div class="tables" id="tables"></div>
-
-<!-- ========================= -->
-<!-- POPUP -->
-<!-- ========================= -->
-
-<div class="popup" id="popup">
-
-  <div class="popup-box">
-
-    <div class="popup-top">
-
-      <div class="room-name"
-      id="roomName">
-        C01
-      </div>
-
-      <button class="close"
-      onclick="closePopup()">
-        
-      </button>
-
-    </div>
-
-<div class="predict">
-
-  <div class="predict-label">
-    D oán tip theo
-  </div>
-
-  <div class="predict-result"
-  id="predictResult">
-    B
-  </div>
-
-</div>
-
-<!-- BIU  -->
-
-<div class="chart-box">
-
-  <div class="chart-item">
-
-    <div class="chart-label">
-      BANKER
-    </div>
-
-    <div class="chart-bar-bg">
-
-      <div class="chart-bar banker-bar"
-      id="bankerBar"></div>
-
-    </div>
-
-    <div class="chart-value"
-    id="bankerText">
-      0%
-    </div>
-
-  </div>
-
-  <div class="chart-item">
-
-    <div class="chart-label">
-      PLAYER
-    </div>
-
-    <div class="chart-bar-bg">
-
-      <div class="chart-bar player-bar"
-      id="playerBar"></div>
-
-    </div>
-
-    <div class="chart-value"
-    id="playerText">
-      0%
-    </div>
-
-  </div>
-
-  <div class="chart-item">
-
-    <div class="chart-label">
-      TIE
-    </div>
-
-    <div class="chart-bar-bg">
-
-      <div class="chart-bar tie-bar"
-      id="tieBar"></div>
-
-    </div>
-
-    <div class="chart-value"
-    id="tieText">
-      0%
-    </div>
-
-  </div>
-
-</div>
-
-<!-- LCH S CU -->
-
-<div class="history-title">
-  LCH S CU
-</div>
-
-<div class="road"
-id="road"></div>
-
-<div class="stats"
-id="stats"></div>
-
-  </div>
-
-</div>
-
-<script>
-
-/* =========================
-API
-========================= */
-
-const API =
-"https://api.allorigins.win/raw?url=" +
-encodeURIComponent(
-  "https://employers-hormone-land-idaho.trycloudflare.com/api/bcr"
-);
-
-/* =========================
-TABLES
-========================= */
-
-const TABLES = [];
-
-for(let i=1;i<=20;i++){
-
-  TABLES.push(
-    "c" + String(i).padStart(2,"0")
-  );
-
-}
-
-const allData = {};
-
-const tablesDiv =
-document.getElementById("tables");
-
-/* =========================
-RENDER LOBBY
-========================= */
-
-function renderLobby(){
-
-  tablesDiv.innerHTML = "";
-
-  TABLES.forEach(table=>{
-
-    const results =
-      allData[table] || [];
-
-    const card =
-      document.createElement("div");
-
-    card.className = "card";
-
-    card.onclick =
-      ()=>openPopup(table);
-
-    card.innerHTML = `
-
-      <div class="card-top">
-
-        <div class="table-name">
-          ${table.toUpperCase()}
-        </div>
-
-        <div class="online"></div>
-
-      </div>
-
-      <div class="preview-road">
-
-        ${results
-        .slice(-12)
-        .map(r=>`
-
-          <div class="dot ${r}">
-            ${r}
-          </div>
-
-        `).join("")}
-
-      </div>
-
-    `;
-
-    tablesDiv.appendChild(card);
-
-  });
-
-}
-
-/* =========================
-OPEN POPUP
-========================= */
-
-function openPopup(table){
-
-  document
-  .getElementById("popup")
-  .style.display = "flex";
-
-  document
-  .getElementById("roomName")
-  .innerText =
-    table.toUpperCase();
-
-  renderRoom(
-    allData[table] || []
-  );
-
-}
-
-/* =========================
-CLOSE POPUP
-========================= */
-
-function closePopup(){
-
-  document
-  .getElementById("popup")
-  .style.display = "none";
-
-}
-
-/* =========================
-PREDICT
-========================= */
-
-function predict(results){
-
-  if(results.length < 2)
-    return "B";
-
-  const last =
-    results[results.length-1];
-
-  const last2 =
-    results[results.length-2];
-
-  // bt
-  if(last === last2){
-
-    return last;
-
-  }
-
-  // o
-  if(last === "B")
-    return "P";
-
-  if(last === "P")
-    return "B";
-
-  return "B";
-
-}
-
-/* =========================
-RENDER ROOM
-========================= */
-
-function renderRoom(results){
-
-  const road =
-    document.getElementById("road");
-
-  if(!road) return;
-
-  road.innerHTML = "";
-
-  /*
-  LỊCH SỬ CẦU
-  */
-
-  (results || []).forEach(r=>{
-
-    road.innerHTML += `
-
-      <div class="dot ${r}">
-        ${r}
-      </div>
-
-    `;
-
-  });
-
-  /*
-  DỰ ĐOÁN
-  */
-
-  const next =
-    predict(results);
-
-  const predictBox =
-    document.getElementById("predictResult");
-
-  if(predictBox){
-
-    predictBox.className =
-      `predict-result ${next}`;
-
-    predictBox.innerText =
-      next;
-
-  }
-
-  /*
-  THỐNG KÊ
-  */
-
-  const b =
-    results.filter(x=>x==="B").length;
-
-  const p =
-    results.filter(x=>x==="P").length;
-
-  const t =
-    results.filter(x=>x==="T").length;
-
-  const total =
-    results.length || 1;
-
-  /*
-  %
-  */
-
-  const bPercent =
-    ((b/total)*100).toFixed(0);
-
-  const pPercent =
-    ((p/total)*100).toFixed(0);
-
-  const tPercent =
-    ((t/total)*100).toFixed(0);
-
-  /*
-  UPDATE BAR
-  */
-
-  const bankerBar =
-    document.getElementById("bankerBar");
-
-  const playerBar =
-    document.getElementById("playerBar");
-
-  const tieBar =
-    document.getElementById("tieBar");
-
-  if(bankerBar)
-    bankerBar.style.width =
-      bPercent + "%";
-
-  if(playerBar)
-    playerBar.style.width =
-      pPercent + "%";
-
-  if(tieBar)
-    tieBar.style.width =
-      tPercent + "%";
-
-  /*
-  UPDATE TEXT
-  */
-
-  const bankerText =
-    document.getElementById("bankerText");
-
-  const playerText =
-    document.getElementById("playerText");
-
-  const tieText =
-    document.getElementById("tieText");
-
-  if(bankerText)
-    bankerText.innerText =
-      bPercent + "%";
-
-  if(playerText)
-    playerText.innerText =
-      pPercent + "%";
-
-  if(tieText)
-    tieText.innerText =
-      tPercent + "%";
-
-  /*
-  STATS
-  */
-
-  const stats =
-    document.getElementById("stats");
-
-if(stats){
-
-  stats.innerHTML = `
-
-    Banker: ${b}<br>
-    Player: ${p}<br>
-    Tie: ${t}<br>
-    Tổng lịch sử: ${results.length}
-
-  `;
-
-}
-
-road.scrollLeft =
-road.scrollWidth;
-
-}
-
-/* =========================
-LOAD API
-========================= */
-
-/*
-Ví d JSON API:
-
-{
-  "c01":["B","P","B"],
-  "c02":["P","P","B"]
-}
-*/
-
-async function loadAPI(){
-
-  try{
-
-    const res =
-      await fetch(API);
-
-    const text =
-      await res.text();
-
-    console.log(text);
-
-    const json =
-      JSON.parse(text);
-
-    /*
-    DEBUG
-    */
-
-    console.log(json);
-    
-    console.log(json.c01);
-
-    TABLES.forEach(table=>{
-
-  let data =
-    json[table];
-
-  /*
-  FIX NULL
-  */
-
-  if(!data){
-
-    data = [];
-
-  }
-
-  /*
-  STRING
-  */
-
-  if(typeof data === "string"){
-
-    data =
-      data
-      .replace(/\s/g,"")
-      .split(",");
-
-  }
-
-  /*
-  OBJECT
-  */
-
-  if(Array.isArray(data)){
-
-    data =
-      data.map(x=>{
-
-        /*
-        1 = Banker
-        2 = Player
-        3 = Tie
-        */
-
-        if(x === 1) return "B";
-        if(x === 2) return "P";
-        if(x === 3) return "T";
-
-        return x;
-
-      });
-
-  }
-
-  /*
-  CH GI B P T
-  */
-
-  data =
-    data.filter(x=>
-      x==="B" ||
-      x==="P" ||
-      x==="T"
-    );
-
-  allData[table] = data;
-
-});
-
-    renderLobby();
-    const popup =
-document.getElementById("popup");
-
-if(
-  popup.style.display === "flex"
-){
-
-  const current =
-    document
-    .getElementById("roomName")
-    .innerText
-    .toLowerCase();
-
-  renderRoom(
-    allData[current] || []
-  );
-
-}
-
-    /*
-    popup ang m
-    */
-
-    const current =
-      document
-      .getElementById("roomName")
-      .innerText
-      .toLowerCase();
-
-    if(TABLES.includes(current)){
-
-      renderRoom(
-        allData[current]
-      );
-
+// ==UserScript==
+// @name         LC79 Club - Robot Dự Đoán Chẵn/Lẻ 
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Robot dự đoán chẵn/lẻ 
+// @author       LC79 Robot
+// @match        https://lc79b.bet/*
+// @match        http://lc79b.bet/*
+// @match        https://play.lc79.bet/*
+// @match        http://play.lc79.bet/*
+// @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
+// @connect      chanlelc79.onrender.com
+// @run-at       document-end
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    GM_addStyle(`
+        .lc79-robot-draggable {
+            position: fixed;
+            top: 24px;
+            left: 140px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 999999;
+            cursor: grab;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+        }
+        .lc79-robot-draggable:active {
+            cursor: grabbing;
+        }
+        .lc79-robot-container img {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: radial-gradient(circle, rgba(0,255,200,0.15), transparent);
+            padding: 3px;
+            border: 1.5px solid rgba(0,230,200,0.4);
+            pointer-events: none;
+        }
+        .lc79-prediction-box {
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 16px;
+            min-width: 260px;
+            box-shadow: 0 0 0 2px rgba(0,230,200,0.1);
+            pointer-events: none;
+        }
+        .lc79-session-line {
+            display: flex;
+            justify-content: flex-start;
+            align-items: baseline;
+            font-weight: 600;
+            font-size: 13px;
+            margin: 5px 0;
+            white-space: nowrap;
+        }
+        .lc79-session-line .lc79-label {
+            color: #aaa;
+            padding-right: 8px;
+            min-width: 70px;
+            font-weight: bold;
+        }
+        .lc79-value.lc79-chan {
+            color: #2ecc71;
+        }
+        .lc79-value.lc79-le {
+            color: #e74c3c;
+        }
+        .lc79-waiting-text {
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            color: #f1c40f;
+            padding: 12px 6px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+        }
+        .lc79-menu-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .lc79-menu-button, .lc79-toggle-button {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 8px 14px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+        }
+        .lc79-toggle-button.lc79-active i.fa-toggle-on {
+            color: #2ecc71;
+        }
+        .lc79-toggle-button.lc79-inactive i.fa-toggle-off {
+            color: #e74c3c;
+        }
+        .lc79-menu-controls {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .lc79-menu-controls.lc79-open {
+            display: flex;
+        }
+    `);
+
+    const API_URL = "https://chanlelc79.onrender.com/predict";
+    const REFRESH_MS = 800;
+
+    let isRobotEnabled = true;
+    let lastData = null;
+    let currentPhien = 1;
+
+    function toBold(str) {
+        if (!str) return "";
+        const map = {
+            'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋',
+            'M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗',
+            'Y':'𝐘','Z':'𝐙','a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣',
+            'k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯',
+            'w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳','0':'𝟎','1':'𝟏','2':'𝟐','3':'𝟑','4':'𝟒','5':'𝟓','6':'𝟔','7':'𝟕',
+            '8':'𝟖','9':'𝟗'
+        };
+        let result = "";
+        for(let ch of str) result += map[ch] || ch;
+        return result;
     }
 
-  }catch(err){
+    function formatDices(dicesStr) {
+        if (!dicesStr) return "---";
+        let str = dicesStr.toLowerCase();
+        str = str.replace(/do/g, '🔴 ĐỎ');
+        str = str.replace(/trang/g, '⚪ TRẮNG');
+        return str.toUpperCase();
+    }
 
-    console.log(
-      "API ERROR",
-      err
-    );
+    function updateUI(phien, duDoan, doTinCay, ketQuaTruoc, dicesDuDoan) {
+        const phienElem = document.getElementById('lc79-phien-text');
+        const duDoanElem = document.getElementById('lc79-du-doan-text');
+        const tinCayElem = document.getElementById('lc79-do-tin-cay-text');
+        const truocElem = document.getElementById('lc79-ketqua-truoc-text');
+        const dicesElem = document.getElementById('lc79-dices-text');
+        
+        if (phienElem) {
+            phienElem.textContent = toBold(String(phien));
+        }
+        
+        let duDoanText = duDoan === "chan" ? "Chẵn" : (duDoan === "le" ? "Lẻ" : duDoan);
+        duDoanElem.textContent = toBold(duDoanText);
+        duDoanElem.className = 'lc79-value';
+        duDoanElem.classList.add(duDoanText === "Chẵn" ? 'lc79-chan' : 'lc79-le');
+        
+        tinCayElem.textContent = toBold(doTinCay || "?%");
+        
+        let truocText = ketQuaTruoc === "chan" ? "Chẵn" : (ketQuaTruoc === "le" ? "Lẻ" : (ketQuaTruoc || "---"));
+        truocElem.textContent = toBold(truocText);
+        truocElem.className = 'lc79-value';
+        if (truocText === "Chẵn") truocElem.classList.add('lc79-chan');
+        else if (truocText === "Lẻ") truocElem.classList.add('lc79-le');
+        
+        if (dicesElem) {
+            dicesElem.textContent = toBold(formatDices(dicesDuDoan));
+        }
+    }
 
-  }
+    function showError(msg) {
+        document.getElementById('lc79-phien-text').textContent = toBold("?");
+        document.getElementById('lc79-du-doan-text').textContent = toBold(msg);
+        document.getElementById('lc79-do-tin-cay-text').textContent = toBold("---");
+        document.getElementById('lc79-ketqua-truoc-text').textContent = toBold("---");
+        const dicesElem = document.getElementById('lc79-dices-text');
+        if (dicesElem) dicesElem.textContent = toBold("---");
+    }
 
-}
+    function fetchData() {
+        if (!isRobotEnabled) return;
+        
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: API_URL + "?t=" + Date.now(),
+            timeout: 6000,
+            onload: function(res) {
+                if (res.status === 200) {
+                    try {
+                        let data = JSON.parse(res.responseText);
+                        console.log("API Data:", data);
+                        
+                        let duDoan = null;
+                        let doTinCay = null;
+                        let ketQuaTruoc = null;
+                        let dicesDuDoan = null;
+                        let soPhien = null;
+                        
+                        if (data.phien_nay) {
+                            duDoan = data.phien_nay.du_doan;
+                            doTinCay = data.phien_nay.do_tin_cay;
+                            dicesDuDoan = data.phien_nay.dices_du_doan;
+                            soPhien = data.phien_nay.so_phien;
+                        }
+                        if (data.phien_truoc) {
+                            ketQuaTruoc = data.phien_truoc.ket_qua;
+                        }
+                        
+                        if (duDoan) {
+                            let phienValue = soPhien;
+                            if (!phienValue || phienValue === "tiếp theo") {
+                                phienValue = currentPhien;
+                                currentPhien++;
+                            } else {
+                                currentPhien = parseInt(phienValue) + 1;
+                            }
+                            
+                            let currentData = JSON.stringify({duDoan, doTinCay, ketQuaTruoc, dicesDuDoan, phienValue});
+                            if (lastData !== currentData) {
+                                lastData = currentData;
+                                updateUI(phienValue, duDoan, doTinCay, ketQuaTruoc, dicesDuDoan);
+                            }
+                        } else {
+                            showError("𝐊𝐡ô𝐧𝐠 𝐜ó 𝐝ự 𝐝𝐨á𝐧");
+                        }
+                    } catch(e) {
+                        console.error("Parse error:", e);
+                        showError("𝐋ỗ𝐢 𝐱𝐮̛̉ 𝐥ý");
+                    }
+                } else {
+                    showError("𝐊ế𝐭 𝐧ố𝐢 𝐭𝐡ấ𝐭 𝐛ạ𝐢");
+                }
+            },
+            onerror: function() {
+                showError("𝐌ấ𝐭 𝐤ế𝐭 𝐧ố𝐢");
+            },
+            ontimeout: function() {
+                showError("𝐐𝐮á 𝐭𝐡ờ𝐢 𝐠𝐢𝐚𝐧");
+            }
+        });
+    }
 
-loadAPI();
+    function createUI() {
+        const robotDiv = document.createElement('div');
+        robotDiv.className = 'lc79-robot-draggable';
+        robotDiv.id = 'lc79Robot';
+        robotDiv.innerHTML = `
+            <div class="lc79-robot-container">
+                <img src="https://i.postimg.cc/63bdy9D9/robotics-1.gif" alt="Robot">
+            </div>
+            <div class="lc79-prediction-box">
+                <div id="lc79-prediction-content">
+                    <div class="lc79-session-line">
+                        <span class="lc79-label">📌 #𝐏𝐡𝐢ê𝐧:</span>
+                        <span class="lc79-value" id="lc79-phien-text">---</span>
+                    </div>
+                    <div class="lc79-session-line">
+                        <span class="lc79-label">🎲 𝐃ự 𝐃𝐨á𝐧:</span>
+                        <span class="lc79-value" id="lc79-du-doan-text">---</span>
+                    </div>
+                    <div class="lc79-session-line">
+                        <span class="lc79-label">Dices:?:</span>
+                        <span class="lc79-value" id="lc79-dices-text">---</span>
+                    </div>
+                    <div class="lc79-session-line">
+                        <span class="lc79-label">📈 𝐓𝐢𝐧 𝐂ậ𝐲:</span>
+                        <span class="lc79-value" id="lc79-do-tin-cay-text">---</span>
+                    </div>
+                    <div class="lc79-session-line">
+                        <span class="lc79-label">📜 𝐊ế𝐭 𝐪𝐮ả 𝐭𝐫ướ𝐜:</span>
+                        <span class="lc79-value" id="lc79-ketqua-truoc-text">---</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(robotDiv);
+        
+        const menuPanel = document.createElement('div');
+        menuPanel.className = 'lc79-menu-panel';
+        menuPanel.innerHTML = `
+            <button class="lc79-menu-button" id="lc79-menuBtn"><i class="fas fa-bars"></i> 𝐌𝐞𝐧𝐮</button>
+            <div class="lc79-menu-controls" id="lc79-menuCtrl">
+                <button class="lc79-toggle-button lc79-active" id="lc79-toggleBtn">
+                    <i class="fas fa-toggle-on"></i> 𝐁ậ𝐭 𝐑𝐨𝐛𝐨𝐭
+                </button>
+            </div>
+        `;
+        document.body.appendChild(menuPanel);
+        
+        document.getElementById('lc79-menuBtn').onclick = () => {
+            document.getElementById('lc79-menuCtrl').classList.toggle('lc79-open');
+        };
+        
+        document.getElementById('lc79-toggleBtn').onclick = () => {
+            isRobotEnabled = !isRobotEnabled;
+            const btn = document.getElementById('lc79-toggleBtn');
+            if (isRobotEnabled) {
+                btn.innerHTML = '<i class="fas fa-toggle-on"></i> 𝐁ậ𝐭 𝐑𝐨𝐛𝐨𝐭';
+                btn.classList.remove('lc79-inactive');
+                btn.classList.add('lc79-active');
+                robotDiv.style.display = 'flex';
+                fetchData();
+            } else {
+                btn.innerHTML = '<i class="fas fa-toggle-off"></i> 𝐓ắ𝐭 𝐑𝐨𝐛𝐨𝐭';
+                btn.classList.remove('lc79-active');
+                btn.classList.add('lc79-inactive');
+                robotDiv.style.display = 'none';
+            }
+            document.getElementById('lc79-menuCtrl').classList.remove('lc79-open');
+        };
+        
+        // DRAG FUNCTION
+        let offsetX, offsetY, isDragging = false;
+        
+        const onMouseMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            let x = e.clientX - offsetX;
+            let y = e.clientY - offsetY;
+            x = Math.max(0, Math.min(x, window.innerWidth - robotDiv.offsetWidth));
+            y = Math.max(0, Math.min(y, window.innerHeight - robotDiv.offsetHeight));
+            robotDiv.style.left = x + 'px';
+            robotDiv.style.top = y + 'px';
+        };
+        
+        const onMouseUp = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            robotDiv.style.cursor = 'grab';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+        
+        robotDiv.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.lc79-menu-button') || e.target.closest('.lc79-toggle-button')) return;
+            e.preventDefault();
+            isDragging = true;
+            const rect = robotDiv.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            robotDiv.style.cursor = 'grabbing';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        
+        robotDiv.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.lc79-menu-button') || e.target.closest('.lc79-toggle-button')) return;
+            const touch = e.touches[0];
+            const rect = robotDiv.getBoundingClientRect();
+            offsetX = touch.clientX - rect.left;
+            offsetY = touch.clientY - rect.top;
+            isDragging = true;
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            let x = touch.clientX - offsetX;
+            let y = touch.clientY - offsetY;
+            x = Math.max(0, Math.min(x, window.innerWidth - robotDiv.offsetWidth));
+            y = Math.max(0, Math.min(y, window.innerHeight - robotDiv.offsetHeight));
+            robotDiv.style.left = x + 'px';
+            robotDiv.style.top = y + 'px';
+        });
+        
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    }
 
-setInterval(loadAPI,1000);
+    function addFontAwesome() {
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            document.head.appendChild(link);
+        }
+    }
 
-</script>
-
-</body>
-</html>
+    addFontAwesome();
+    createUI();
+    setInterval(fetchData, REFRESH_MS);
+    fetchData();
+})();
