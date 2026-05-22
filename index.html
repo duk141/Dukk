@@ -849,18 +849,21 @@ function renderRoom(results){
   const stats =
     document.getElementById("stats");
 
-  if(stats){
+if(stats){
 
-    stats.innerHTML = `
+  stats.innerHTML = `
 
-      Banker: ${b}<br>
-      Player: ${p}<br>
-      Tie: ${t}<br>
-      Tổng lịch sử: ${results.length}
+    Banker: ${b}<br>
+    Player: ${p}<br>
+    Tie: ${t}<br>
+    Tổng lịch sử: ${results.length}
 
-    `;
+  `;
 
-  }
+}
+
+road.scrollLeft =
+road.scrollWidth;
 
 }
 
@@ -968,42 +971,6 @@ async function loadAPI(){
 
 });
 
-      /*
-      Nu API không có
-      */
-
-      if(!data){
-
-        data = [];
-
-      }
-
-      /*
-      Nu API tr:
-      "B,P,B,P"
-      */
-
-      if(typeof data === "string"){
-
-        data =
-          data.split(",");
-
-      }
-
-      /*
-      Ch nhn array
-      */
-
-      if(!Array.isArray(data)){
-
-        data = [];
-
-      }
-
-      allData[table] = data;
-
-    });
-
     renderLobby();
     const popup =
 document.getElementById("popup");
@@ -1055,7 +1022,7 @@ if(
 
 loadAPI();
 
-setInterval(loadAPI,150);
+setInterval(loadAPI,1000);
 
 </script>
 
