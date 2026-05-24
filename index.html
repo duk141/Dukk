@@ -1,879 +1,489 @@
-<!DOCTYPE html>  <html lang="vi">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport"  
-content="width=device-width, initial-scale=1.0">  <title>TX FLOAT</title>
-<style>  
-  
-*{  
-  margin:0;  
-  padding:0;  
-  box-sizing:border-box;  
-  font-family:Arial;  
-}  
-  
-body{  
-  overflow:hidden;  
-  background:#111;  
-}  
-  
-/* GAME */  
-  
-#game{  
-  position:fixed;  
-  inset:0;  
-  width:100%;  
-  height:100%;  
-  border:none;  
-}  
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-/* ROBOT */
+<title>AVIATOR SHA512 ANALYZER AI</title>
 
-#robot{
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
 
-  position:fixed;
+<style>
 
-  top:120px;
-  left:10px;
-
-  z-index:999999;
-
-  user-select:none;
-
-  touch-action:none;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
 }
 
-/* HEAD */
-
-#robotHead{
-
-  width:70px;
-  height:70px;
-
-  border-radius:50%;
-
-  background:#111;
-
-  border:4px solid #00ff90;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  font-size:34px;
-
-  box-shadow:
-  0 0 20px #00ff90;
-
-  margin:auto;
-
-  cursor:move;
-}
-
-/* BODY */
-
-#robotBody{
-
-  margin-top:8px;
-
-  width:220px;
-
-  background:#111;
-
-  border:2px solid #00ff90;
-
-  border-radius:20px;
-
-  padding:12px;
-
+body{
+  background:#0f1115;
   color:white;
-
-  box-shadow:
-  0 0 20px rgba(0,255,144,.5);
+  padding:15px;
 }
 
-/* TEXT */
+h1{
+  text-align:center;
+  margin-bottom:20px;
+  color:#00ffae;
+}
 
-.line{
+.box{
+  background:#1b1f27;
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:15px;
+  border:1px solid #2d3442;
+}
 
-  margin-bottom:10px;
+.title{
+  font-size:18px;
+  margin-bottom:12px;
+  color:#00ffae;
+}
 
+input,textarea{
+
+  width:100%;
+  background:#0b0d11;
+  border:none;
+  color:white;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
   font-size:15px;
 
+}
+
+button{
+
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  background:#00ffae;
+  color:black;
+  font-size:16px;
   font-weight:bold;
 
-  line-height:1.5;
 }
 
-.predictText{
+.result{
 
-  color:#00ff90;
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  background:#11151c;
+  line-height:1.8;
 
-  font-size:17px;
 }
 
-  
-</style> 
+.history{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
 
-</head> 
+.item{
 
-<body>  <!-- GAME -->  <iframe  
-id="game"  
-src="https://play.lc79.bet/">  
-</iframe>  <!-- FLOAT -->  
-<!-- ROBOT -->
+  min-width:70px;
+  text-align:center;
+  padding:10px;
+  border-radius:10px;
+  font-weight:bold;
 
-<div id="robot">
+}
 
-  <div id="robotHead">
-    🤖
-  </div>
+.red{
+  background:#ff4b4b;
+}
 
-  <div id="robotBody">
+.green{
+  background:#00c853;
+}
 
-    <div class="line">
-      📌 Phiên:
-      <span id="session">
-        #0000
-      </span>
-    </div>
+.yellow{
+  background:#ffb300;
+  color:black;
+}
 
-    <div class="line">
-      🎯 Ván trước:
-      <span id="result">
-        ...
-      </span>
-    </div>
+.predict{
 
-    <div class="line predictText">
-      🔮
-      <span id="predict">
-        ĐANG PHÂN TÍCH
-      </span>
-    </div>
+  font-size:24px;
+  text-align:center;
+  margin-top:15px;
+  font-weight:bold;
 
-    <div class="line">
-      📅
-      <span id="date">
-        ...
-      </span>
-    </div>
+}
 
-  </div>
+.bar{
+
+  width:100%;
+  height:20px;
+  background:#333;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:10px;
+
+}
+
+.fill{
+
+  height:100%;
+  width:0%;
+  background:#00ffae;
+
+}
+
+.live{
+
+  margin-top:12px;
+  font-size:15px;
+  line-height:1.8;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>AVIATOR AI ANALYZER</h1>
+
+<!-- VERIFY -->
+
+<div class="box">
+
+<div class="title">
+SHA512 VERIFY
+</div>
+
+<input
+id="server"
+placeholder="Server Seed"
+/>
+
+<input
+id="client"
+placeholder="Client Seed"
+/>
+
+<button onclick="verifyHash()">
+VERIFY HASH
+</button>
+
+<div class="result" id="verifyResult">
+...
+</div>
 
 </div>
+
+<!-- HASH -->
+
+<div class="box">
+
+<div class="title">
+HASH → CRASH
+</div>
+
+<input
+id="hashInput"
+placeholder="Nhập SHA512 Hash"
+/>
+
+<button onclick="hashToCrash()">
+TÍNH CRASH
+</button>
+
+<div class="result" id="crashResult">
+...
+</div>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="box">
+
+<div class="title">
+AI PREDICTOR
+</div>
+
+<textarea
+id="historyInput"
+rows="6"
+placeholder="1.12,1.44,2.55..."
+></textarea>
+
+<button onclick="analyzeAI()">
+PHÂN TÍCH AI
+</button>
+
+<div class="predict" id="predict">
+...
+</div>
+
+<div class="bar">
+<div class="fill" id="fill"></div>
+</div>
+
+<div class="history" id="history">
+</div>
+
+<div class="live" id="live">
+</div>
+
+</div>
+
 <script>
 
-// ===================
-// API
-// ===================
+let autoData = [];
 
-const API =
-"https://corsproxy.io/?https://strategy-cube-vinyl-warcraft.trycloudflare.com/api/txmd5";
+function verifyHash(){
 
-// ===================
-// DATA
-// ===================
+  let server =
+    document.getElementById("server")
+    .value.trim();
 
-let historyData =
-JSON.parse(
-localStorage.getItem("tx")
-) || [];
+  let client =
+    document.getElementById("client")
+    .value.trim();
 
-let lastSession = "";
+  let combined =
+    server + client;
 
-// ===================
-// NORMALIZE
-// ===================
+  let hash =
+    CryptoJS.SHA512(combined)
+    .toString();
 
-function normalizeResult(text){
+  document.getElementById("verifyResult")
+    .innerHTML = `
 
-  if(!text) return "";
+    SHA512:<br><br>
 
-  text = text
-  .toString()
-  .trim()
-  .toLowerCase();
+    ${hash}
 
-  if(
-    text.includes("tài")
-    || text.includes("tai")
-  ){
-    return "tai";
-  }
-
-  return "xiu";
-}
-
-// ===================
-// GET API
-// ===================
-
-async function getData(){
-
-  try{
-
-    let res =
-    await fetch(API,{
-
-      method:"GET",
-
-      cache:"no-cache",
-
-      headers:{
-        "Accept":"application/json"
-      }
-
-    });
-
-    if(!res.ok){
-
-      throw new Error("API ERROR");
-
-    }
-
-    let data =
-    await res.json();
-
-    console.log(data);
-
-    if(
-      !data
-      || !data.phien
-    ){
-      return;
-    }
-
-    let currentSession =
-    String(data.phien);
-
-    if(
-      currentSession
-      === lastSession
-    ){
-      return;
-    }
-
-    lastSession =
-    currentSession;
-
-    updateUI(data);
-
-  }catch(err){
-
-    console.log(
-      "API ERROR:",
-      err
-    );
-
-    document
-    .getElementById("predict")
-    .innerHTML =
-    "LỖI API";
-  }
-}
-
-// ===================
-// UPDATE UI
-// ===================
-
-function updateUI(data){
-
-  // SESSION
-
-  document
-  .getElementById("session")
-  .innerHTML =
-  "#" + data.phien;
-
-  // RESULT
-
-  let result =
-  normalizeResult(
-    data.ket_qua
-  );
-
-  document
-  .getElementById("result")
-  .innerHTML =
-  result==="tai"
-  ? "TÀI"
-  : "XỈU";
-
-  // HISTORY
-
-  historyData.push(result);
-
-  if(historyData.length > 20){
-
-    historyData.shift();
-
-  }
-
-  localStorage.setItem(
-    "tx",
-    JSON.stringify(historyData)
-  );
-
-  // PREDICT
-
-  let next =
-  analyze();
-
-  document
-  .getElementById("predict")
-  .innerHTML =
-  "DỰ ĐOÁN " + next;
-
-  // DATE
-
-  document
-  .getElementById("date")
-  .innerHTML =
-  data.update_at || "...";
+    `;
 
 }
 
-// ===================
-// AI
-// ===================
+function hashToCrash(){
 
-function analyze(){
+  let hash =
+    document.getElementById("hashInput")
+    .value.trim();
 
-  // =====================
-  // CHƯA ĐỦ DỮ LIỆU
-  // =====================
+  if(hash.length < 13){
 
-  if(historyData.length < 6){
-
-    return "ĐANG HỌC";
+    alert("Hash không hợp lệ");
+    return;
 
   }
 
-  // =====================
-  // DATA
-  // =====================
+  let hex =
+    hash.substring(0,13);
 
-  let h =
-  historyData;
+  let decimal =
+    parseInt(hex,16);
 
-  let last1 =
-  h[h.length-1];
+  let e =
+    Math.pow(2,52);
 
-  let last2 =
-  h[h.length-2];
+  let crash =
+    (100 * e - decimal) /
+    (e - decimal);
 
-  let last3 =
-  h.slice(-3);
+  crash =
+    Math.floor(crash)/100;
 
-  let last4 =
-  h.slice(-4);
+  document.getElementById("crashResult")
+    .innerHTML = `
 
-  let last5 =
-  h.slice(-5);
+    HEX:<br>
+    ${hex}
 
-  let last6 =
-  h.slice(-6);
+    <br><br>
 
-  let p3 =
-  last3.join("-");
+    DECIMAL:<br>
+    ${decimal}
 
-  let p4 =
-  last4.join("-");
+    <br><br>
 
-  let p5 =
-  last5.join("-");
+    CRASH:<br>
+    <b>${crash.toFixed(2)}x</b>
 
-  let p6 =
-  last6.join("-");
+    `;
 
-  // =====================
-  // ĐẾM 10 PHIÊN
-  // =====================
+}
 
-  let tai = 0;
-  let xiu = 0;
+function analyzeAI(){
 
-  h.slice(-10).forEach(i=>{
+  let raw =
+    document.getElementById("historyInput")
+    .value;
 
-    if(i==="tai"){
+  let arr =
+    raw.split(",")
+    .map(v=>parseFloat(v.trim()))
+    .filter(v=>!isNaN(v));
 
-      tai++;
+  autoData = arr;
 
-    }else{
+  renderHistory(arr);
 
-      xiu++;
+  aiPredict(arr);
 
+}
+
+function renderHistory(arr){
+
+  let html = "";
+
+  arr.slice().reverse().forEach(v=>{
+
+    let cls = "green";
+
+    if(v < 2){
+      cls = "red";
     }
+
+    if(v >= 10){
+      cls = "yellow";
+    }
+
+    html += `
+
+      <div class="item ${cls}">
+        ${v.toFixed(2)}x
+      </div>
+
+    `;
 
   });
 
-  // =====================
-  // CẦU BỆT
-  // =====================
-
-  // TTT
-
-  if(
-    last3.every(
-      x=>x==="tai"
-    )
-  ){
-
-    return "XỈU";
-
-  }
-
-  // XXX
-
-  if(
-    last3.every(
-      x=>x==="xiu"
-    )
-  ){
-
-    return "TÀI";
-
-  }
-
-  // =====================
-  // CẦU ĐƠN
-  // =====================
-
-  // T X T X
-
-  if(
-    p4===
-    "tai-xiu-tai-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-
-  // X T X T
-
-  if(
-    p4===
-    "xiu-tai-xiu-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // =====================
-  // CẦU ĐÔI
-  // =====================
-
-  // TT XX
-
-  if(
-    p4===
-    "tai-tai-xiu-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-
-  // XX TT
-
-  if(
-    p4===
-    "xiu-xiu-tai-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // =====================
-  // CẦU KÉP
-  // =====================
-
-  // TXX
-
-  if(
-    p3===
-    "tai-xiu-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-
-  // XTT
-
-  if(
-    p3===
-    "xiu-tai-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // =====================
-  // CẦU ĐẢO
-  // =====================
-
-  if(last1 !== last2){
-
-    return last1==="tai"
-    ? "XỈU"
-    : "TÀI";
-
-  }
-
-  // =====================
-  // CẦU 1-2-3
-  // =====================
-
-  // T XX TTT
-
-  if(
-    p6===
-    "tai-xiu-xiu-tai-tai-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // X TT XXX
-
-  if(
-    p6===
-    "xiu-tai-tai-xiu-xiu-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-
-  // =====================
-  // CẦU 3-2-1
-  // =====================
-
-  // TTT XX T
-
-  if(
-    p6===
-    "tai-tai-tai-xiu-xiu-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // XXX TT X
-
-  if(
-    p6===
-    "xiu-xiu-xiu-tai-tai-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-
-  // =====================
-  // CẦU 2-1-2
-  // =====================
-
-  // TT X TT
-
-  if(
-    p5===
-    "tai-tai-xiu-tai-tai"
-  ){
-
-    return "XỈU";
-
-  }
-
-  // XX T XX
-
-  if(
-    p5===
-    "xiu-xiu-tai-xiu-xiu"
-  ){
-
-    return "TÀI";
-
-  }
-  
-  // =====================
-// HỒI BỆT DÀI
-// TTT X TTTT
-// XXX T XXXX
-// =====================
-
-let p7 =
-h.slice(-7).join("-");
-
-if(
-  p7 ===
-  "tai-tai-tai-xiu-tai-tai-tai"
-){
-
-  return "TÀI";
+  document.getElementById("history")
+    .innerHTML = html;
 
 }
 
-if(
-  p7 ===
-  "xiu-xiu-xiu-tai-xiu-xiu-xiu"
-){
+function aiPredict(arr){
 
-  return "XỈU";
+  if(arr.length < 10){
 
-}
+    document.getElementById("predict")
+      .innerText = "LEARNING";
 
-// =====================
-// SIÊU BỆT
-// XXXX T XXXX
-// =====================
-
-let p9 =
-h.slice(-9).join("-");
-
-if(
-  p9 ===
-  "xiu-xiu-xiu-xiu-tai-xiu-xiu-xiu-xiu"
-){
-
-  return "XỈU";
-
-}
-
-if(
-  p9 ===
-  "tai-tai-tai-tai-xiu-tai-tai-tai-tai"
-){
-
-  return "TÀI";
-
-}
-
-  // =====================
-  // NGHIÊNG CẦU
-  // =====================
-
-  if(tai >= 8){
-
-    return "XỈU";
+    return;
 
   }
 
-  if(xiu >= 8){
+  let last10 =
+    arr.slice(-10);
 
-    return "TÀI";
+  let red =
+    last10.filter(v=>v<2).length;
 
-  }
+  let green =
+    last10.filter(v=>v>=2).length;
 
-  // =====================
-  // PHÂN TÍCH NHỊP
-  // =====================
+  let high =
+    last10.filter(v=>v>=10).length;
 
-  let streak = 1;
+  let avg =
+    last10.reduce((a,b)=>a+b,0)
+    / last10.length;
 
-  for(
-    let i=h.length-1;
-    i>0;
-    i--
-  ){
+  let confidence = 50;
 
-    if(h[i]===h[i-1]){
+  if(red >= 7){
 
-      streak++;
-
-    }else{
-
-      break;
-
-    }
-  }
-
-  // bệt dài đảo
-
-  if(streak >= 4){
-
-    return last1==="tai"
-    ? "XỈU"
-    : "TÀI";
+    confidence += 25;
 
   }
 
-  // =====================
-  // AI RANDOM THÔNG MINH
-  // =====================
+  if(avg < 2){
 
-  let scoreTai = 0;
-  let scoreXiu = 0;
+    confidence += 15;
 
-  // thống kê
+  }
 
-  if(tai > xiu){
+  if(high >= 2){
 
-    scoreTai += 2;
+    confidence -= 10;
+
+  }
+
+  if(confidence > 100){
+    confidence = 100;
+  }
+
+  let signal = "WAIT";
+
+  if(confidence >= 75){
+
+    signal = "🔥 HIGH GREEN";
+
+  }else if(confidence >= 60){
+
+    signal = "📈 POSSIBLE GREEN";
 
   }else{
 
-    scoreXiu += 2;
+    signal = "⚠️ LOW CONFIDENCE";
 
   }
 
-  // nhịp cuối
+  document.getElementById("predict")
+    .innerText = signal;
 
-  if(last1==="tai"){
+  document.getElementById("fill")
+    .style.width =
+    confidence + "%";
 
-    scoreTai++;
+  document.getElementById("live")
+    .innerHTML = `
 
-  }else{
+    🔴 Red (<2x):
+    ${red}
 
-    scoreXiu++;
+    <br>
 
-  }
+    🟢 Green (>=2x):
+    ${green}
 
-  // random nhẹ
+    <br>
 
-  let rand =
-  Math.random();
+    💥 High (10x+):
+    ${high}
 
-  if(rand > 0.5){
+    <br>
 
-    scoreTai++;
+    📊 AVG:
+    ${avg.toFixed(2)}x
 
-  }else{
+    <br>
 
-    scoreXiu++;
+    🎯 Confidence:
+    ${confidence}%
 
-  }
-
-  // =====================
-  // FINAL
-  // =====================
-
-  return scoreTai >= scoreXiu
-  ? "TÀI"
-  : "XỈU";
+    `;
 
 }
-
-// ===================
-// DRAG ROBOT
-// ===================
-
-const robot =
-document.getElementById("robot");
-
-let isDragging = false;
-
-let offsetX = 0;
-let offsetY = 0;
-
-// MOBILE
-
-robot.addEventListener(
-"touchstart",
-e=>{
-
-  isDragging = true;
-
-  offsetX =
-  e.touches[0].clientX
-  - robot.offsetLeft;
-
-  offsetY =
-  e.touches[0].clientY
-  - robot.offsetTop;
-});
-
-document.addEventListener(
-"touchmove",
-e=>{
-
-  if(!isDragging) return;
-
-  robot.style.left =
-  (
-    e.touches[0].clientX
-    - offsetX
-  ) + "px";
-
-  robot.style.top =
-  (
-    e.touches[0].clientY
-    - offsetY
-  ) + "px";
-});
-
-document.addEventListener(
-"touchend",
-()=>{
-
-  isDragging = false;
-
-});
-
-// PC
-
-robot.addEventListener(
-"mousedown",
-e=>{
-
-  isDragging = true;
-
-  offsetX =
-  e.clientX
-  - robot.offsetLeft;
-
-  offsetY =
-  e.clientY
-  - robot.offsetTop;
-});
-
-document.addEventListener(
-"mousemove",
-e=>{
-
-  if(!isDragging) return;
-
-  robot.style.left =
-  (
-    e.clientX
-    - offsetX
-  ) + "px";
-
-  robot.style.top =
-  (
-    e.clientY
-    - offsetY
-  ) + "px";
-});
-
-document.addEventListener(
-"mouseup",
-()=>{
-
-  isDragging = false;
-
-});
-
-// ===================
-// AUTO
-// ===================
-
-getData();
 
 setInterval(()=>{
 
-  getData();
+  if(autoData.length > 0){
 
-},3000);
+    aiPredict(autoData);
+
+  }
+
+},2000);
 
 </script>
+
+</body>
+</html>
