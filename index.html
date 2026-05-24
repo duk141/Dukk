@@ -112,6 +112,10 @@ button{
   background:#ec4899;
 }
 
+.S{
+  background:#6b7280;
+}
+
 #predict{
   text-align:center;
   font-size:26px;
@@ -172,6 +176,7 @@ HILO AI OVERLAY
 <div class="row">
 <button class="high" onclick="addResult('H')">HIGH</button>
 <button class="low" onclick="addResult('L')">LOW</button>
+<button class="ai" onclick="addResult('S')">SKIP</button>
 </div>
 
 <div class="row">
@@ -205,7 +210,12 @@ function render(){
 
     let div = document.createElement("div");
     div.className = "ball " + x;
-    div.innerText = x;
+    div.innerText =
+      x === 'H'
+      ? 'H'
+      : x === 'L'
+      ? 'L'
+      : 'S';
     history.appendChild(div);
 
   });
