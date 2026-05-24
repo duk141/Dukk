@@ -152,6 +152,7 @@ HILO AI OVERLAY
 <div class="card">
 <div>Bài hiện tại:</div>
 <select id="card" style="width:100%;padding:10px;margin-top:8px;border-radius:10px;font-size:18px;">
+<option value="1">A</option>
 <option value="2">2</option>
 <option value="3">3</option>
 <option value="4">4</option>
@@ -259,74 +260,58 @@ function analyze(){
     document.getElementById("card").value
   );
 
-  let scoreH = 0;
-  let scoreL = 0;
+  let predict = "SKIP";
+  let level = "DANGER";
 
+  // A nhỏ nhất
   if(card <= 4){
-    scoreH += 5;
-  }
-
-  if(card >= 10){
-    scoreL += 5;
-  }
-
-  if(card >=5 && card <=9){
-    scoreH += 1;
-    scoreL += 1;
-  }
-
-  let last = historyData.slice(-6);
-
-  let h = last.filter(x=>x==='H').length;
-  let l = last.filter(x=>x==='L').length;
-
-  if(h >= 4){
-    scoreL += 3;
-  }
-
-  if(l >= 4){
-    scoreH += 3;
-  }
-
-  let st = streak();
-
-  if(st >= 5){
-
-    if(historyData[historyData.length-1] === 'H'){
-      scoreL += 4;
-    }else{
-      scoreH += 4;
-    }
-
-  }
-
-  let predict = "";
-  let level = "";
-
-  if(scoreH > scoreL){
 
     predict = "HIGH";
+    level = "SAFE";
 
-    if(scoreH-scoreL >=4){
-      level = "SAFE";
-    }else{
-      level = "RISK";
-    }
+  }
 
-  }else if(scoreL > scoreH){
+  // J Q K
+  else if(card >= 11){
 
     predict = "LOW";
+    level = "SAFE";
 
-    if(scoreL-scoreH >=4){
-      level = "SAFE";
-    }else{
-      level = "RISK";
-    }
+  }
 
-  }else{
+  // 9 10
+  else if(card == 9 || card == 10){
+
+    predict = "LOW";
+    level = "RISK";
+
+  }
+
+  // 5 6 7 8
+  else {
 
     predict = "SKIP";
     level = "DANGER";
+
+  }
+
+  // cầu bệt
+  let last5 = historyData.slice(-5);
+
+  if(last5.length === 5){
+
+    let allH = last5.every(x=>x==='H');
+    let allL = last5.every(x=>x==='L');
+
+    if(allH){
+      predict = "LOW";
+      level = "SAFE";
+    }
+
+    if(allL){
+      predict = "HIGH";
+      level = "SAFE";
+    }
 
   }
 
@@ -337,15 +322,15 @@ function analyze(){
 
   document.getElementById("predict")
   .innerHTML = `
-  <div class="${cls}">${predict}</div>
-  <div style="font-size:15px;margin-top:5px;">${level}</div>
+    <div class="${cls}">${predict}</div>
+    <div style="font-size:15px;margin-top:5px;">${level}</div>
   `;
 
   document.getElementById("stats")
   .innerHTML = `
-  HIGH SCORE: ${scoreH} |
-  LOW SCORE: ${scoreL} |
-  STREAK: ${st}
+    A/2/3/4 = HIGH |
+    J/Q/K = LOW |
+    5/6/7/8 = SKIP
   `;
 
 }
