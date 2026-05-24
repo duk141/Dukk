@@ -2,11 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>AVIATOR SHA512 ANALYZER AI</title>
-
-<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HILO AI TOOL</title>
 
 <style>
 
@@ -18,470 +15,377 @@
 }
 
 body{
-  background:#0f1115;
+  background:#0f172a;
   color:white;
-  padding:15px;
+  overflow:hidden;
 }
 
-h1{
-  text-align:center;
-  margin-bottom:20px;
-  color:#00ffae;
+#floating{
+  position:fixed;
+  top:50px;
+  left:10px;
+  width:360px;
+  background:#111827;
+  border:2px solid #2563eb;
+  border-radius:18px;
+  z-index:999999;
+  box-shadow:0 0 25px rgba(0,0,0,.5);
 }
 
-.box{
-  background:#1b1f27;
-  border-radius:16px;
-  padding:15px;
-  margin-bottom:15px;
-  border:1px solid #2d3442;
-}
-
-.title{
-  font-size:18px;
-  margin-bottom:12px;
-  color:#00ffae;
-}
-
-input,textarea{
-
-  width:100%;
-  background:#0b0d11;
-  border:none;
-  color:white;
+#topbar{
   padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-  font-size:15px;
+  background:#1e3a8a;
+  border-radius:16px 16px 0 0;
+  font-weight:bold;
+  text-align:center;
+  cursor:move;
+}
 
+#content{
+  padding:12px;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
 }
 
 button{
-
-  width:100%;
-  padding:14px;
-  margin-top:12px;
+  flex:1;
   border:none;
-  border-radius:12px;
-  background:#00ffae;
-  color:black;
-  font-size:16px;
+  border-radius:10px;
+  padding:12px;
+  color:white;
   font-weight:bold;
-
+  font-size:16px;
 }
 
-.result{
+.high{
+  background:#ca8a04;
+}
 
-  margin-top:12px;
+.low{
+  background:#db2777;
+}
+
+.reset{
+  background:#dc2626;
+}
+
+.ai{
+  background:#2563eb;
+}
+
+.card{
+  background:#1f2937;
   padding:12px;
   border-radius:12px;
-  background:#11151c;
-  line-height:1.8;
-
+  margin-bottom:10px;
 }
 
-.history{
+#history{
   display:flex;
   flex-wrap:wrap;
-  gap:8px;
-  margin-top:10px;
+  gap:6px;
+  max-height:120px;
+  overflow:auto;
 }
 
-.item{
-
-  min-width:70px;
-  text-align:center;
-  padding:10px;
-  border-radius:10px;
+.ball{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
   font-weight:bold;
-
 }
 
-.red{
-  background:#ff4b4b;
-}
-
-.green{
-  background:#00c853;
-}
-
-.yellow{
-  background:#ffb300;
+.H{
+  background:#eab308;
   color:black;
 }
 
-.predict{
+.L{
+  background:#ec4899;
+}
 
-  font-size:24px;
+#predict{
   text-align:center;
-  margin-top:15px;
+  font-size:26px;
   font-weight:bold;
-
-}
-
-.bar{
-
-  width:100%;
-  height:20px;
-  background:#333;
-  border-radius:20px;
-  overflow:hidden;
   margin-top:10px;
-
 }
 
-.fill{
-
-  height:100%;
-  width:0%;
-  background:#00ffae;
-
+.safe{
+  color:#22c55e;
 }
 
-.live{
+.risk{
+  color:#f59e0b;
+}
 
-  margin-top:12px;
-  font-size:15px;
-  line-height:1.8;
+.danger{
+  color:#ef4444;
+}
 
+.small{
+  font-size:13px;
+  opacity:.8;
+  margin-top:4px;
 }
 
 </style>
 </head>
-
 <body>
 
-<h1>AVIATOR AI ANALYZER</h1>
+<div id="floating">
 
-<!-- VERIFY -->
-
-<div class="box">
-
-<div class="title">
-SHA512 VERIFY
+<div id="topbar">
+HILO AI OVERLAY
 </div>
 
-<input
-id="server"
-placeholder="Server Seed"
-/>
+<div id="content">
 
-<input
-id="client"
-placeholder="Client Seed"
-/>
-
-<button onclick="verifyHash()">
-VERIFY HASH
-</button>
-
-<div class="result" id="verifyResult">
-...
+<div class="card">
+<div>Bài hiện tại:</div>
+<select id="card" style="width:100%;padding:10px;margin-top:8px;border-radius:10px;font-size:18px;">
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">J</option>
+<option value="12">Q</option>
+<option value="13">K</option>
+<option value="14">A</option>
+</select>
 </div>
 
+<div class="row">
+<button class="high" onclick="addResult('H')">HIGH</button>
+<button class="low" onclick="addResult('L')">LOW</button>
 </div>
 
-<!-- HASH -->
-
-<div class="box">
-
-<div class="title">
-HASH → CRASH
+<div class="row">
+<button class="ai" onclick="analyze()">AI ANALYZE</button>
+<button class="reset" onclick="resetAll()">RESET</button>
 </div>
 
-<input
-id="hashInput"
-placeholder="Nhập SHA512 Hash"
-/>
+<div class="card">
+<div id="predict">WAIT...</div>
+<div class="small" id="stats"></div>
+</div>
 
-<button onclick="hashToCrash()">
-TÍNH CRASH
-</button>
-
-<div class="result" id="crashResult">
-...
+<div class="card">
+<div style="margin-bottom:10px;">LỊCH SỬ</div>
+<div id="history"></div>
 </div>
 
 </div>
-
-<!-- HISTORY -->
-
-<div class="box">
-
-<div class="title">
-AI PREDICTOR
-</div>
-
-<textarea
-id="historyInput"
-rows="6"
-placeholder="1.12,1.44,2.55..."
-></textarea>
-
-<button onclick="analyzeAI()">
-PHÂN TÍCH AI
-</button>
-
-<div class="predict" id="predict">
-...
-</div>
-
-<div class="bar">
-<div class="fill" id="fill"></div>
-</div>
-
-<div class="history" id="history">
-</div>
-
-<div class="live" id="live">
-</div>
-
 </div>
 
 <script>
 
-let autoData = [];
+let historyData = JSON.parse(localStorage.getItem("hilo_history") || "[]");
 
-function verifyHash(){
+function render(){
 
-  let server =
-    document.getElementById("server")
-    .value.trim();
+  const history = document.getElementById("history");
+  history.innerHTML = "";
 
-  let client =
-    document.getElementById("client")
-    .value.trim();
+  historyData.slice(-40).forEach(x=>{
 
-  let combined =
-    server + client;
-
-  let hash =
-    CryptoJS.SHA512(combined)
-    .toString();
-
-  document.getElementById("verifyResult")
-    .innerHTML = `
-
-    SHA512:<br><br>
-
-    ${hash}
-
-    `;
-
-}
-
-function hashToCrash(){
-
-  let hash =
-    document.getElementById("hashInput")
-    .value.trim();
-
-  if(hash.length < 13){
-
-    alert("Hash không hợp lệ");
-    return;
-
-  }
-
-  let hex =
-    hash.substring(0,13);
-
-  let decimal =
-    parseInt(hex,16);
-
-  let e =
-    Math.pow(2,52);
-
-  let crash =
-    (100 * e - decimal) /
-    (e - decimal);
-
-  crash =
-    Math.floor(crash)/100;
-
-  document.getElementById("crashResult")
-    .innerHTML = `
-
-    HEX:<br>
-    ${hex}
-
-    <br><br>
-
-    DECIMAL:<br>
-    ${decimal}
-
-    <br><br>
-
-    CRASH:<br>
-    <b>${crash.toFixed(2)}x</b>
-
-    `;
-
-}
-
-function analyzeAI(){
-
-  let raw =
-    document.getElementById("historyInput")
-    .value;
-
-  let arr =
-    raw.split(",")
-    .map(v=>parseFloat(v.trim()))
-    .filter(v=>!isNaN(v));
-
-  autoData = arr;
-
-  renderHistory(arr);
-
-  aiPredict(arr);
-
-}
-
-function renderHistory(arr){
-
-  let html = "";
-
-  arr.slice().reverse().forEach(v=>{
-
-    let cls = "green";
-
-    if(v < 2){
-      cls = "red";
-    }
-
-    if(v >= 10){
-      cls = "yellow";
-    }
-
-    html += `
-
-      <div class="item ${cls}">
-        ${v.toFixed(2)}x
-      </div>
-
-    `;
+    let div = document.createElement("div");
+    div.className = "ball " + x;
+    div.innerText = x;
+    history.appendChild(div);
 
   });
 
-  document.getElementById("history")
-    .innerHTML = html;
+  localStorage.setItem(
+    "hilo_history",
+    JSON.stringify(historyData)
+  );
 
 }
 
-function aiPredict(arr){
+function addResult(type){
 
-  if(arr.length < 10){
+  historyData.push(type);
+  render();
+  analyze();
 
-    document.getElementById("predict")
-      .innerText = "LEARNING";
+}
 
-    return;
+function resetAll(){
 
-  }
+  historyData = [];
+  render();
+  analyze();
 
-  let last10 =
-    arr.slice(-10);
+}
 
-  let red =
-    last10.filter(v=>v<2).length;
+function streak(){
 
-  let green =
-    last10.filter(v=>v>=2).length;
+  if(historyData.length === 0) return 0;
 
-  let high =
-    last10.filter(v=>v>=10).length;
+  let last = historyData[historyData.length-1];
+  let s = 0;
 
-  let avg =
-    last10.reduce((a,b)=>a+b,0)
-    / last10.length;
+  for(let i=historyData.length-1;i>=0;i--){
 
-  let confidence = 50;
-
-  if(red >= 7){
-
-    confidence += 25;
+    if(historyData[i] === last){
+      s++;
+    }else{
+      break;
+    }
 
   }
 
-  if(avg < 2){
+  return s;
 
-    confidence += 15;
+}
+
+function analyze(){
+
+  let card = parseInt(
+    document.getElementById("card").value
+  );
+
+  let scoreH = 0;
+  let scoreL = 0;
+
+  if(card <= 4){
+    scoreH += 5;
+  }
+
+  if(card >= 10){
+    scoreL += 5;
+  }
+
+  if(card >=5 && card <=9){
+    scoreH += 1;
+    scoreL += 1;
+  }
+
+  let last = historyData.slice(-6);
+
+  let h = last.filter(x=>x==='H').length;
+  let l = last.filter(x=>x==='L').length;
+
+  if(h >= 4){
+    scoreL += 3;
+  }
+
+  if(l >= 4){
+    scoreH += 3;
+  }
+
+  let st = streak();
+
+  if(st >= 5){
+
+    if(historyData[historyData.length-1] === 'H'){
+      scoreL += 4;
+    }else{
+      scoreH += 4;
+    }
 
   }
 
-  if(high >= 2){
+  let predict = "";
+  let level = "";
 
-    confidence -= 10;
+  if(scoreH > scoreL){
 
-  }
+    predict = "HIGH";
 
-  if(confidence > 100){
-    confidence = 100;
-  }
+    if(scoreH-scoreL >=4){
+      level = "SAFE";
+    }else{
+      level = "RISK";
+    }
 
-  let signal = "WAIT";
+  }else if(scoreL > scoreH){
 
-  if(confidence >= 75){
+    predict = "LOW";
 
-    signal = "🔥 HIGH GREEN";
-
-  }else if(confidence >= 60){
-
-    signal = "📈 POSSIBLE GREEN";
+    if(scoreL-scoreH >=4){
+      level = "SAFE";
+    }else{
+      level = "RISK";
+    }
 
   }else{
 
-    signal = "⚠️ LOW CONFIDENCE";
+    predict = "SKIP";
+    level = "DANGER";
 
   }
 
+  let cls = "safe";
+
+  if(level === "RISK") cls = "risk";
+  if(level === "DANGER") cls = "danger";
+
   document.getElementById("predict")
-    .innerText = signal;
+  .innerHTML = `
+  <div class="${cls}">${predict}</div>
+  <div style="font-size:15px;margin-top:5px;">${level}</div>
+  `;
 
-  document.getElementById("fill")
-    .style.width =
-    confidence + "%";
-
-  document.getElementById("live")
-    .innerHTML = `
-
-    🔴 Red (<2x):
-    ${red}
-
-    <br>
-
-    🟢 Green (>=2x):
-    ${green}
-
-    <br>
-
-    💥 High (10x+):
-    ${high}
-
-    <br>
-
-    📊 AVG:
-    ${avg.toFixed(2)}x
-
-    <br>
-
-    🎯 Confidence:
-    ${confidence}%
-
-    `;
+  document.getElementById("stats")
+  .innerHTML = `
+  HIGH SCORE: ${scoreH} |
+  LOW SCORE: ${scoreL} |
+  STREAK: ${st}
+  `;
 
 }
 
-setInterval(()=>{
+render();
+analyze();
 
-  if(autoData.length > 0){
+// DRAG MOBILE
 
-    aiPredict(autoData);
+const floating = document.getElementById("floating");
+const topbar = document.getElementById("topbar");
 
-  }
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
 
-},2000);
+topbar.addEventListener("touchstart", e=>{
+
+  isDragging = true;
+
+  offsetX = e.touches[0].clientX - floating.offsetLeft;
+  offsetY = e.touches[0].clientY - floating.offsetTop;
+
+});
+
+window.addEventListener("touchmove", e=>{
+
+  if(!isDragging) return;
+
+  floating.style.left =
+    (e.touches[0].clientX-offsetX)+"px";
+
+  floating.style.top =
+    (e.touches[0].clientY-offsetY)+"px";
+
+});
+
+window.addEventListener("touchend", ()=>{
+  isDragging = false;
+});
 
 </script>
 
