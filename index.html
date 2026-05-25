@@ -160,6 +160,41 @@ let rawCards = [];
 let data = [];
 
 // =======================
+// AUTO LOAD HISTORY
+// =======================
+const savedRaw =
+  localStorage.getItem("hilo_raw");
+
+const savedData =
+  localStorage.getItem("hilo_data");
+
+if(savedRaw && savedData){
+
+  rawCards = JSON.parse(savedRaw);
+  data = JSON.parse(savedData);
+
+  setTimeout(()=>{
+    render();
+  },100);
+}
+
+// =======================
+// SAVE HISTORY
+// =======================
+function saveHistory(){
+
+  localStorage.setItem(
+    "hilo_raw",
+    JSON.stringify(rawCards)
+  );
+
+  localStorage.setItem(
+    "hilo_data",
+    JSON.stringify(data)
+  );
+}
+
+// =======================
 // CARD => H/L
 // =======================
 function toHL(card){
@@ -182,20 +217,30 @@ function addCard(card){
 
   data.push(hl);
 
+  saveHistory();
+
   render();
 }
 
 // =======================
 function skip(){
+
   rawCards.push("S");
   data.push("S");
+
+  saveHistory();
+
   render();
 }
 
 // =======================
 function clearAll(){
+
   rawCards = [];
   data = [];
+
+  localStorage.clear();
+
   render();
 }
 
