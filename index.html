@@ -3,188 +3,304 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HiLo Deck AI</title>
+<title>HiLo A→K AI</title>
 
 <style>
+
 body{
   margin:0;
-  font-family:Arial;
+  padding:15px;
   background:#0f172a;
   color:white;
-  padding:15px;
+  font-family:Arial;
 }
 
 .box{
-  max-width:520px;
+  max-width:700px;
   margin:auto;
   background:#111827;
   padding:15px;
   border-radius:12px;
 }
 
-h2{text-align:center;}
-
-input{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border-radius:8px;
-  border:none;
-  margin-top:10px;
+h2{
+  text-align:center;
+  margin-bottom:15px;
 }
 
-.row{display:flex; gap:10px; margin-top:10px;}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
 
-button{
+.card-btn{
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#1e293b;
+  color:white;
+}
+
+.card-btn:hover{
+  opacity:0.9;
+}
+
+.low{
+  background:#16a34a;
+}
+
+.high{
+  background:#dc2626;
+}
+
+.control{
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+}
+
+.control button{
   flex:1;
   padding:12px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   font-weight:bold;
-  font-size:16px;
   cursor:pointer;
 }
 
-.add{background:#3b82f6;color:white;}
-.clear{background:#ef4444;color:white;width:100%;margin-top:10px;}
-
-#history{
-  margin-top:12px;
-  background:#0b1220;
-  padding:10px;
-  border-radius:8px;
-  font-size:14px;
+.clear{
+  background:#2563eb;
+  color:white;
 }
 
+.skip{
+  background:#f59e0b;
+  color:black;
+}
+
+#history,
 #ai{
-  margin-top:12px;
-  background:#1f2937;
-  padding:10px;
-  border-radius:8px;
+  margin-top:15px;
+  background:#0b1220;
+  padding:12px;
+  border-radius:10px;
   font-size:14px;
+  line-height:1.6;
 }
+
+.tag{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:6px;
+  margin-left:5px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.tag-low{
+  background:#16a34a;
+}
+
+.tag-high{
+  background:#dc2626;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="box">
-  <h2>🃏 HiLo A→K AI</h2>
 
-  <input id="cardInput" placeholder="Nhập: A,2,3...10,J,Q,K">
+  <h2>🃏 HiLo A → K AI</h2>
 
-  <div class="row">
-    <button class="add" onclick="addCard()">ADD</button>
+  <div class="cards">
+
+    <button class="card-btn low" onclick="addCard('A')">A</button>
+    <button class="card-btn low" onclick="addCard('2')">2</button>
+    <button class="card-btn low" onclick="addCard('3')">3</button>
+    <button class="card-btn low" onclick="addCard('4')">4</button>
+
+    <button class="card-btn low" onclick="addCard('5')">5</button>
+    <button class="card-btn low" onclick="addCard('6')">6</button>
+    <button class="card-btn low" onclick="addCard('7')">7</button>
+
+    <button class="card-btn high" onclick="addCard('8')">8</button>
+    <button class="card-btn high" onclick="addCard('9')">9</button>
+    <button class="card-btn high" onclick="addCard('10')">10</button>
+
+    <button class="card-btn high" onclick="addCard('J')">J</button>
+    <button class="card-btn high" onclick="addCard('Q')">Q</button>
+    <button class="card-btn high" onclick="addCard('K')">K</button>
+
   </div>
 
-  <button class="clear" onclick="clearAll()">CLEAR</button>
+  <div class="control">
+    <button class="skip" onclick="skip()">SKIP</button>
+    <button class="clear" onclick="clearAll()">CLEAR</button>
+  </div>
 
-  <div id="ai">AI: nhập dữ liệu</div>
-  <div id="history"></div>
+  <div id="ai">
+    AI: Chưa đủ dữ liệu
+  </div>
+
+  <div id="history">
+    History:
+  </div>
+
 </div>
 
 <script>
 
+let rawCards = [];
 let data = [];
 
-// =========================
-// MAP CARD → HIGH/LOW
-// =========================
+// =======================
+// CARD => H/L
+// =======================
 function toHL(card){
-
-  card = card.toUpperCase().trim();
 
   if(["A","2","3","4","5","6","7"].includes(card)){
     return "L";
   }
 
-  if(["8","9","10","J","Q","K"].includes(card)){
-    return "H";
-  }
-
-  return null;
+  return "H";
 }
 
-// =========================
-function addCard(){
+// =======================
+// ADD CARD
+// =======================
+function addCard(card){
 
-  let val = document.getElementById("cardInput").value;
+  rawCards.push(card);
 
-  let hl = toHL(val);
-
-  if(!hl){
-    alert("Sai input!");
-    return;
-  }
+  let hl = toHL(card);
 
   data.push(hl);
-  document.getElementById("cardInput").value = "";
 
   render();
 }
 
+// =======================
+function skip(){
+  rawCards.push("S");
+  data.push("S");
+  render();
+}
+
+// =======================
 function clearAll(){
+  rawCards = [];
   data = [];
   render();
 }
 
+// =======================
+// RENDER
+// =======================
 function render(){
-  document.getElementById("history").innerText =
-    "History: " + data.join(" ");
+
+  let html = "";
+
+  rawCards.forEach(c=>{
+
+    if(c==="S"){
+      html += "[SKIP] ";
+      return;
+    }
+
+    let type = toHL(c);
+
+    html += `
+      ${c}
+      <span class="tag ${type==='H' ? 'tag-high':'tag-low'}">
+        ${type}
+      </span>
+    `;
+  });
+
+  document.getElementById("history").innerHTML =
+    html || "History:";
 
   analyze();
 }
 
-// =========================
-// AI ENGINE
-// =========================
+// =======================
+// AI ANALYZE
+// =======================
 function analyze(){
 
-  if(data.length < 5){
-    document.getElementById("ai").innerText =
+  let seq = data.filter(x=>x!=="S");
+
+  if(seq.length < 5){
+
+    document.getElementById("ai").innerHTML =
       "AI: cần ít nhất 5 lá";
+
     return;
   }
 
-  let seq = data;
-
-  let last = seq[seq.length - 1];
-
-  // =====================
+  // ===================
   // STREAK
-  // =====================
+  // ===================
+  let last = seq[seq.length-1];
+
   let streak = 1;
+
   for(let i=seq.length-2;i>=0;i--){
-    if(seq[i] === last) streak++;
-    else break;
+
+    if(seq[i]===last){
+      streak++;
+    }else{
+      break;
+    }
   }
 
-  // =====================
-  // PATTERN CHECK
-  // =====================
-  let last5 = seq.slice(-5).join("");
+  // ===================
+  // PATTERN
+  // ===================
+  let last6 = seq.slice(-6).join("");
 
-  let is11 = (last5 === "HLHLH" || last5 === "LHLHL");
-  let is12 = (last5.includes("HLL") || last5.includes("LLH"));
+  let pattern = "Không rõ";
 
-  // =====================
+  if(last6==="HLHLHL" || last6==="LHLHLH"){
+    pattern = "🔁 Cầu 1-1";
+  }
+  else if(
+    last6.includes("HLL") ||
+    last6.includes("LHH")
+  ){
+    pattern = "📈 Cầu 1-2";
+  }
+  else if(streak>=3){
+    pattern = "🔥 Bệt";
+  }
+
+  // ===================
   // SẮP ĐẢO
-  // =====================
-  let soonReverse = false;
+  // ===================
+  let reverse = false;
 
-  if(streak >= 3) soonReverse = true;
-  if(is11 && seq.slice(-2).join("") !== "HL" && seq.slice(-2).join("") !== "LH"){
-    soonReverse = true;
+  if(streak>=3){
+    reverse = true;
   }
 
-  // =====================
+  // ===================
   // CẦU GÃY
-  // =====================
+  // ===================
   let broken = false;
 
   let flip = 0;
+
   for(let i=1;i<seq.length;i++){
-    if(seq[i] !== seq[i-1]) flip++;
+
+    if(seq[i]!==seq[i-1]){
+      flip++;
+    }
   }
 
   let flipRate = flip / seq.length;
@@ -193,38 +309,24 @@ function analyze(){
     broken = true;
   }
 
-  if(is12 && streak === 1){
-    broken = true;
-  }
-
-  // =====================
-  // OUTPUT
-  // =====================
+  // ===================
+  // AI OUTPUT
+  // ===================
   let msg = "";
 
-  msg += "🃏 Last: " + last + "<br>";
+  msg += "🧠 Pattern: " + pattern + "<br>";
   msg += "📊 Streak: " + last + " x" + streak + "<br>";
 
-  if(is11){
-    msg += "🔁 Cầu 1-1<br>";
-  }
-  else if(is12){
-    msg += "📈 Cầu 1-2<br>";
-  }
-  else{
-    msg += "❓ Cầu yếu<br>";
-  }
-
-  if(soonReverse){
-    msg += "⚠️ SẮP ĐẢO CẦU<br>";
+  if(reverse){
+    msg += "⚠️ Sắp đảo cầu<br>";
   }
 
   if(broken){
-    msg += "💥 CẦU GÃY / NHIỄU<br>";
+    msg += "💥 Cầu gãy / nhiễu<br>";
   }
 
-  if(!soonReverse && !broken){
-    msg += "🧠 Cầu ổn định<br>";
+  if(!reverse && !broken){
+    msg += "✅ Cầu ổn định<br>";
   }
 
   document.getElementById("ai").innerHTML = msg;
