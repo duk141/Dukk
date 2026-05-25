@@ -2,385 +2,253 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HILO AI TOOL</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MD5 Multi User Bot</title>
 
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,sans-serif;
-}
 
 body{
   background:#0f172a;
   color:white;
-  overflow:hidden;
+  font-family:Arial;
+  padding:20px;
 }
 
-#floating{
-  position:fixed;
-  top:50px;
-  left:10px;
-  width:360px;
+.box{
+  max-width:600px;
+  margin:auto;
   background:#111827;
-  border:2px solid #2563eb;
-  border-radius:18px;
-  z-index:999999;
-  box-shadow:0 0 25px rgba(0,0,0,.5);
+  padding:20px;
+  border-radius:20px;
 }
 
-#topbar{
-  padding:12px;
-  background:#1e3a8a;
-  border-radius:16px 16px 0 0;
-  font-weight:bold;
+h1{
   text-align:center;
-  cursor:move;
+  color:#38bdf8;
+  margin-bottom:20px;
 }
 
-#content{
-  padding:12px;
-}
-
-.row{
-  display:flex;
-  gap:8px;
+input{
+  width:100%;
+  height:50px;
   margin-bottom:10px;
+  border:none;
+  border-radius:10px;
+  padding:10px;
+  background:#1e293b;
+  color:white;
+  font-size:15px;
 }
 
 button{
-  flex:1;
+  width:100%;
+  height:50px;
+  background:#0ea5e9;
   border:none;
   border-radius:10px;
-  padding:12px;
   color:white;
+  font-size:18px;
   font-weight:bold;
-  font-size:16px;
+  cursor:pointer;
 }
 
-.high{
-  background:#ca8a04;
-}
-
-.low{
-  background:#db2777;
-}
-
-.reset{
-  background:#dc2626;
-}
-
-.ai{
-  background:#2563eb;
-}
-
-.card{
-  background:#1f2937;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:10px;
-}
-
-#history{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  max-height:120px;
-  overflow:auto;
-}
-
-.ball{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.H{
-  background:#eab308;
-  color:black;
-}
-
-.L{
-  background:#ec4899;
-}
-
-.S{
-  background:#6b7280;
-}
-
-#predict{
+.result{
+  margin-top:20px;
+  padding:15px;
+  background:#1e293b;
+  border-radius:10px;
   text-align:center;
-  font-size:26px;
-  font-weight:bold;
-  margin-top:10px;
 }
 
-.safe{
+.big{
   color:#22c55e;
-}
-
-.risk{
-  color:#f59e0b;
-}
-
-.danger{
-  color:#ef4444;
+  font-size:40px;
+  font-weight:bold;
 }
 
 .small{
-  font-size:13px;
-  opacity:.8;
-  margin-top:4px;
+  color:#ef4444;
+  font-size:40px;
+  font-weight:bold;
+}
+
+.info{
+  margin-top:10px;
+}
+
+.history{
+  margin-top:15px;
+}
+
+.item{
+  background:#1e293b;
+  padding:10px;
+  margin-bottom:8px;
+  border-radius:8px;
+  font-size:14px;
 }
 
 </style>
 </head>
+
 <body>
 
-<div id="floating">
+<div class="box">
 
-<div id="topbar">
-HILO AI OVERLAY
+<h1>MD5 TELEGRAM MULTI BOT</h1>
+
+<!-- TOKEN CHỈ NHẬP 1 LẦN -->
+<input id="token" placeholder="8825094691:AAFgqjoxw4URi117sZhmvcfEeFlMbeHreW4">
+
+<!-- MD5 USER -->
+<input id="md5" placeholder="User nhập MD5...">
+
+<button onclick="run()">
+DỰ ĐOÁN + GỬI TELEGRAM
+</button>
+
+<div class="result" id="result">
+Chưa có dữ liệu
 </div>
 
-<div id="content">
+<div class="history" id="history"></div>
 
-<div class="card">
-<div>Bài hiện tại:</div>
-<select id="card" style="width:100%;padding:10px;margin-top:8px;border-radius:10px;font-size:18px;">
-<option value="1">A</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option>
-<option value="11">J</option>
-<option value="12">Q</option>
-<option value="13">K</option>
-<option value="14">A</option>
-</select>
-</div>
-
-<div class="row">
-<button class="high" onclick="addResult('H')">HIGH</button>
-<button class="low" onclick="addResult('L')">LOW</button>
-<button class="ai" onclick="addResult('S')">SKIP</button>
-</div>
-
-<div class="row">
-<button class="ai" onclick="analyze()">AI ANALYZE</button>
-<button class="reset" onclick="resetAll()">RESET</button>
-</div>
-
-<div class="card">
-<div id="predict">WAIT...</div>
-<div class="small" id="stats"></div>
-</div>
-
-<div class="card">
-<div style="margin-bottom:10px;">LỊCH SỬ</div>
-<div id="history"></div>
-</div>
-
-</div>
 </div>
 
 <script>
 
-let historyData = JSON.parse(localStorage.getItem("hilo_history") || "[]");
+let historyData = [];
 
-function render(){
+// lưu token toàn cục
+let BOT_TOKEN = "";
 
-  const history = document.getElementById("history");
-  history.innerHTML = "";
+function run(){
 
-  historyData.slice(-40).forEach(x=>{
+  const tokenInput =
+    document.getElementById("token").value.trim();
 
-    let div = document.createElement("div");
-    div.className = "ball " + x;
-    div.innerText =
-      x === 'H'
-      ? 'H'
-      : x === 'L'
-      ? 'L'
-      : 'S';
-    history.appendChild(div);
+  const md5 =
+    document.getElementById("md5").value.trim().toLowerCase();
 
+  // lưu token 1 lần
+  if(tokenInput !== ""){
+    BOT_TOKEN = tokenInput;
+    localStorage.setItem("bot_token", BOT_TOKEN);
+  }
+
+  // load lại token nếu có
+  if(BOT_TOKEN === ""){
+    BOT_TOKEN = localStorage.getItem("bot_token") || "";
+  }
+
+  if(BOT_TOKEN === ""){
+    alert("Chưa có TOKEN");
+    return;
+  }
+
+  if(md5.length < 10){
+    alert("MD5 không hợp lệ");
+    return;
+  }
+
+  let big = 0;
+  let small = 0;
+
+  for(let c of md5){
+
+    if(/[0-9]/.test(c)){
+      let n = parseInt(c);
+      if(n >= 5) big += 2;
+      else small += 2;
+    }else{
+      let code = c.charCodeAt(0);
+      if(code % 2 === 0) big++;
+      else small++;
+    }
+
+  }
+
+  // chống lặp
+  if(historyData.length >= 2){
+    let a = historyData.at(-1);
+    let b = historyData.at(-2);
+
+    if(a === b){
+      if(a === "BIG") small += 4;
+      else big += 4;
+    }
+  }
+
+  let result = big >= small ? "BIG" : "SMALL";
+
+  let percent = Math.floor(
+    Math.max(big,small) / (big+small) * 100
+  );
+
+  historyData.push(result);
+
+  document.getElementById("result").innerHTML = `
+    <div class="${result === "BIG" ? "big" : "small"}">
+      ${result}
+    </div>
+    <div class="info">CONFIDENCE: ${percent}%</div>
+    <div class="info">MD5: ${md5}</div>
+  `;
+
+  renderHistory();
+
+  sendTelegram(result, percent, md5);
+
+}
+
+function renderHistory(){
+
+  let box = document.getElementById("history");
+  box.innerHTML = "";
+
+  historyData.slice().reverse().forEach((v,i)=>{
+    box.innerHTML += `
+      <div class="item">#${historyData.length-i} → ${v}</div>
+    `;
   });
 
-  localStorage.setItem(
-    "hilo_history",
-    JSON.stringify(historyData)
-  );
+}
+
+async function sendTelegram(result, percent, md5){
+
+  let text =
+`MD5 MULTI BOT
+
+MD5: ${md5}
+RESULT: ${result}
+CONFIDENCE: ${percent}%`;
+
+  try{
+
+    await fetch(
+      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          chat_id: "", 
+          text:text
+        })
+      }
+    );
+
+  }catch(e){
+    alert("Lỗi gửi Telegram");
+  }
 
 }
 
-function addResult(type){
-
-  historyData.push(type);
-  render();
-  analyze();
-
-}
-
-function resetAll(){
-
-  historyData = [];
-  render();
-  analyze();
-
-}
-
-function streak(){
-
-  if(historyData.length === 0) return 0;
-
-  let last = historyData[historyData.length-1];
-  let s = 0;
-
-  for(let i=historyData.length-1;i>=0;i--){
-
-    if(historyData[i] === last){
-      s++;
-    }else{
-      break;
-    }
-
-  }
-
-  return s;
-
-}
-
-function analyze(){
-
-  let card = parseInt(
-    document.getElementById("card").value
-  );
-
-  let predict = "SKIP";
-  let level = "DANGER";
-
-  // A nhỏ nhất
-  if(card <= 4){
-
-    predict = "HIGH";
-    level = "SAFE";
-
-  }
-
-  // J Q K
-  else if(card >= 11){
-
-    predict = "LOW";
-    level = "SAFE";
-
-  }
-
-  // 9 10
-  else if(card == 9 || card == 10){
-
-    predict = "LOW";
-    level = "RISK";
-
-  }
-
-  // 5 6 7 8
-  else {
-
-    predict = "SKIP";
-    level = "DANGER";
-
-  }
-
-  // cầu bệt
-  let last5 = historyData.slice(-5);
-
-  if(last5.length === 5){
-
-    let allH = last5.every(x=>x==='H');
-    let allL = last5.every(x=>x==='L');
-
-    if(allH){
-      predict = "LOW";
-      level = "SAFE";
-    }
-
-    if(allL){
-      predict = "HIGH";
-      level = "SAFE";
-    }
-
-  }
-
-  let cls = "safe";
-
-  if(level === "RISK") cls = "risk";
-  if(level === "DANGER") cls = "danger";
-
-  document.getElementById("predict")
-  .innerHTML = `
-    <div class="${cls}">${predict}</div>
-    <div style="font-size:15px;margin-top:5px;">${level}</div>
-  `;
-
-  document.getElementById("stats")
-  .innerHTML = `
-    A/2/3/4 = HIGH |
-    J/Q/K = LOW |
-    5/6/7/8 = SKIP
-  `;
-
-}
-
-render();
-analyze();
-
-// DRAG MOBILE
-
-const floating = document.getElementById("floating");
-const topbar = document.getElementById("topbar");
-
-let isDragging = false;
-let offsetX = 0;
-let offsetY = 0;
-
-topbar.addEventListener("touchstart", e=>{
-
-  isDragging = true;
-
-  offsetX = e.touches[0].clientX - floating.offsetLeft;
-  offsetY = e.touches[0].clientY - floating.offsetTop;
-
-});
-
-window.addEventListener("touchmove", e=>{
-
-  if(!isDragging) return;
-
-  floating.style.left =
-    (e.touches[0].clientX-offsetX)+"px";
-
-  floating.style.top =
-    (e.touches[0].clientY-offsetY)+"px";
-
-});
-
-window.addEventListener("touchend", ()=>{
-  isDragging = false;
-});
+// auto load token khi mở web
+window.onload = ()=>{
+  BOT_TOKEN = localStorage.getItem("bot_token") || "";
+};
 
 </script>
 
