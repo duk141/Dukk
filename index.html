@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HiLo Markov 2 AI</title>
+<title>HiLo Deck AI</title>
 
 <style>
 body{
@@ -24,6 +24,15 @@ body{
 
 h2{text-align:center;}
 
+input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:8px;
+  border:none;
+  margin-top:10px;
+}
+
 .row{display:flex; gap:10px; margin-top:10px;}
 
 button{
@@ -33,12 +42,11 @@ button{
   border-radius:8px;
   font-weight:bold;
   font-size:16px;
+  cursor:pointer;
 }
 
-.high{background:#ef4444;color:white;}
-.low{background:#22c55e;color:white;}
-.skip{background:#f59e0b;color:black;}
-.clear{background:#3b82f6;color:white;width:100%;margin-top:10px;}
+.add{background:#3b82f6;color:white;}
+.clear{background:#ef4444;color:white;width:100%;margin-top:10px;}
 
 #history{
   margin-top:12px;
@@ -61,17 +69,17 @@ button{
 <body>
 
 <div class="box">
-  <h2>🧠 Markov Bậc 2 HiLo AI</h2>
+  <h2>🃏 HiLo A→K AI</h2>
+
+  <input id="cardInput" placeholder="Nhập: A,2,3...10,J,Q,K">
 
   <div class="row">
-    <button class="high" onclick="add('H')">HIGH</button>
-    <button class="low" onclick="add('L')">LOW</button>
-    <button class="skip" onclick="add('S')">SKIP</button>
+    <button class="add" onclick="addCard()">ADD</button>
   </div>
 
   <button class="clear" onclick="clearAll()">CLEAR</button>
 
-  <div id="ai">AI: chưa đủ dữ liệu</div>
+  <div id="ai">AI: nhập dữ liệu</div>
   <div id="history"></div>
 </div>
 
@@ -79,8 +87,39 @@ button{
 
 let data = [];
 
-function add(v){
-  data.push(v);
+// =========================
+// MAP CARD → HIGH/LOW
+// =========================
+function toHL(card){
+
+  card = card.toUpperCase().trim();
+
+  if(["A","2","3","4","5","6","7"].includes(card)){
+    return "L";
+  }
+
+  if(["8","9","10","J","Q","K"].includes(card)){
+    return "H";
+  }
+
+  return null;
+}
+
+// =========================
+function addCard(){
+
+  let val = document.getElementById("cardInput").value;
+
+  let hl = toHL(val);
+
+  if(!hl){
+    alert("Sai input!");
+    return;
+  }
+
+  data.push(hl);
+  document.getElementById("cardInput").value = "";
+
   render();
 }
 
@@ -96,102 +135,99 @@ function render(){
   analyze();
 }
 
-// ============================
-// MARKOV ORDER 2 ENGINE
-// ============================
+// =========================
+// AI ENGINE
+// =========================
 function analyze(){
 
-  let seq = data.filter(x => x !== "S");
-
-  if(seq.length < 15){
+  if(data.length < 5){
     document.getElementById("ai").innerText =
-      "AI: cần ít nhất 15 phiên để học Markov bậc 2";
+      "AI: cần ít nhất 5 lá";
     return;
   }
 
-  // =========================
-  // 1. BUILD 2-STEP MATRIX
-  // =========================
-  let states = ["H","L"];
+  let seq = data;
 
-  let trans2 = {};
+  let last = seq[seq.length - 1];
 
-  for(let a of states){
-    for(let b of states){
-      trans2[a+b] = {H:0, L:0};
-    }
+  // =====================
+  // STREAK
+  // =====================
+  let streak = 1;
+  for(let i=seq.length-2;i>=0;i--){
+    if(seq[i] === last) streak++;
+    else break;
   }
 
-  // =========================
-  // 2. FILL TRANSITIONS
-  // =========================
-  for(let i=0;i<seq.length-2;i++){
+  // =====================
+  // PATTERN CHECK
+  // =====================
+  let last5 = seq.slice(-5).join("");
 
-    let key = seq[i] + seq[i+1];
-    let next = seq[i+2];
+  let is11 = (last5 === "HLHLH" || last5 === "LHLHL");
+  let is12 = (last5.includes("HLL") || last5.includes("LLH"));
 
-    if(trans2[key]){
-      trans2[key][next]++;
-    }
+  // =====================
+  // SẮP ĐẢO
+  // =====================
+  let soonReverse = false;
+
+  if(streak >= 3) soonReverse = true;
+  if(is11 && seq.slice(-2).join("") !== "HL" && seq.slice(-2).join("") !== "LH"){
+    soonReverse = true;
   }
 
-  // =========================
-  // 3. GET CURRENT STATE
-  // =========================
-  let last1 = seq[seq.length-2];
-  let last2 = seq[seq.length-1];
+  // =====================
+  // CẦU GÃY
+  // =====================
+  let broken = false;
 
-  let currentState = last1 + last2;
-
-  if(!trans2[currentState]){
-    document.getElementById("ai").innerText =
-      "AI: trạng thái chưa đủ dữ liệu";
-    return;
+  let flip = 0;
+  for(let i=1;i<seq.length;i++){
+    if(seq[i] !== seq[i-1]) flip++;
   }
 
-  let total = trans2[currentState].H + trans2[currentState].L;
+  let flipRate = flip / seq.length;
 
-  let pH = total ? trans2[currentState].H / total : 0;
-  let pL = total ? trans2[currentState].L / total : 0;
-
-  let predict = pH > pL ? "HIGH" : "LOW";
-  let confidence = Math.max(pH,pL) * 100;
-
-  // =========================
-  // 4. PATTERN INSIGHT
-  // =========================
-  let pattern = "";
-
-  if(currentState === "HH"){
-    pattern = "Sau HH → kiểm tra đảo hoặc bệt tiếp";
-  }
-  else if(currentState === "LL"){
-    pattern = "Sau LL → thường dễ đảo hoặc kéo dài";
-  }
-  else if(currentState === "HL"){
-    pattern = "HL = cầu gãy → biến động cao";
-  }
-  else if(currentState === "LH"){
-    pattern = "LH = đảo nhịp → dễ flip tiếp";
+  if(flipRate > 0.7){
+    broken = true;
   }
 
-  // =========================
-  // 5. TREND STRENGTH
-  // =========================
-  let stability =
-    total < 3 ? "Yếu (ít dữ liệu)"
-    : confidence > 0.65 ? "Rõ xu hướng"
-    : "Nhiễu / khó đoán";
+  if(is12 && streak === 1){
+    broken = true;
+  }
 
-  // =========================
-  // 6. OUTPUT
-  // =========================
-  document.getElementById("ai").innerHTML =
-    "🎯 Dự đoán: " + predict +
-    "<br>📊 Confidence: " + confidence.toFixed(1) + "%" +
-    "<br>🧩 State: " + currentState +
-    "<br>📈 Insight: " + pattern +
-    "<br>🧠 Strength: " + stability;
+  // =====================
+  // OUTPUT
+  // =====================
+  let msg = "";
+
+  msg += "🃏 Last: " + last + "<br>";
+  msg += "📊 Streak: " + last + " x" + streak + "<br>";
+
+  if(is11){
+    msg += "🔁 Cầu 1-1<br>";
+  }
+  else if(is12){
+    msg += "📈 Cầu 1-2<br>";
+  }
+  else{
+    msg += "❓ Cầu yếu<br>";
+  }
+
+  if(soonReverse){
+    msg += "⚠️ SẮP ĐẢO CẦU<br>";
+  }
+
+  if(broken){
+    msg += "💥 CẦU GÃY / NHIỄU<br>";
+  }
+
+  if(!soonReverse && !broken){
+    msg += "🧠 Cầu ổn định<br>";
+  }
+
+  document.getElementById("ai").innerHTML = msg;
 }
 
 </script>
