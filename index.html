@@ -2,253 +2,197 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>MD5 Multi User Bot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HiLo Markov 2 AI</title>
 
 <style>
-
 body{
+  margin:0;
+  font-family:Arial;
   background:#0f172a;
   color:white;
-  font-family:Arial;
-  padding:20px;
+  padding:15px;
 }
 
 .box{
-  max-width:600px;
+  max-width:520px;
   margin:auto;
   background:#111827;
-  padding:20px;
-  border-radius:20px;
+  padding:15px;
+  border-radius:12px;
 }
 
-h1{
-  text-align:center;
-  color:#38bdf8;
-  margin-bottom:20px;
-}
+h2{text-align:center;}
 
-input{
-  width:100%;
-  height:50px;
-  margin-bottom:10px;
-  border:none;
-  border-radius:10px;
-  padding:10px;
-  background:#1e293b;
-  color:white;
-  font-size:15px;
-}
+.row{display:flex; gap:10px; margin-top:10px;}
 
 button{
-  width:100%;
-  height:50px;
-  background:#0ea5e9;
+  flex:1;
+  padding:12px;
   border:none;
-  border-radius:10px;
-  color:white;
-  font-size:18px;
+  border-radius:8px;
   font-weight:bold;
-  cursor:pointer;
+  font-size:16px;
 }
 
-.result{
-  margin-top:20px;
-  padding:15px;
-  background:#1e293b;
-  border-radius:10px;
-  text-align:center;
-}
+.high{background:#ef4444;color:white;}
+.low{background:#22c55e;color:white;}
+.skip{background:#f59e0b;color:black;}
+.clear{background:#3b82f6;color:white;width:100%;margin-top:10px;}
 
-.big{
-  color:#22c55e;
-  font-size:40px;
-  font-weight:bold;
-}
-
-.small{
-  color:#ef4444;
-  font-size:40px;
-  font-weight:bold;
-}
-
-.info{
-  margin-top:10px;
-}
-
-.history{
-  margin-top:15px;
-}
-
-.item{
-  background:#1e293b;
+#history{
+  margin-top:12px;
+  background:#0b1220;
   padding:10px;
-  margin-bottom:8px;
   border-radius:8px;
   font-size:14px;
 }
 
+#ai{
+  margin-top:12px;
+  background:#1f2937;
+  padding:10px;
+  border-radius:8px;
+  font-size:14px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="box">
+  <h2>🧠 Markov Bậc 2 HiLo AI</h2>
 
-<h1>MD5 TELEGRAM MULTI BOT</h1>
+  <div class="row">
+    <button class="high" onclick="add('H')">HIGH</button>
+    <button class="low" onclick="add('L')">LOW</button>
+    <button class="skip" onclick="add('S')">SKIP</button>
+  </div>
 
-<!-- TOKEN CHỈ NHẬP 1 LẦN -->
-<input id="token" placeholder="8825094691:AAFgqjoxw4URi117sZhmvcfEeFlMbeHreW4">
+  <button class="clear" onclick="clearAll()">CLEAR</button>
 
-<!-- MD5 USER -->
-<input id="md5" placeholder="User nhập MD5...">
-
-<button onclick="run()">
-DỰ ĐOÁN + GỬI TELEGRAM
-</button>
-
-<div class="result" id="result">
-Chưa có dữ liệu
-</div>
-
-<div class="history" id="history"></div>
-
+  <div id="ai">AI: chưa đủ dữ liệu</div>
+  <div id="history"></div>
 </div>
 
 <script>
 
-let historyData = [];
+let data = [];
 
-// lưu token toàn cục
-let BOT_TOKEN = "";
+function add(v){
+  data.push(v);
+  render();
+}
 
-function run(){
+function clearAll(){
+  data = [];
+  render();
+}
 
-  const tokenInput =
-    document.getElementById("token").value.trim();
+function render(){
+  document.getElementById("history").innerText =
+    "History: " + data.join(" ");
 
-  const md5 =
-    document.getElementById("md5").value.trim().toLowerCase();
+  analyze();
+}
 
-  // lưu token 1 lần
-  if(tokenInput !== ""){
-    BOT_TOKEN = tokenInput;
-    localStorage.setItem("bot_token", BOT_TOKEN);
-  }
+// ============================
+// MARKOV ORDER 2 ENGINE
+// ============================
+function analyze(){
 
-  // load lại token nếu có
-  if(BOT_TOKEN === ""){
-    BOT_TOKEN = localStorage.getItem("bot_token") || "";
-  }
+  let seq = data.filter(x => x !== "S");
 
-  if(BOT_TOKEN === ""){
-    alert("Chưa có TOKEN");
+  if(seq.length < 15){
+    document.getElementById("ai").innerText =
+      "AI: cần ít nhất 15 phiên để học Markov bậc 2";
     return;
   }
 
-  if(md5.length < 10){
-    alert("MD5 không hợp lệ");
+  // =========================
+  // 1. BUILD 2-STEP MATRIX
+  // =========================
+  let states = ["H","L"];
+
+  let trans2 = {};
+
+  for(let a of states){
+    for(let b of states){
+      trans2[a+b] = {H:0, L:0};
+    }
+  }
+
+  // =========================
+  // 2. FILL TRANSITIONS
+  // =========================
+  for(let i=0;i<seq.length-2;i++){
+
+    let key = seq[i] + seq[i+1];
+    let next = seq[i+2];
+
+    if(trans2[key]){
+      trans2[key][next]++;
+    }
+  }
+
+  // =========================
+  // 3. GET CURRENT STATE
+  // =========================
+  let last1 = seq[seq.length-2];
+  let last2 = seq[seq.length-1];
+
+  let currentState = last1 + last2;
+
+  if(!trans2[currentState]){
+    document.getElementById("ai").innerText =
+      "AI: trạng thái chưa đủ dữ liệu";
     return;
   }
 
-  let big = 0;
-  let small = 0;
+  let total = trans2[currentState].H + trans2[currentState].L;
 
-  for(let c of md5){
+  let pH = total ? trans2[currentState].H / total : 0;
+  let pL = total ? trans2[currentState].L / total : 0;
 
-    if(/[0-9]/.test(c)){
-      let n = parseInt(c);
-      if(n >= 5) big += 2;
-      else small += 2;
-    }else{
-      let code = c.charCodeAt(0);
-      if(code % 2 === 0) big++;
-      else small++;
-    }
+  let predict = pH > pL ? "HIGH" : "LOW";
+  let confidence = Math.max(pH,pL) * 100;
 
+  // =========================
+  // 4. PATTERN INSIGHT
+  // =========================
+  let pattern = "";
+
+  if(currentState === "HH"){
+    pattern = "Sau HH → kiểm tra đảo hoặc bệt tiếp";
+  }
+  else if(currentState === "LL"){
+    pattern = "Sau LL → thường dễ đảo hoặc kéo dài";
+  }
+  else if(currentState === "HL"){
+    pattern = "HL = cầu gãy → biến động cao";
+  }
+  else if(currentState === "LH"){
+    pattern = "LH = đảo nhịp → dễ flip tiếp";
   }
 
-  // chống lặp
-  if(historyData.length >= 2){
-    let a = historyData.at(-1);
-    let b = historyData.at(-2);
+  // =========================
+  // 5. TREND STRENGTH
+  // =========================
+  let stability =
+    total < 3 ? "Yếu (ít dữ liệu)"
+    : confidence > 0.65 ? "Rõ xu hướng"
+    : "Nhiễu / khó đoán";
 
-    if(a === b){
-      if(a === "BIG") small += 4;
-      else big += 4;
-    }
-  }
-
-  let result = big >= small ? "BIG" : "SMALL";
-
-  let percent = Math.floor(
-    Math.max(big,small) / (big+small) * 100
-  );
-
-  historyData.push(result);
-
-  document.getElementById("result").innerHTML = `
-    <div class="${result === "BIG" ? "big" : "small"}">
-      ${result}
-    </div>
-    <div class="info">CONFIDENCE: ${percent}%</div>
-    <div class="info">MD5: ${md5}</div>
-  `;
-
-  renderHistory();
-
-  sendTelegram(result, percent, md5);
-
+  // =========================
+  // 6. OUTPUT
+  // =========================
+  document.getElementById("ai").innerHTML =
+    "🎯 Dự đoán: " + predict +
+    "<br>📊 Confidence: " + confidence.toFixed(1) + "%" +
+    "<br>🧩 State: " + currentState +
+    "<br>📈 Insight: " + pattern +
+    "<br>🧠 Strength: " + stability;
 }
-
-function renderHistory(){
-
-  let box = document.getElementById("history");
-  box.innerHTML = "";
-
-  historyData.slice().reverse().forEach((v,i)=>{
-    box.innerHTML += `
-      <div class="item">#${historyData.length-i} → ${v}</div>
-    `;
-  });
-
-}
-
-async function sendTelegram(result, percent, md5){
-
-  let text =
-`MD5 MULTI BOT
-
-MD5: ${md5}
-RESULT: ${result}
-CONFIDENCE: ${percent}%`;
-
-  try{
-
-    await fetch(
-      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          chat_id: "", 
-          text:text
-        })
-      }
-    );
-
-  }catch(e){
-    alert("Lỗi gửi Telegram");
-  }
-
-}
-
-// auto load token khi mở web
-window.onload = ()=>{
-  BOT_TOKEN = localStorage.getItem("bot_token") || "";
-};
 
 </script>
 
