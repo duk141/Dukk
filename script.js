@@ -4,18 +4,28 @@
 let selectedPackage = null;
 let currentUser = null;
 let currentRandomMemo = "";
+let bcrAutoInterval = null;
+let activeApiEndpoint = localStorage.getItem('baccarat_api_endpoint') || 'https://bcr-mimr.onrender.com/api/sexy';
 
-// Sao chép văn bản
+function changeApiEndpoint() {
+    let newUrl = prompt("Nhập URL Endpoint Sexy Baccarat API:", activeApiEndpoint);
+    if (newUrl && newUrl.trim() !== "") {
+        activeApiEndpoint = newUrl.trim();
+        localStorage.setItem('baccarat_api_endpoint', activeApiEndpoint);
+        alert("Đã cập nhật Endpoint API thành công!");
+        fetchBaccaratAPI();
+    }
+}
+
 function copyText(text) {
     if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
         alert("Đã sao chép: " + text);
-    }).catch(() => {
+    }).catch(err => {
         alert("Lỗi sao chép!");
     });
 }
 
-// Tạo cú pháp chuyển khoản ngẫu nhiên
 function generateRandomMemo() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = 'KEY';
@@ -25,7 +35,6 @@ function generateRandomMemo() {
     return result;
 }
 
-// Xử lý chọn gói cước nạp tiền & Tạo mã VietQR
 function selectKeyPackage(evt, price, timeText) {
     selectedPackage = { price, timeText };
     const qrSection = document.getElementById('qr-section');
@@ -40,9 +49,9 @@ function selectKeyPackage(evt, price, timeText) {
 
     currentRandomMemo = generateRandomMemo();
     
-    let bankCode = "MB"; 
-    let accountNo = "888881415"; 
-    let accountName = "TRUONG NGUYEN THANH DANH"; 
+    let bankCode = "MB";
+    let accountNo = "888881415";
+    let accountName = "TRUONG NGUYEN THANH DANH";
     
     let qrUrl = `https://api.vietqr.io/image/${bankCode}-${accountNo}-compact2.png?amount=${price}&addInfo=${encodeURIComponent(currentRandomMemo)}&accountName=${encodeURIComponent(accountName)}`;
 
@@ -86,7 +95,6 @@ function simulatePaymentSuccess() {
     updateUserExpiryDisplay();
 }
 
-// Kích hoạt Mã Key nhập thủ công
 function activateManualKey() {
     const keyInput = document.getElementById('manual-key-input').value.trim();
     const resultBox = document.getElementById('key-result-box');
@@ -130,7 +138,7 @@ function updateUserExpiryDisplay() {
 }
 
 /* =============================================================
-   THUẬT TOÁN HASH MD5 / SHA256
+   BIẾN TOÀN CỤC THUẬT TOÁN HASH THUẦN
 ============================================================= */
 let correct = 0, wrong = 0;
 let historyList = [];
@@ -232,13 +240,11 @@ function analyze() {
         if (mode === "vip") {
             result = (totalByteValue + seed) % 2 === 0 ? "TÀI" : "XỈU";
             confidence = Math.floor((seed % 12) + 87);
-            
             let baseRatio = (totalByteValue % 25) + 65;
             tai_percent = result === "TÀI" ? baseRatio : (100 - baseRatio);
         } else {
             result = Math.floor(parseFloat(entropy) * 100) % 2 === 0 ? "TÀI" : "XỈU";
             confidence = Math.floor((seed % 25) + 55);
-            
             let baseRatio = (totalByteValue % 30) + 50; 
             tai_percent = result === "TÀI" ? baseRatio : (100 - baseRatio);
         }
@@ -301,6 +307,19 @@ function switchTab(tabName) {
             if (menu) menu.classList.remove('active');
         }
     });
+
+    if (tabName === 'baccarat') {
+        fetchBaccaratAPI();
+        if (!bcrAutoInterval) {
+            bcrAutoInterval = setInterval(fetchBaccaratAPI, 7000);
+        }
+    } else {
+        if (bcrAutoInterval) {
+            clearInterval(bcrAutoInterval);
+            bcrAutoInterval = null;
+        }
+    }
+
     document.getElementById('neon-container').scrollTop = 0;
     const sidebar = document.getElementById('sidebar');
     if (sidebar.classList.contains('active')) toggleSidebar();
@@ -383,7 +402,7 @@ function animate() {
 animate();
 
 /* =============================================================
-   XỬ LÝ ĐĂNG NHẬP & HỒ SƠ (ĐÃ CẬP NHẬT DÙNG SESSIONSTORAGE)
+   AUTHENTICATION & USER PROFILE
 ============================================================= */
 let isLoginMode = true;
 document.addEventListener("DOMContentLoaded", () => { checkAutoLogin(); });
@@ -405,8 +424,7 @@ function toggleAuthMode() {
     } else {
         title.innerText = "Register System";
         btnAction.innerText = "Tạo Tài Khoản";
-        toggleText.innerText = "Đã có tài khoản?";
-        toggleLink.innerText = "Đăng nhập";
+        toggleText.innerText = "Đăng nhập";
     }
 }
 
@@ -420,8 +438,6 @@ function handleAuth() {
 
     if (isLoginMode) {
         if ((user === "admin" && pass === "123456") || (users[user] && users[user] === pass)) {
-            // Lưu cả vào sessionStorage để tab ẩn danh duy trì trạng thái khi refresh
-            sessionStorage.setItem('logged_in_user', user);
             localStorage.setItem('logged_in_user', user);
             currentUser = user;
             showMainScreen(user);
@@ -446,7 +462,7 @@ function showMessage(element, text, type) {
 }
 
 function checkAutoLogin() {
-    const loggedUser = sessionStorage.getItem('logged_in_user') || localStorage.getItem('logged_in_user');
+    const loggedUser = localStorage.getItem('logged_in_user');
     if (loggedUser) {
         currentUser = loggedUser;
         showMainScreen(loggedUser);
@@ -462,7 +478,6 @@ function showMainScreen(username) {
 }
 
 function handleLogout() {
-    sessionStorage.removeItem('logged_in_user');
     localStorage.removeItem('logged_in_user');
     currentUser = null;
     document.getElementById('username').value = "";
@@ -472,7 +487,7 @@ function handleLogout() {
 }
 
 function saveUserProfile() {
-    const loggedUser = sessionStorage.getItem('logged_in_user') || localStorage.getItem('logged_in_user');
+    const loggedUser = localStorage.getItem('logged_in_user');
     if (!loggedUser) return;
 
     const nickname = document.getElementById('profile-nickname').value.trim();
@@ -693,162 +708,282 @@ function updateBankRoadmapUI() {
 }
 
 /* =============================================================
-   BACCARAT AI ENGINE PRO
+   BACCARAT AUTOMATED REAL-TIME API ENGINE & CORS FALLBACK
 ============================================================= */
-let baccaratHistory = [];
+let globalBaccaratData = [];
 
-function addBaccaratResult(type) { baccaratHistory.push(type); updateBaccaratUI(); }
-function popBaccaratResult() { if (baccaratHistory.length > 0) { baccaratHistory.pop(); updateBaccaratUI(); } }
-function clearBaccaratHistory() { baccaratHistory = []; updateBaccaratUI(); }
+async function fetchBaccaratAPI() {
+    const apiStatus = document.getElementById('api-status');
 
-function analyzeBaccaratAlgorithm(history, pCount, bCount, tCount) {
-    const cleanList = history.filter(x => x === 'P' || x === 'B');
-    const n = cleanList.length;
+    if (apiStatus) {
+        apiStatus.innerText = "Đang quét API...";
+        apiStatus.style.color = "#00f3ff";
+    }
 
-    if (n < 2) {
+    const primaryUrl = activeApiEndpoint;
+    const corsProxies = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(primaryUrl),
+        'https://corsproxy.io/?' + encodeURIComponent(primaryUrl)
+    ];
+
+    let rawData = null;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        let res = await fetch(primaryUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) rawData = await res.json();
+    } catch (e) {
+        console.warn("Lỗi Fetch trực tiếp, chuyển sang proxy CORS...", e);
+    }
+
+    if (!rawData) {
+        for (let proxyUrl of corsProxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                let res = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    rawData = await res.json();
+                    break;
+                }
+            } catch (err) {
+                console.warn("Lỗi Proxy: " + proxyUrl, err);
+            }
+        }
+    }
+
+    if (rawData) {
+        renderBaccaratTables(rawData);
+        if (apiStatus) {
+            const now = new Date().toLocaleTimeString('vi-VN');
+            apiStatus.innerText = `Live API (${now})`;
+            apiStatus.style.color = "#00ff66";
+        }
+    } else {
+        console.warn("Server API chưa sẵn sàng hoặc timeout. Chuyển sang mô phỏng...");
+        if (apiStatus) {
+            apiStatus.innerText = "Đang dùng API Mô Phỏng (Fallback)";
+            apiStatus.style.color = "#ffd700";
+        }
+        renderFallbackBaccaratData();
+    }
+}
+
+function extractTableName(tbl, index) {
+    let rawName = tbl.tableName || tbl.tableNo || tbl.tableId || tbl.tableCode || tbl.code || tbl.id || tbl.name || `${index + 1}`;
+    rawName = String(rawName).trim();
+    if (/^bàn/i.test(rawName)) return rawName;
+    return `Bàn ${rawName}`;
+}
+
+function parseRawHistory(tbl) {
+    let historyArr = [];
+    const possibleFields = ['history', 'roadmap', 'results', 'data', 'beadRoad', 'records', 'shoal', 'rounds'];
+    
+    for (let field of possibleFields) {
+        if (tbl[field]) {
+            if (Array.isArray(tbl[field])) {
+                historyArr = tbl[field];
+                break;
+            } else if (typeof tbl[field] === 'string') {
+                historyArr = tbl[field].split('');
+                break;
+            }
+        }
+    }
+
+    return historyArr.map(item => {
+        if (typeof item === 'object' && item !== null) {
+            return item.winner || item.result || item.res || item.val || 'T';
+        }
+        return item;
+    });
+}
+
+function computeAIPrediction(historyList) {
+    if (!historyList || !Array.isArray(historyList) || historyList.length < 2) {
         return { 
-            pick: "CHỜ THÊM CẦU", rate: "50%", pattern: "Cần tối thiểu 2 ván P/B để kích hoạt ma trận phân tích", 
-            algo: "Thuật toán PRNG Xác suất Tĩnh", color: "#a0a0c0", advice: "Vui lòng nhập thêm kết quả."
+            pick: "CHỜ CẦU", 
+            rate: "50%", 
+            badgeClass: "badge-tie",
+            reason: "Dữ liệu bàn chơi đang được cập nhật thêm..." 
         };
     }
 
-    const last = cleanList[n - 1];
-    const prev1 = cleanList[n - 2];
-    const prev2 = n >= 3 ? cleanList[n - 3] : null;
-    const prev3 = n >= 4 ? cleanList[n - 4] : null;
+    const clean = historyList
+        .map(x => String(x).toUpperCase().trim())
+        .filter(x => ['P', 'B', 'PLAYER', 'BANKER', '1', '2', 'BLUE', 'RED'].includes(x))
+        .map(x => (['P', 'PLAYER', '1', 'BLUE'].includes(x) ? 'P' : 'B'));
 
-    let pick = "", pattern = "", rate = 65, algo = "", advice = "";
+    if (clean.length < 2) {
+        return { pick: "CHỜ CẦU", rate: "50%", badgeClass: "badge-tie", reason: "Chưa đủ số ván cược để phân tích cầu AI" };
+    }
+
+    const last = clean[clean.length - 1];
+    const prev = clean[clean.length - 2];
 
     let streak = 0;
-    for (let i = n - 1; i >= 0; i--) {
-        if (cleanList[i] === last) streak++;
+    for (let i = clean.length - 1; i >= 0; i--) {
+        if (clean[i] === last) streak++;
         else break;
     }
 
-    if (streak >= 4) {
-        pick = last; pattern = `Cầu Bệt dài ${streak} ván ${last} (Long Dragon)`;
-        algo = "Thuật toán Ma Trận Lịch Sử (Roadmap Vector Engine)"; rate = Math.min(88, 75 + streak * 2);
-        advice = "Tuyệt đối KHÔNG bẻ cầu! Đánh thuận dòng cầu bệt đến khi đứt.";
-    } 
-    else if (n >= 4 && last !== prev1 && prev1 !== prev2 && prev2 !== prev3) {
-        pick = last === 'P' ? 'B' : 'P'; pattern = "Cầu Nhảy 1-1 (Alternating Pattern)";
-        algo = "Thuật toán Ma Trận Dịch Chuyển Véc-tơ (N-1)"; rate = 82; advice = "Đánh xoay chiều luân phiên theo nhịp 1-1.";
-    }
-    else if (n >= 4 && last === prev1 && prev1 !== prev2 && prev2 === prev3) {
-        pick = last === 'P' ? 'B' : 'P'; pattern = "Cầu Kép 2-2 (Double Pattern)";
-        algo = "Thuật toán Chu Kỳ Chuỗi Đối Xứng"; rate = 78; advice = "Đủ bộ đôi 2 ván, chủ động bẻ nhịp sang cửa đối lập.";
-    }
-    else if (n >= 3 && last !== prev1 && prev1 === prev2) {
-        pick = prev1; pattern = "Cầu 1-2 / 1-3 (Sub-alternating Pattern)";
-        algo = "Thuật toán Roadmap Cockroach Pig"; rate = 74; advice = "Đánh nối theo nhịp cầu phụ 2 ván trùng.";
-    }
-    else if (Math.abs(pCount - bCount) >= 4) {
-        pick = pCount > bCount ? 'B' : 'P'; const diff = Math.abs(pCount - bCount);
-        pattern = `Cầu Nghiêng / Lệch Cân Bằng (${diff} ván)`;
-        algo = "Thuật toán Cân Bằng Dòng Tiền Nhà Cái (Balance Engine)"; rate = 76;
-        advice = `Tỷ lệ nghiêng cao về ${pCount > bCount ? 'PLAYER' : 'BANKER'}. Ưu tiên đánh trả ván cho cửa còn lại.`;
-    }
-    else if (n >= 6 && streak === 1 && Math.abs(pCount - bCount) <= 1) {
-        pick = last === 'P' ? 'B' : 'P'; pattern = "Cầu Dây Thừng / Lộn Xộn (Random Noise)";
-        algo = "Thuật toán Nhiễu Dữ Liệu PRNG Máy"; rate = 60; advice = "Cầu biến thể nhiễu cao. Nên giảm mức cược hoặc đổi bàn!";
-    }
-    else {
-        pick = last === 'P' ? 'B' : 'P'; pattern = "Cầu Ngắn Swapping (1-1 / 2-1 linh hoạt)";
-        algo = "Thuật toán Mô Phỏng Monte Carlo"; rate = 66; advice = "Đánh đảo chiều nhẹ nhàng theo chu kỳ ván trước.";
+    let pick = "P";
+    let rate = "75%";
+    let reason = "";
+
+    if (streak >= 3) {
+        pick = last;
+        rate = `${Math.min(94, 80 + streak * 3)}%`;
+        reason = `Phát hiện CẦU BỆT ${streak} tay ${pick === 'P' ? 'PLAYER' : 'BANKER'}. Theo đà bệt!`;
+    } else if (last !== prev) {
+        pick = last === 'P' ? 'B' : 'P';
+        rate = "83%";
+        reason = `Cầu nhảy 1-1 đối lập nhịp nhàng. Ưu tiên bẻ sang cửa ${pick === 'P' ? 'PLAYER' : 'BANKER'}.`;
+    } else {
+        pick = last === 'P' ? 'B' : 'P';
+        rate = "78%";
+        reason = `Thuật toán bẻ nhịp đôi 2-2. Đặt cửa ${pick === 'P' ? 'PLAYER' : 'BANKER'}.`;
     }
 
-    if (tCount / history.length > 0.15) { advice += " (Cảnh báo: Tần suất Hòa TIE cao > 15%)"; }
+    const fullPickName = pick === 'P' ? 'PLAYER' : 'BANKER';
+    const badgeClass = pick === 'P' ? 'badge-player' : 'badge-banker';
 
-    const color = pick === 'P' ? '#00a2ff' : pick === 'B' ? '#ff0055' : '#00f3ff';
-    return { pick, rate: `${rate}%`, pattern, algo, color, advice };
+    return { pick: fullPickName, rate, badgeClass, reason };
 }
 
-function updateBaccaratUI() {
-    const beadGrid = document.getElementById('bead-grid');
-    const bigRoadGrid = document.getElementById('big-road-grid');
-    const statP = document.getElementById('stat-p');
-    const statB = document.getElementById('stat-b');
-    const statT = document.getElementById('stat-t');
-    const resultBox = document.getElementById('baccarat-result');
+function renderBaccaratTables(apiData) {
+    const container = document.getElementById('bcr-tables-container');
+    if (!container) return;
 
-    beadGrid.innerHTML = ''; bigRoadGrid.innerHTML = '';
+    let tables = [];
+    if (Array.isArray(apiData)) {
+        tables = apiData;
+    } else if (apiData && Array.isArray(apiData.data)) {
+        tables = apiData.data;
+    } else if (apiData && Array.isArray(apiData.tables)) {
+        tables = apiData.tables;
+    } else if (apiData && typeof apiData === 'object') {
+        tables = Object.values(apiData).filter(item => typeof item === 'object' && item !== null);
+    }
 
-    if (baccaratHistory.length === 0) {
-        statP.innerText = '0 (0%)'; statB.innerText = '0 (0%)'; statT.innerText = '0 (0%)';
-        resultBox.classList.add('hidden');
+    if (!tables || tables.length === 0) {
+        renderFallbackBaccaratData();
         return;
     }
 
+    globalBaccaratData = [];
+    let html = '';
+
+    tables.forEach((tbl, index) => {
+        const tableName = extractTableName(tbl, index);
+        let rawHistory = parseRawHistory(tbl);
+        let prediction = computeAIPrediction(rawHistory);
+
+        let tableObj = { id: index, tableName, rawHistory, prediction };
+        globalBaccaratData.push(tableObj);
+
+        let beadHtml = '';
+        if (Array.isArray(rawHistory) && rawHistory.length > 0) {
+            const recentList = rawHistory.slice(-15);
+            recentList.forEach(item => {
+                const val = String(item).toUpperCase().trim();
+                let dotClass = 'dot-t';
+                let char = 'T';
+                if (['P', 'PLAYER', '1', 'BLUE'].includes(val)) { dotClass = 'dot-p'; char = 'P'; }
+                else if (['B', 'BANKER', '2', 'RED'].includes(val)) { dotClass = 'dot-b'; char = 'B'; }
+
+                beadHtml += `<div class="bcr-bead-dot ${dotClass}">${char}</div>`;
+            });
+        } else {
+            beadHtml = `<span style="font-size:10px; color:#a0a0c0;">Đang nạp chuỗi cầu...</span>`;
+        }
+
+        html += `
+            <div class="bcr-card" onclick="openBaccaratModal(${index})">
+                <div class="bcr-card-header">
+                    <div class="bcr-table-title">🎰 ${tableName}</div>
+                    <div class="bcr-prediction-badge ${prediction.badgeClass}">
+                        ${prediction.pick} (${prediction.rate})
+                    </div>
+                </div>
+
+                <div style="font-size:10px; color:#a0a0c0; margin-bottom:4px;">Chuỗi cầu gần đây (Click xem chi tiết):</div>
+                <div class="bcr-bead-mini">
+                    ${beadHtml}
+                </div>
+
+                <div style="font-size:11px; display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px dashed rgba(255,255,255,0.1);">
+                    <span>Gợi ý cược: <b style="color:#00f3ff;">${prediction.pick}</b></span>
+                    <span style="color:#00ff66;">Tỷ lệ: <b>${prediction.rate}</b></span>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function renderFallbackBaccaratData() {
+    const fallbackTables = [
+        { tableName: "Bàn 01", history: ['B','B','P','B','P','P','P','B','B','P','P','B','P','B'] },
+        { tableName: "Bàn 02", history: ['P','P','P','B','P','B','B','P','B','B','P','B','B','B'] },
+        { tableName: "Bàn 03", history: ['B','P','B','P','B','P','B','P','B','P','B','P','B','P'] },
+        { tableName: "Bàn C01", history: ['P','B','B','B','B','P','P','B','P','P','B','B','P','B'] },
+        { tableName: "Bàn C02", history: ['B','B','B','P','B','P','P','P','B','P','B','B','P','P'] },
+        { tableName: "Bàn BC01", history: ['P','P','B','B','P','P','B','B','P','P','B','B','P','P'] }
+    ];
+    renderBaccaratTables(fallbackTables);
+}
+
+/* =============================================================
+   MỞ / ĐÓNG CỬA SỔ NỔI BÀN BACCARAT CHI TIẾT
+============================================================= */
+function openBaccaratModal(tableIdx) {
+    const tblData = globalBaccaratData[tableIdx];
+    if (!tblData) return;
+
+    document.getElementById('modal-table-title').innerText = `🎰 ${tblData.tableName} - SOI CẦU AI REALTIME`;
+
+    const beadGrid = document.getElementById('modal-bead-grid');
+    beadGrid.innerHTML = '';
+
     let pCount = 0, bCount = 0, tCount = 0;
 
-    baccaratHistory.forEach((item) => {
-        if (item === 'P') pCount++;
-        else if (item === 'B') bCount++;
-        else if (item === 'T') tCount++;
-
-        const cell = document.createElement('div');
-        cell.className = `bead-cell bead-${item.toLowerCase()}`;
-        cell.innerText = item;
-        beadGrid.appendChild(cell);
-    });
-
-    const beadWrapper = beadGrid.parentElement;
-    beadWrapper.scrollLeft = beadWrapper.scrollWidth;
-
-    let columns = [];
-    let currentCol = [];
-    let lastType = null;
-
-    baccaratHistory.forEach(item => {
-        if (item === 'T') return;
-        if (item !== lastType) {
-            if (currentCol.length > 0) columns.push(currentCol);
-            currentCol = [item];
-            lastType = item;
-        } else {
-            if (currentCol.length < 6) {
-                currentCol.push(item);
+    if (tblData.rawHistory && tblData.rawHistory.length > 0) {
+        tblData.rawHistory.forEach(item => {
+            const val = String(item).toUpperCase().trim();
+            const cell = document.createElement('div');
+            
+            if (['P', 'PLAYER', '1', 'BLUE'].includes(val)) {
+                cell.className = 'road-cell-p'; cell.innerText = 'P'; pCount++;
+            } else if (['B', 'BANKER', '2', 'RED'].includes(val)) {
+                cell.className = 'road-cell-b'; cell.innerText = 'B'; bCount++;
             } else {
-                columns.push(currentCol);
-                currentCol = [item];
+                cell.className = 'road-cell-t'; cell.innerText = 'T'; tCount++;
             }
-        }
-    });
-    if (currentCol.length > 0) columns.push(currentCol);
-
-    columns.forEach(col => {
-        col.forEach(item => {
-            const bigCell = document.createElement('div');
-            bigCell.className = `big-road-cell big-${item.toLowerCase()}`;
-            bigCell.innerText = item;
-            bigRoadGrid.appendChild(bigCell);
+            beadGrid.appendChild(cell);
         });
-        for (let i = col.length; i < 6; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'big-road-cell';
-            bigRoadGrid.appendChild(emptyCell);
-        }
-    });
+    } else {
+        beadGrid.innerHTML = `<span style="font-size:11px; color:#a0a0c0;">Chưa có lịch sử kết quả.</span>`;
+    }
 
-    const bigWrapper = bigRoadGrid.parentElement;
-    bigWrapper.scrollLeft = bigWrapper.scrollWidth;
-
-    const total = baccaratHistory.length;
-    statP.innerText = `${pCount} (${((pCount / total) * 100).toFixed(1)}%)`;
-    statB.innerText = `${bCount} (${((bCount / total) * 100).toFixed(1)}%)`;
-    statT.innerText = `${tCount} (${((tCount / total) * 100).toFixed(1)}%)`;
-
-    const prediction = analyzeBaccaratAlgorithm(baccaratHistory, pCount, bCount, tCount);
-
-    resultBox.className = "result-box prediction-bg";
-    resultBox.classList.remove('hidden');
-    resultBox.innerHTML = `
-        <b>DỰ ĐOÁN VÁN TIẾP THEO: <span style="color:${prediction.color}; font-size:18px;">${prediction.pick}</span></b><br>
-        <div class="analysis-detail">
-            • <b>Tỷ lệ chính xác AI:</b> <span style="color:#00ff66;">${prediction.rate}</span><br>
-            • <b>Dạng cầu nhận diện:</b> ${prediction.pattern}<br>
-            • <b>Thuật toán vận hành:</b> ${prediction.algo}<br>
-            • <b>Chiến thuật khuyên dùng:</b> <i>${prediction.advice}</i>
-        </div>
+    const pred = tblData.prediction;
+    const analysisBox = document.getElementById('modal-analysis-box');
+    analysisBox.innerHTML = `
+        🎯 <b>DỰ ĐOÁN TAY TIẾP THEO: <span style="color:${pred.pick === 'PLAYER' ? '#00f3ff' : '#ff0055'}; font-size:18px;">${pred.pick}</span></b><br>
+        ----------------------------------------<br>
+        • <b>Tỷ lệ AI đánh giá:</b> <b style="color:#00ff66;">${pred.rate}</b><br>
+        • <b>Phân tích cầu:</b> ${pred.reason}<br>
+        • <b>Thống kê bàn:</b> <span style="color:#00a2ff;">PLAYER: ${pCount}</span> | <span style="color:#ff0055;">BANKER: ${bCount}</span> | <span style="color:#00ff66;">HÒA: ${tCount}</span>
     `;
+
+    document.getElementById('bcr-modal-overlay').classList.add('active');
+}
+
+function closeBaccaratModal() {
+    document.getElementById('bcr-modal-overlay').classList.remove('active');
 }
