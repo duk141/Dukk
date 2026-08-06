@@ -1,383 +1,391 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HiLo A→K AI</title>
-
-<style>
-
-body{
-  margin:0;
-  padding:15px;
-  background:#0f172a;
-  color:white;
-  font-family:Arial;
-}
-
-.box{
-  max-width:700px;
-  margin:auto;
-  background:#111827;
-  padding:15px;
-  border-radius:12px;
-}
-
-h2{
-  text-align:center;
-  margin-bottom:15px;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.card-btn{
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  font-size:18px;
-  font-weight:bold;
-  cursor:pointer;
-  background:#1e293b;
-  color:white;
-}
-
-.card-btn:hover{
-  opacity:0.9;
-}
-
-.low{
-  background:#16a34a;
-}
-
-.high{
-  background:#dc2626;
-}
-
-.control{
-  margin-top:15px;
-  display:flex;
-  gap:10px;
-}
-
-.control button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.clear{
-  background:#2563eb;
-  color:white;
-}
-
-.skip{
-  background:#f59e0b;
-  color:black;
-}
-
-#history,
-#ai{
-  margin-top:15px;
-  background:#0b1220;
-  padding:12px;
-  border-radius:10px;
-  font-size:14px;
-  line-height:1.6;
-}
-
-.tag{
-  display:inline-block;
-  padding:3px 8px;
-  border-radius:6px;
-  margin-left:5px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.tag-low{
-  background:#16a34a;
-}
-
-.tag-high{
-  background:#dc2626;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD5 & BACCARAT & BANK TX AI PRO SYSTEM</title>
+    <!-- Thư viện CryptoJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="box">
-
-  <h2>🃏 HiLo A → K AI</h2>
-
-  <div class="cards">
-
-    <button class="card-btn low" onclick="addCard('A')">A</button>
-    <button class="card-btn low" onclick="addCard('2')">2</button>
-    <button class="card-btn low" onclick="addCard('3')">3</button>
-    <button class="card-btn low" onclick="addCard('4')">4</button>
-
-    <button class="card-btn low" onclick="addCard('5')">5</button>
-    <button class="card-btn low" onclick="addCard('6')">6</button>
-    <button class="card-btn low" onclick="addCard('7')">7</button>
-
-    <button class="card-btn high" onclick="addCard('8')">8</button>
-    <button class="card-btn high" onclick="addCard('9')">9</button>
-    <button class="card-btn high" onclick="addCard('10')">10</button>
-
-    <button class="card-btn high" onclick="addCard('J')">J</button>
-    <button class="card-btn high" onclick="addCard('Q')">Q</button>
-    <button class="card-btn high" onclick="addCard('K')">K</button>
-
-  </div>
-
-  <div class="control">
-    <button class="skip" onclick="skip()">SKIP</button>
-    <button class="clear" onclick="clearAll()">CLEAR</button>
-  </div>
-
-  <div id="ai">
-    AI: Chưa đủ dữ liệu
-  </div>
-
-  <div id="history">
-    History:
-  </div>
-
-</div>
-
-<script>
-
-let rawCards = [];
-let data = [];
-
-// =======================
-// AUTO LOAD HISTORY
-// =======================
-const savedRaw =
-  localStorage.getItem("hilo_raw");
-
-const savedData =
-  localStorage.getItem("hilo_data");
-
-if(savedRaw && savedData){
-
-  rawCards = JSON.parse(savedRaw);
-  data = JSON.parse(savedData);
-
-  setTimeout(()=>{
-    render();
-  },100);
-}
-
-// =======================
-// SAVE HISTORY
-// =======================
-function saveHistory(){
-
-  localStorage.setItem(
-    "hilo_raw",
-    JSON.stringify(rawCards)
-  );
-
-  localStorage.setItem(
-    "hilo_data",
-    JSON.stringify(data)
-  );
-}
-
-// =======================
-// CARD => H/L
-// =======================
-function toHL(card){
-
-  if(["A","2","3","4","5","6","7"].includes(card)){
-    return "L";
-  }
-
-  return "H";
-}
-
-// =======================
-// ADD CARD
-// =======================
-function addCard(card){
-
-  rawCards.push(card);
-
-  let hl = toHL(card);
-
-  data.push(hl);
-
-  saveHistory();
-
-  render();
-}
-
-// =======================
-function skip(){
-
-  rawCards.push("S");
-  data.push("S");
-
-  saveHistory();
-
-  render();
-}
-
-// =======================
-function clearAll(){
-
-  rawCards = [];
-  data = [];
-
-  localStorage.clear();
-
-  render();
-}
-
-// =======================
-// RENDER
-// =======================
-function render(){
-
-  let html = "";
-
-  rawCards.forEach(c=>{
-
-    if(c==="S"){
-      html += "[SKIP] ";
-      return;
-    }
-
-    let type = toHL(c);
-
-    html += `
-      ${c}
-      <span class="tag ${type==='H' ? 'tag-high':'tag-low'}">
-        ${type}
-      </span>
-    `;
-  });
-
-  document.getElementById("history").innerHTML =
-    html || "History:";
-
-  analyze();
-}
-
-// =======================
-// AI ANALYZE
-// =======================
-function analyze(){
-
-  let seq = data.filter(x=>x!=="S");
-
-  if(seq.length < 5){
-
-    document.getElementById("ai").innerHTML =
-      "AI: cần ít nhất 5 lá";
-
-    return;
-  }
-
-  // ===================
-  // STREAK
-  // ===================
-  let last = seq[seq.length-1];
-
-  let streak = 1;
-
-  for(let i=seq.length-2;i>=0;i--){
-
-    if(seq[i]===last){
-      streak++;
-    }else{
-      break;
-    }
-  }
-
-  // ===================
-  // PATTERN
-  // ===================
-  let last6 = seq.slice(-6).join("");
-
-  let pattern = "Không rõ";
-
-  if(last6==="HLHLHL" || last6==="LHLHLH"){
-    pattern = "🔁 Cầu 1-1";
-  }
-  else if(
-    last6.includes("HLL") ||
-    last6.includes("LHH")
-  ){
-    pattern = "📈 Cầu 1-2";
-  }
-  else if(streak>=3){
-    pattern = "🔥 Bệt";
-  }
-
-  // ===================
-  // SẮP ĐẢO
-  // ===================
-  let reverse = false;
-
-  if(streak>=3){
-    reverse = true;
-  }
-
-  // ===================
-  // CẦU GÃY
-  // ===================
-  let broken = false;
-
-  let flip = 0;
-
-  for(let i=1;i<seq.length;i++){
-
-    if(seq[i]!==seq[i-1]){
-      flip++;
-    }
-  }
-
-  let flipRate = flip / seq.length;
-
-  if(flipRate > 0.7){
-    broken = true;
-  }
-
-  // ===================
-  // AI OUTPUT
-  // ===================
-  let msg = "";
-
-  msg += "🧠 Pattern: " + pattern + "<br>";
-  msg += "📊 Streak: " + last + " x" + streak + "<br>";
-
-  if(reverse){
-    msg += "⚠️ Sắp đảo cầu<br>";
-  }
-
-  if(broken){
-    msg += "💥 Cầu gãy / nhiễu<br>";
-  }
-
-  if(!reverse && !broken){
-    msg += "✅ Cầu ổn định<br>";
-  }
-
-  document.getElementById("ai").innerHTML = msg;
-}
-
-</script>
-
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">Menu Hệ Thống</div>
+        <div class="menu-item active" id="menu-home" onclick="switchTab('home')">🏠 Trang Chủ</div>
+        <div class="menu-item" id="menu-buykey" onclick="switchTab('buykey')">🔑 Mua Key VIP Auto</div>
+        <div class="menu-item" id="menu-md5" onclick="switchTab('md5')">⚡ Dự Đoán MD5/SHA256</div>
+        <div class="menu-item" id="menu-bank" onclick="switchTab('bank')">🏦 Dự Đoán TX Ngân Hàng</div>
+        <div class="menu-item" id="menu-baccarat" onclick="switchTab('baccarat')">🎲 Dự Đoán Baccarat Pro</div>
+        <div class="menu-item" id="menu-support" onclick="switchTab('support')">🎧 Hỗ Trợ Khách Hàng</div>
+    </div>
+
+    <div class="neon-box-wrapper">
+        <svg class="neon-border-svg">
+            <rect class="border-base" x="2" y="2" width="99%" height="99%" />
+            <rect class="border-glow" x="2" y="2" width="99%" height="99%" />
+        </svg>
+
+        <div class="neon-container" id="neon-container">
+            <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
+            <div id="auth-screen">
+                <h2 id="auth-title">System Login</h2>
+                
+                <div class="form-group">
+                    <label for="username">Tài khoản</label>
+                    <input type="text" id="username" placeholder="Nhập tên tài khoản">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" placeholder="Nhập mật khẩu">
+                </div>
+
+                <p id="auth-message" class="message"></p>
+
+                <button class="btn-primary" id="btn-auth-action" onclick="handleAuth()">Đăng Nhập</button>
+
+                <div style="margin-top: 18px; text-align: center; font-size: 12px; color: #d0d0f0;">
+                    <span id="toggle-text">Chưa có tài khoản?</span>
+                    <a href="javascript:void(0)" onclick="toggleAuthMode()" id="toggle-link" style="color:#ff0055; font-weight:bold; text-decoration:none;">Đăng ký ngay</a>
+                </div>
+            </div>
+
+            <!-- MÀN HÌNH CHÍNH -->
+            <div id="main-screen" class="hidden">
+                <div class="user-header">
+                    <span>XIN CHÀO: <b id="user-display"></b> | HẠN: <b id="key-expiry-display" style="color:#00ff66;">Chưa kích hoạt</b></span>
+                    <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+                </div>
+
+                <!-- TAB HOME -->
+                <div id="tab-home-content">
+                    <h2>Trung Tâm Điều Khiển</h2>
+                    
+                    <div class="home-grid">
+                        <div class="home-card" onclick="switchTab('buykey')" style="border-color:#00ff66;">
+                            <div>
+                                <h3 style="font-size:15px; color:#00ff66;">🔑 Mua Key VIP Tự Động</h3>
+                                <p style="font-size:11px; color:#a0a0c0;">Nạp tiền tạo Key tự động kích hoạt ngay</p>
+                            </div>
+                            <div style="font-size:28px;">💳</div>
+                        </div>
+
+                        <div class="home-card" onclick="switchTab('md5')">
+                            <div>
+                                <h3 style="font-size:15px; color:#fff;">⚡ Dự Đoán Hash MD5 & SHA-256</h3>
+                                <p style="font-size:11px; color:#a0a0c0;">Băm Shannon Entropy + Byte Seed Nâng Cấp</p>
+                            </div>
+                            <div style="font-size:28px;">🔓</div>
+                        </div>
+
+                        <div class="home-card" onclick="switchTab('bank')">
+                            <div>
+                                <h3 style="font-size:15px; color:#fff;">🏦 Dự Đoán Tài Xỉu Ngân Hàng</h3>
+                                <p style="font-size:11px; color:#a0a0c0;">Thuật toán Nút Số 0-9 & Bảng Cầu AI Ngân Hàng</p>
+                            </div>
+                            <div style="font-size:28px;">🏛️</div>
+                        </div>
+
+                        <div class="home-card" onclick="switchTab('baccarat')">
+                            <div>
+                                <h3 style="font-size:15px; color:#fff;">🎲 Baccarat AI Pro Engine</h3>
+                                <p style="font-size:11px; color:#a0a0c0;">Thuật toán Ma Trận & Cân Bằng Cầu Casino</p>
+                            </div>
+                            <div style="font-size:28px;">🎰</div>
+                        </div>
+
+                        <div class="home-card" onclick="switchTab('support')">
+                            <div>
+                                <h3 style="font-size:15px; color:#fff;">🎧 Trung Tâm Hỗ Trợ</h3>
+                                <p style="font-size:11px; color:#a0a0c0;">Liên hệ CSKH 24/7 & Hướng dẫn sử dụng</p>
+                            </div>
+                            <div style="font-size:28px;">💬</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 style="color:#00f3ff; font-size:14px; margin-bottom:15px;">👤 Thiết Lập Hồ Sơ Cá Nhân</h3>
+                        <div class="form-group">
+                            <label>Biệt Danh:</label>
+                            <input type="text" id="profile-nickname" placeholder="Ví dụ: SatThuDeChe">
+                        </div>
+                        <div class="form-group">
+                            <label>Năm Sinh:</label>
+                            <input type="number" id="profile-birthyear" placeholder="1998">
+                        </div>
+                        <div class="form-group">
+                            <label>Địa Chỉ Email:</label>
+                            <input type="email" id="profile-email" placeholder="example@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Số Điện Thoại:</label>
+                            <input type="text" id="profile-phone" placeholder="0901234567">
+                        </div>
+                        <p id="profile-message" class="message"></p>
+                        <button class="btn-primary" onclick="saveUserProfile()">Lưu Hồ Sơ</button>
+                    </div>
+                </div>
+
+                <!-- TAB MUA KEY TỰ ĐỘNG -->
+                <div id="tab-buykey-content" class="hidden" style="position:relative;">
+                    <button class="home-nav-btn" onclick="switchTab('home')">🏠 Trang Chủ</button>
+                    <h2>Mua Key VIP Tự Động</h2>
+                    <p style="font-size:12px; color:#a0a0c0; text-align:center; margin-bottom:15px;">
+                        Chọn gói cước ➔ Quét mã QR thanh toán ➔ Hệ thống tự động cấp Key & Kích hoạt cho tài khoản.
+                    </p>
+
+                    <div class="key-grid">
+                        <div class="key-card" onclick="selectKeyPackage(event, 15000, '1 Tiếng')">
+                            <div class="price">15.000 VNĐ</div>
+                            <div class="time">⏱️ 1 Tiếng</div>
+                        </div>
+                        <div class="key-card" onclick="selectKeyPackage(event, 30000, '1 Ngày')">
+                            <div class="price">30.000 VNĐ</div>
+                            <div class="time">📅 1 Ngày</div>
+                        </div>
+                        <div class="key-card" onclick="selectKeyPackage(event, 50000, '3 Ngày')">
+                            <div class="price">50.000 VNĐ</div>
+                            <div class="time">📅 3 Ngày</div>
+                        </div>
+                        <div class="key-card" onclick="selectKeyPackage(event, 100000, '15 Ngày')">
+                            <div class="price">100.000 VNĐ</div>
+                            <div class="time">🚀 15 Ngày</div>
+                        </div>
+                        <div class="key-card" onclick="selectKeyPackage(event, 200000, '30 Ngày')">
+                            <div class="price">200.000 VNĐ</div>
+                            <div class="time">💎 30 Ngày</div>
+                        </div>
+                        <div class="key-card" onclick="selectKeyPackage(event, 500000, 'Vĩnh Viễn')">
+                            <div class="price">500.000 VNĐ</div>
+                            <div class="time">👑 Vĩnh Viễn</div>
+                        </div>
+                    </div>
+
+                    <div id="qr-section" class="qr-box hidden">
+                        <h3 style="color:#00ff66; font-size:14px;">MÃ QUÉT THANH TOÁN VIETQR</h3>
+                        <img id="qr-code-img" class="qr-img" src="" alt="Mã QR Thanh Toán">
+                        <p style="font-size:12px; color:#fff;">
+                            Số tiền: <b id="qr-price" style="color:#00ff66;">0 VNĐ</b>
+                            <button class="btn-copy" onclick="copyText(selectedPackage ? selectedPackage.price : '')">Copy</button>
+                        </p>
+                        <p style="font-size:11px; color:#d0d0f0; margin-top:4px;">Ngân hàng: <b style="color:#00f3ff;">MB Bank (MB)</b></p>
+                        <p style="font-size:11px; color:#d0d0f0; margin-top:2px;">Chủ TK: <b style="color:#ffd700;">TRUONG NGUYEN THANH DANH</b></p>
+                        <p style="font-size:11px; color:#d0d0f0; margin-top:2px;">
+                            STK: <b style="color:#ffd700;">888881415</b>
+                            <button class="btn-copy" onclick="copyText('888881415')">Copy</button>
+                        </p>
+                        <p style="font-size:12px; color:#ff0055; margin-top:6px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:5px; border:1px dashed #ff0055;">
+                            ⚠️ NỘI DUNG CK: <span id="qr-memo" style="color:#00f3ff; font-size:14px;">---</span>
+                            <button class="btn-copy" onclick="copyText(currentRandomMemo)">Copy</button>
+                        </p>
+
+                        <div style="margin-top:12px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.2);">
+                            <p style="font-size:10px; color:#a0a0c0; margin-bottom:6px;">[Mô phỏng Webhook Auto Ngân Hàng]</p>
+                            <button class="btn-primary" style="padding:8px; font-size:11px; background:rgba(0, 255, 102, 0.2); border-color:#00ff66; color:#00ff66;" onclick="simulatePaymentSuccess()">
+                                ⚡ Giả Lập Đã Chuyển Khoản Thành Công
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(0,243,255,0.3);">
+                        <h3 style="color:#00f3ff; font-size:13px; margin-bottom:10px;">🔑 KÍCH HOẠT MÃ KEY BẰNG TAY</h3>
+                        <div class="form-group" style="margin-bottom:8px;">
+                            <input type="text" id="manual-key-input" placeholder="Nhập mã Key VIP (Ví dụ: VIP-XXXXXX)">
+                        </div>
+                        <button class="btn-primary" style="padding:8px; font-size:12px;" onclick="activateManualKey()">Kích Hoạt Key</button>
+                    </div>
+
+                    <div id="key-result-box" class="result-box hidden" style="background:rgba(0,255,102,0.15); border:1px solid #00ff66; color:#00ff66; margin-top:15px;"></div>
+                </div>
+
+                <!-- TAB MD5 ENGINE -->
+                <div id="tab-md5-content" class="hidden" style="position:relative;">
+                    <button class="home-nav-btn" onclick="switchTab('home')">🏠 Trang Chủ</button>
+                    <h2>Dự Đoán MD5 / SHA-256 Engine</h2>
+                    
+                    <div class="mode-container">
+                        <button type="button" class="btn-mode" onclick="setMode('vip')">👑 Chế độ VIP</button>
+                        <button type="button" class="btn-mode" onclick="setMode('basic')">⚡ Chế độ BASIC</button>
+                    </div>
+                    <div id="modeText" class="modeBox mode-vip">👑 VIP MODE ACTIVE</div>
+
+                    <div class="form-group">
+                        <label for="hashInput">Nhập chuỗi Hash (MD5 32 ký tự hoặc SHA-256 64 ký tự):</label>
+                        <input type="text" id="hashInput" placeholder="Ví dụ: c4ca4238a0b923820dcc509a6f75849b">
+                    </div>
+
+                    <button class="btn-primary" id="analyzeBtn" onclick="analyze()">Chạy Phân Tích AI Hash</button>
+
+                    <div id="radarBox" class="radar-box">
+                        <div style="font-size: 11px; color: #00f3ff;" id="statusPhase">1. Đọc cấu trúc Byte...</div>
+                        <div class="progress-bar-bg">
+                            <div id="scanBar" class="progress-bar-fill"></div>
+                        </div>
+                        <div style="font-size: 10px; margin-top: 4px; color: #a0a0c0;"><span id="scanPercent">0</span>%</div>
+                    </div>
+
+                    <div id="crack-result" class="result-box hidden">
+                        <div style="text-align: center; font-size: 16px; margin-bottom: 5px;">
+                            DỰ ĐOÁN HASH [<span id="hashType">MD5</span>]: <b id="result" style="font-size: 22px; color: #00f3ff;">---</b>
+                        </div>
+
+                        <div style="font-size: 11px; display: flex; justify-content: space-between;">
+                            <span>TÀI: <b id="tai">50</b>%</span>
+                            <span>XỈU: <b id="xiu">50</b>%</span>
+                        </div>
+                        <div class="ratio-bar-bg">
+                            <div id="bar" class="ratio-bar-fill"></div>
+                        </div>
+
+                        <div class="analysis-detail">
+                            • <b>Độ tin cậy thuật toán:</b> <span id="conf" style="color: #00ff66;">0%</span><br>
+                            • <b>Shannon Entropy:</b> <span id="entropyVal">0.00</span><br>
+                            • <b>Chỉ số may mắn (Seed):</b> <span id="lucky">0</span><br>
+                            • <b>Tỷ lệ thắng hệ thống:</b> <span id="winrate">50%</span><br>
+                            • <b>Thống kê phiên:</b> <span id="stats">ĐÚNG: 0 | SAI: 0</span>
+                        </div>
+
+                        <div class="rate-btn-group">
+                            <button id="btnOk" class="btn-rate btn-rate-ok" onclick="mark(true)" disabled>👍 Kết Quả ĐÚNG</button>
+                            <button id="btnFail" class="btn-rate btn-rate-fail" onclick="mark(false)" disabled>👎 Kết Quả SAI</button>
+                        </div>
+
+                        <div class="roadmap-container-title" style="margin-top: 12px;">📜 Lịch Sử Băm Phiên Gần Đây:</div>
+                        <div id="history" style="font-size: 10px; color: #a0a0c0; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- TAB DỰ ĐOÁN TÀI XỈU NGÂN HÀNG -->
+                <div id="tab-bank-content" class="hidden" style="position:relative;">
+                    <button class="home-nav-btn" onclick="switchTab('home')">🏠 Trang Chủ</button>
+                    <h2>Dự Đoán Tài Xỉu Ngân Hàng</h2>
+                    
+                    <div class="baccarat-stats">
+                        <div class="stat-card">
+                            <h4>XỈU (1 - 4)</h4>
+                            <div class="val val-banker" id="bank-stat-xiu">0 (0%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>TÀI (5 - 8)</h4>
+                            <div class="val val-player" id="bank-stat-tai">0 (0%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>HÒA (0, 9)</h4>
+                            <div class="val val-tie" id="bank-stat-special">0 (0%)</div>
+                        </div>
+                    </div>
+
+                    <label style="margin-bottom:8px;">Chọn Kết Quả Nút Số Ngân Hàng (0 - 9):</label>
+                    <div class="bank-num-grid">
+                        <button type="button" class="btn-bank-num btn-bank-special" onclick="inputBankNum(0)">0 (Hòa)</button>
+                        <button type="button" class="btn-bank-num btn-bank-xiu" onclick="inputBankNum(1)">1 (Xỉu)</button>
+                        <button type="button" class="btn-bank-num btn-bank-xiu" onclick="inputBankNum(2)">2 (Xỉu)</button>
+                        <button type="button" class="btn-bank-num btn-bank-xiu" onclick="inputBankNum(3)">3 (Xỉu)</button>
+                        <button type="button" class="btn-bank-num btn-bank-xiu" onclick="inputBankNum(4)">4 (Xỉu)</button>
+                        <button type="button" class="btn-bank-num btn-bank-tai" onclick="inputBankNum(5)">5 (Tài)</button>
+                        <button type="button" class="btn-bank-num btn-bank-tai" onclick="inputBankNum(6)">6 (Tài)</button>
+                        <button type="button" class="btn-bank-num btn-bank-tai" onclick="inputBankNum(7)">7 (Tài)</button>
+                        <button type="button" class="btn-bank-num btn-bank-tai" onclick="inputBankNum(8)">8 (Tài)</button>
+                        <button type="button" class="btn-bank-num btn-bank-special" onclick="inputBankNum(9)">9 (Hòa)</button>
+                    </div>
+
+                    <div class="baccarat-action-row" style="margin-top:15px;">
+                        <button type="button" class="btn-control-sub" onclick="popBankResult()">Xóa ván cuối</button>
+                        <button type="button" class="btn-control-sub" onclick="clearBankHistory()">Xóa tất cả cầu</button>
+                    </div>
+
+                    <div class="roadmap-container-title">📊 Bead Road Ngân Hàng (Bảng Hạt Số 6xN):</div>
+                    <div class="bead-board-wrapper">
+                        <div class="bead-grid" id="bank-bead-grid"></div>
+                    </div>
+
+                    <div class="roadmap-container-title">📈 Big Road Ngân Hàng (Bảng Cầu Chạy Cột):</div>
+                    <div class="big-road-wrapper">
+                        <div class="big-road-grid" id="bank-big-road-grid"></div>
+                    </div>
+
+                    <div id="bank-result" class="result-box hidden"></div>
+                </div>
+
+                <!-- TAB BACCARAT ENGINE -->
+                <div id="tab-baccarat-content" class="hidden" style="position:relative;">
+                    <button class="home-nav-btn" onclick="switchTab('home')">🏠 Trang Chủ</button>
+                    <h2>Baccarat AI Engine v4.0</h2>
+                    
+                    <div class="baccarat-stats">
+                        <div class="stat-card">
+                            <h4>PLAYER (P)</h4>
+                            <div class="val val-player" id="stat-p">0 (0%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>BANKER (B)</h4>
+                            <div class="val val-banker" id="stat-b">0 (0%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>TIE (T)</h4>
+                            <div class="val val-tie" id="stat-t">0 (0%)</div>
+                        </div>
+                    </div>
+
+                    <div class="baccarat-btn-group">
+                        <button type="button" class="btn-p" onclick="addBaccaratResult('P')">P</button>
+                        <button type="button" class="btn-b" onclick="addBaccaratResult('B')">B</button>
+                        <button type="button" class="btn-t" onclick="addBaccaratResult('T')">T</button>
+                    </div>
+                    
+                    <div class="baccarat-action-row">
+                        <button type="button" class="btn-control-sub" onclick="popBaccaratResult()">Xóa ván cuối</button>
+                        <button type="button" class="btn-control-sub" onclick="clearBaccaratHistory()">Xóa tất cả</button>
+                    </div>
+
+                    <div class="roadmap-container-title">📊 Bead Road (Bảng Hạt Bài Matrix 6xN):</div>
+                    <div class="bead-board-wrapper">
+                        <div class="bead-grid" id="bead-grid"></div>
+                    </div>
+
+                    <div class="roadmap-container-title">📈 Big Road (Bảng Cầu Chạy Cột):</div>
+                    <div class="big-road-wrapper">
+                        <div class="big-road-grid" id="big-road-grid"></div>
+                    </div>
+
+                    <div id="baccarat-result" class="result-box hidden"></div>
+                </div>
+
+                <!-- TAB SUPPORT -->
+                <div id="tab-support-content" class="hidden" style="position:relative;">
+                    <button class="home-nav-btn" onclick="switchTab('home')">🏠 Trang Chủ</button>
+                    <h2>Trung Tâm Hỗ Trợ</h2>
+                    <div class="support-box">
+                        <div class="support-item">
+                            <span>Telegram CSKH 24/7:</span>
+                            <a href="#" target="_blank">@Support_AI_Bot</a>
+                        </div>
+                        <div class="support-item">
+                            <span>Kênh Báo Lỗi / Thuật Toán:</span>
+                            <a href="#" target="_blank">@Dev_Team_MD5</a>
+                        </div>
+                        <div class="support-item">
+                            <span>Hotline Trực Tuyến:</span>
+                            <span style="color:#00ff66; font-weight:bold;">1900 xxxx (24/7)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
