@@ -1,4 +1,3 @@
-
 /* =============================================================
    BIẾN TOÀN CỤC & MUA KEY AUTOMATION
 ============================================================= */
@@ -384,7 +383,7 @@ function animate() {
 animate();
 
 /* =============================================================
-   XỬ LÝ ĐĂNG NHẬP & HỒ SƠ
+   XỬ LÝ ĐĂNG NHẬP & HỒ SƠ (ĐÃ CẬP NHẬT DÙNG SESSIONSTORAGE)
 ============================================================= */
 let isLoginMode = true;
 document.addEventListener("DOMContentLoaded", () => { checkAutoLogin(); });
@@ -421,6 +420,8 @@ function handleAuth() {
 
     if (isLoginMode) {
         if ((user === "admin" && pass === "123456") || (users[user] && users[user] === pass)) {
+            // Lưu cả vào sessionStorage để tab ẩn danh duy trì trạng thái khi refresh
+            sessionStorage.setItem('logged_in_user', user);
             localStorage.setItem('logged_in_user', user);
             currentUser = user;
             showMainScreen(user);
@@ -445,7 +446,7 @@ function showMessage(element, text, type) {
 }
 
 function checkAutoLogin() {
-    const loggedUser = localStorage.getItem('logged_in_user');
+    const loggedUser = sessionStorage.getItem('logged_in_user') || localStorage.getItem('logged_in_user');
     if (loggedUser) {
         currentUser = loggedUser;
         showMainScreen(loggedUser);
@@ -461,6 +462,7 @@ function showMainScreen(username) {
 }
 
 function handleLogout() {
+    sessionStorage.removeItem('logged_in_user');
     localStorage.removeItem('logged_in_user');
     currentUser = null;
     document.getElementById('username').value = "";
@@ -470,7 +472,7 @@ function handleLogout() {
 }
 
 function saveUserProfile() {
-    const loggedUser = localStorage.getItem('logged_in_user');
+    const loggedUser = sessionStorage.getItem('logged_in_user') || localStorage.getItem('logged_in_user');
     if (!loggedUser) return;
 
     const nickname = document.getElementById('profile-nickname').value.trim();
